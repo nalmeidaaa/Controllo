@@ -206,7 +206,7 @@ Relaciona patrimônios às ordens de serviço.
 
 ## 🔗 Relacionamento das tabelas
 
-<img src="./assets/DiagramaControllo.drawio.png">
+<img src="./assets/controllo.drawio.png">
 
 ### 📌 Descrição
 O sistema possui relacionamentos entre salas, patrimônios, usuários, requisições e ordens de serviço.
