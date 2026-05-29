@@ -1,0 +1,142 @@
+DROP DATABASE controllo;
+CREATE DATABASE controllo;
+USE controllo;
+
+CREATE TABLE usuarios (
+    id_usuario INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    cpf VARCHAR(14) UNIQUE NOT NULL,
+    tipo_usuario ENUM('Administração', 'Manutenção', 'Geral') NOT NULL,
+    email VARCHAR(100),
+    hash_senha VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE administracao (
+    id_administracao INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT NOT NULL,
+
+    CONSTRAINT fk_id_usuario
+        FOREIGN KEY (id_usuario)
+        REFERENCES usuarios(id_usuario)
+        ON DELETE CASCADE
+);
+
+CREATE TABLE manutencao (
+    id_manutencao INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT NOT NULL,
+
+    CONSTRAINT fk_manutencao_usuario
+        FOREIGN KEY (id_usuario)
+        REFERENCES usuarios(id_usuario)
+        ON DELETE CASCADE
+);
+
+CREATE TABLE geral (
+    id_geral INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    CONSTRAINT fk_geral_usuario
+        FOREIGN KEY (id_usuario)
+        REFERENCES usuarios(id_usuario)
+		ON DELETE CASCADE
+);
+
+CREATE TABLE sala (
+    id_sala INT AUTO_INCREMENT PRIMARY KEY,
+    descricao VARCHAR(200) NOT NULL,
+    bloco INT NOT NULL
+);
+
+CREATE TABLE patrimonio (
+    id_patrimonio INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100),
+    status_requisicao ENUM('Pendente', 'Concluído') NOT NULL,
+    id_sala INT NOT NULL,
+
+    CONSTRAINT fk_patrimonio_sala
+        FOREIGN KEY (id_sala)
+        REFERENCES sala(id_sala)
+        ON DELETE CASCADE
+);
+
+CREATE TABLE requisicoes_manutencao (
+    id_requisicao INT AUTO_INCREMENT PRIMARY KEY,
+    descricao VARCHAR(200),
+    status_requisicao ENUM('Pendente', 'Concluído') NOT NULL,
+    prioridade ENUM('Alta', 'Media', 'Baixa'),
+    abertura TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    id_patrimonio INT NOT NULL,
+    id_geral INT NOT NULL,
+
+    CONSTRAINT fk_requisicao_patrimonio
+        FOREIGN KEY (id_patrimonio)
+        REFERENCES patrimonio(id_patrimonio)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_requisicao_geral
+        FOREIGN KEY (id_geral)
+        REFERENCES geral(id_geral)
+		ON DELETE CASCADE
+);
+
+CREATE TABLE historicos_manutencao (
+    id_historico INT AUTO_INCREMENT PRIMARY KEY,
+    descricao VARCHAR(200),
+    id_requisicao INT NOT NULL,
+    fechamento TIMESTAMP,
+
+    CONSTRAINT fk_historico_requisicao
+        FOREIGN KEY (id_requisicao)
+        REFERENCES requisicoes_manutencao(id_requisicao)
+        ON DELETE CASCADE
+);
+
+CREATE TABLE ordem_servico (
+    id_ordem INT AUTO_INCREMENT PRIMARY KEY,
+    descricao VARCHAR(200) NOT NULL,
+    status_ordem ENUM('Pendente', 'Concluído') NOT NULL,
+    abertura TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE usuarios_ordem (
+    id_usuarios_ordem INT AUTO_INCREMENT PRIMARY KEY,
+    id_ordem INT NOT NULL,
+    id_usuario INT NOT NULL,
+
+    CONSTRAINT fk_usuario_ordem_ordem
+        FOREIGN KEY (id_ordem)
+        REFERENCES ordem_servico(id_ordem)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_usuario_ordem_usuario
+        FOREIGN KEY (id_usuario)
+        REFERENCES usuarios(id_usuario)
+        ON DELETE CASCADE
+);
+
+CREATE TABLE itens_ordem (
+    id_itens_ordem INT AUTO_INCREMENT PRIMARY KEY,
+    id_ordem INT NOT NULL,
+    id_patrimonio INT NOT NULL,
+
+    CONSTRAINT fk_itens_ordem_ordem
+        FOREIGN KEY (id_ordem)
+        REFERENCES ordem_servico(id_ordem)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_itens_ordem_patrimonio
+        FOREIGN KEY (id_patrimonio)
+        REFERENCES patrimonio(id_patrimonio)
+		ON DELETE CASCADE
+);
+
+CREATE TABLE historicos_ordem (
+    id_historico INT AUTO_INCREMENT PRIMARY KEY,
+    descricao VARCHAR(200) NOT NULL,
+    id_ordem INT NOT NULL,
+    fechamento TIMESTAMP,
+
+    CONSTRAINT fk_historico_ordem
+        FOREIGN KEY (id_ordem)
+        REFERENCES ordem_servico(id_ordem)
+        ON DELETE CASCADE
+);

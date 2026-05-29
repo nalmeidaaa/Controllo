@@ -1,0 +1,450 @@
+type: collection.insomnia.rest/5.0
+schema_version: "5.1"
+name: Controllo
+meta:
+  id: wrk_967f1a3b14374f0a9157b42d73f98b87
+  created: 1778603681706
+  modified: 1778603681706
+  description: ""
+collection:
+  - name: Usuario
+    meta:
+      id: fld_178a46ca0a174dd8a83000845fde1db9
+      created: 1778603691253
+      modified: 1778603693243
+      sortKey: -1778603691253
+      description: ""
+    children:
+      - name: (Como administrador)
+        meta:
+          id: fld_80af0788791b4c9e886e11b67b114c5a
+          created: 1779474470032
+          modified: 1779474684631
+          sortKey: -1778603697675
+          description: ""
+        children:
+          - url: localhost:8000/usuarios
+            name: Criar Usuário
+            meta:
+              id: req_26be0ef5a5524356aae683be7fb302a8
+              created: 1778603694453
+              modified: 1779476576467
+              isPrivate: false
+              description: ""
+              sortKey: -1779474527509
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                	"nome":"teste",
+                	"cpf":"028.138.520-31",
+                	"tipo_usuario":"Geral",
+                	"email":"teste@controllo.com",
+                	"senha":"1234"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/12.5.0
+                description: ""
+                disabled: false
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywidGlwb191c3VhcmlvIjoiQWRtaW5pc3RyYcOnw6NvIiwiaWF0IjoxNzc5NDc2NTQxLCJleHAiOjE3Nzk0ODAxNDF9.9uy-NQtJupJ681eoLqj5qXiCbteJyFP3b4sh-7AxiNg
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: localhost:8000/usuarios
+            name: Buscar Usuários
+            meta:
+              id: req_446db077bc2a4245b701f754d35debf8
+              created: 1778604248971
+              modified: 1779476024044
+              isPrivate: false
+              description: ""
+              sortKey: -1779474527484
+            method: GET
+            headers:
+              - name: User-Agent
+                value: insomnia/12.5.0
+                description: ""
+                disabled: false
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidGlwb191c3VhcmlvIjoiQWRtaW5pc3RyYcOnw6NvIiwiaWF0IjoxNzc5NDc2MDE4LCJleHAiOjE3Nzk0Nzk2MTh9.bVJoLHLb_SFQYuXXm-n0nZR43TYNIIR6ODB-kMEGHHc
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: localhost:8000/usuarios/1
+            name: Atualizar Usuário
+            meta:
+              id: req_de3d6b96012647a98acd4da93735a816
+              created: 1778604522001
+              modified: 1779476499724
+              isPrivate: false
+              description: ""
+              sortKey: -1779474527459
+            method: PUT
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                	"nome":"Geraldinha",
+                	"cpf":"194.075.410-02",
+                	"email":"geraldo@gmail.com",
+                	"tipo_usuario":"manutencao",
+                	"senha":"1234"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/12.5.0
+                description: ""
+                disabled: false
+            authentication:
+              type: bearer
+              token: ""
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: localhost:8000/usuarios/1
+            name: Deletar Usuário
+            meta:
+              id: req_6eda4d891b5a421ab2337a3d0712e92d
+              created: 1778604658048
+              modified: 1779475999288
+              isPrivate: false
+              description: ""
+              sortKey: -1779474527421.5
+            method: DELETE
+            headers:
+              - name: User-Agent
+                value: insomnia/12.5.0
+                description: ""
+                disabled: false
+            authentication:
+              type: bearer
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - name: Listar específicos
+            meta:
+              id: fld_2d8de7656f8b43e3ae854276b21d767a
+              created: 1778606531724
+              modified: 1779474527462
+              sortKey: -1779474527409
+              description: ""
+            children:
+              - url: localhost:8000/usuarios/administracao
+                name: Listar Administração
+                meta:
+                  id: req_aa55c37e9be542dbaac9adc6f61eee6f
+                  created: 1778606540039
+                  modified: 1778607393112
+                  isPrivate: false
+                  description: ""
+                  sortKey: -1778606541820
+                method: GET
+                headers:
+                  - name: User-Agent
+                    value: insomnia/12.5.0
+                    description: ""
+                    disabled: false
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+              - url: localhost:8000/usuarios/geral
+                name: Listar Geral
+                meta:
+                  id: req_ed232c62496045b3b17f29227142119c
+                  created: 1778607399150
+                  modified: 1778607428619
+                  isPrivate: false
+                  description: ""
+                  sortKey: -1778606541920
+                method: GET
+                headers:
+                  - name: User-Agent
+                    value: insomnia/12.5.0
+                    description: ""
+                    disabled: false
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+              - url: localhost:8000/usuarios/manutencao
+                name: Listar Manutenção
+                meta:
+                  id: req_3ecfbba4a78d41389e223ec15c0ccc9d
+                  created: 1778607404599
+                  modified: 1778607433807
+                  isPrivate: false
+                  description: ""
+                  sortKey: -1778606542020
+                method: GET
+                headers:
+                  - name: User-Agent
+                    value: insomnia/12.5.0
+                    description: ""
+                    disabled: false
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+      - name: (Como outro tipo de usuário)
+        meta:
+          id: fld_746cf7f697674a72979d80512f39e934
+          created: 1779474501056
+          modified: 1779474624901
+          sortKey: -1778603697775
+          description: ""
+        children:
+          - url: localhost:8000/usuarios
+            name: Criar Usuário
+            meta:
+              id: req_fe2a88bde21345fd878b9e1ee6ee8202
+              created: 1779474626243
+              modified: 1779476591500
+              isPrivate: false
+              description: ""
+              sortKey: -1779474629801
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                	"nome":"Geraldo",
+                	"cpf":"194.075.410-02",
+                	"tipo_usuario":"Administracao",
+                	"email":"geraldo@gmail.com",
+                	"senha":"1234"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/12.6.0
+                description: ""
+                disabled: false
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidGlwb191c3VhcmlvIjoiR2VyYWwiLCJpYXQiOjE3Nzk0NzY1ODEsImV4cCI6MTc3OTQ4MDE4MX0.-6gD9Jn2EGb6bqPQUvhi9B0l10Z2rolgf9zRxGDJbuY
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: localhost:8000/usuarios
+            name: Buscar Usuários
+            meta:
+              id: req_4af660277cbf4200bd9bc3e91ab987f1
+              created: 1779474649614
+              modified: 1779476450312
+              isPrivate: false
+              description: ""
+              sortKey: -1779474629701
+            method: GET
+            headers:
+              - name: User-Agent
+                value: insomnia/12.6.0
+                description: ""
+                disabled: false
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidGlwb191c3VhcmlvIjoiR2VyYWwiLCJpYXQiOjE3Nzk0NzY0MjYsImV4cCI6MTc3OTQ4MDAyNn0.zCPiZb2pS5OJDdeTCAq7i66JS7iwNS_nUA_6FlBCdd0
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: localhost:8000/usuarios/1
+            name: Atualizar Usuário
+            meta:
+              id: req_734925b3820c401fa6ac4a63bcdffc3e
+              created: 1779474664883
+              modified: 1779476479763
+              isPrivate: false
+              description: ""
+              sortKey: -1779474629601
+            method: PUT
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                	"nome":"Geraldinha",
+                	"cpf":"194.075.410-02",
+                	"email":"geraldo@gmail.com",
+                	"tipo_usuario":"manutencao",
+                	"senha":"1234"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/12.6.0
+                description: ""
+                disabled: false
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidGlwb191c3VhcmlvIjoiR2VyYWwiLCJpYXQiOjE3Nzk0NzY0MjYsImV4cCI6MTc3OTQ4MDAyNn0.zCPiZb2pS5OJDdeTCAq7i66JS7iwNS_nUA_6FlBCdd0
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: localhost:8000/usuarios/1
+            name: Deletar Usuário
+            meta:
+              id: req_462bd195f7a742a19283a6ac54db07d3
+              created: 1779474680931
+              modified: 1779476471188
+              isPrivate: false
+              description: ""
+              sortKey: -1779474629501
+            method: DELETE
+            headers:
+              - name: User-Agent
+                value: insomnia/12.6.0
+                description: ""
+                disabled: false
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidGlwb191c3VhcmlvIjoiR2VyYWwiLCJpYXQiOjE3Nzk0NzY0MjYsImV4cCI6MTc3OTQ4MDAyNn0.zCPiZb2pS5OJDdeTCAq7i66JS7iwNS_nUA_6FlBCdd0
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: Autenticação
+        meta:
+          id: fld_0e0776998cf8423cb976480625d352cd
+          created: 1779474763559
+          modified: 1779476644221
+          sortKey: -1778603697875
+          description: ""
+        children:
+          - url: localhost:8000/usuarios/login
+            name: Gerar Token (Geral)
+            meta:
+              id: req_fb67248c19ac41b897cb15b9e15048df
+              created: 1779475139150
+              modified: 1779476391156
+              isPrivate: false
+              description: ""
+              sortKey: -1779475140488
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "login": "geral@controllo.com",
+                  "senha": "1234"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/12.6.0
+                description: ""
+                disabled: false
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: localhost:8000/usuarios/login
+            name: Gerar Token (Admin)
+            meta:
+              id: req_c91ada45217d4b3c82df9752dfe21fc8
+              created: 1779476394742
+              modified: 1779476421711
+              isPrivate: false
+              description: ""
+              sortKey: -1779475140388
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "login": "admin@controllo.com",
+                  "senha": "1234"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/12.6.0
+                description: ""
+                disabled: false
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_9d73455369557aa776807a31c7c1c12be02c1efc
+    created: 1778603681718
+    modified: 1778603681718
+environments:
+  name: Base Environment
+  meta:
+    id: env_9d73455369557aa776807a31c7c1c12be02c1efc
+    created: 1778603681714
+    modified: 1778603681714
+    isPrivate: false

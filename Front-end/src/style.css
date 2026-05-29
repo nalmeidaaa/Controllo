@@ -1,0 +1,261 @@
+:root {
+    /* Cores DS */
+    --white: #ffffff;
+    --cyan: #41d1d6;
+    --dark-green: #006569;
+    
+    /* Cores de suporte */
+    --bg-dark: #0a1415;
+    --text-dark: #0d2627;
+    --input-bg: #f5fafb;
+    --border: #e1eded;
+
+    /* Espaçamentos e Raio */
+    --radius: 8px;
+    --transition: all 0.2s ease-in-out;
+}
+
+/* Reset basiquinho */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Helvetica', Arial, sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--white);
+    min-height: 100vh;
+}
+
+/* Global / Typography */
+h1 { font-size: 32px; font-weight: 700; }
+h2 { font-size: 24px; font-weight: 600; }
+h3 { font-size: 20px; font-weight: 500; }
+p, label { font-size: 16px; }
+small { font-size: 14px; }
+
+/* Login Card */
+.card-login {
+    background-color: var(--white);
+    border-radius: 12px;
+    padding: 32px;
+    width: 100%;
+    max-width: 360px;
+    box-shadow: 0 10px 30px rgba(0, 101, 105, 0.2);
+    border: 1px solid rgba(65, 209, 214, 0.15);
+    text-align: center;
+}
+
+.card-login h2 {
+    color: var(--text-dark);
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+}
+
+.card-login .subtitle {
+    color: #627d7f;
+    margin-bottom: 24px;
+}
+
+/* Form controls */
+.form-group {
+    margin-bottom: 16px;
+    text-align: left;
+}
+
+.form-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #4b6566;
+    margin-bottom: 6px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 16px;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text-dark);
+    transition: var(--transition);
+}
+
+.form-control:focus {
+    outline: none;
+    background-color: var(--white);
+    border-color: var(--cyan);
+    box-shadow: 0 0 0 3px rgba(65, 209, 214, 0.15);
+}
+
+/* Buttons */
+.btn-submit {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--cyan);
+    color: var(--bg-dark);
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-submit:hover {
+    background-color: #35c0c5;
+}
+
+.alert-error {
+    background-color: #fff0f1;
+    color: #b71c1c;
+    border: 1px solid #ffccd0;
+    padding: 10px;
+    border-radius: var(--radius);
+    font-size: 14px;
+    margin-bottom: 16px;
+    text-align: left;
+}
+
+/* Navbar */
+.custom-navbar {
+    background-color: rgba(10, 20, 21, 0.95);
+    border-bottom: 1px solid rgba(65, 209, 214, 0.15);
+    backdrop-filter: blur(8px);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    padding: 16px 0;
+}
+
+.nav-container {
+    width: 100%;
+    max-width: 1024px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.nav-logo {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--white);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.nav-menu {
+    display: flex;
+    gap: 24px;
+    list-style: none;
+}
+
+.nav-btn-link {
+    background: none;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    color: #627d7f;
+    cursor: pointer;
+    transition: var(--transition);
+    padding: 4px 8px;
+}
+
+.nav-btn-link:hover, 
+.nav-btn-link.active {
+    color: var(--cyan);
+}
+
+.nav-btn-link.active {
+    border-bottom: 2px solid var(--cyan);
+}
+
+.nav-btn-action {
+    background-color: transparent;
+    border: 2px solid var(--cyan);
+    color: var(--cyan);
+    font-size: 14px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.nav-btn-action:hover {
+    background-color: var(--cyan);
+    color: var(--bg-dark);
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 100vh;
+    overflow: hidden; /* Corta qualquer tentativa de criar barra de rolagem */
+    background-color: var(--bg-dark);
+}
+
+#app {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 16px;
+    }
+
+    .card-login {
+        padding: 24px 16px; /* Reduz o padding interno para os inputs ganharem espaço */
+        width: calc(100% - 32px);
+        max-width: 100%; /* Faz o card se adaptar à largura do celular */
+    }
+
+    .custom-navbar .nav-container {
+        padding: 0 16px;
+    }
+
+    .nav-menu {
+        display: none; 
+    }
+}
+
+@media (min-width: 1024px) {
+    .card-login {
+        max-width: 460px;
+        padding: 48px;
+    }
+
+    .card-login h2 {
+        font-size: 32px;
+        margin-bottom: 8px;
+    }
+
+    .card-login .subtitle {
+        margin-bottom: 32px; 
+    }
+
+    .form-group {
+        margin-bottom: 24px;
+    }
+
+    .form-control {
+        padding: 12px 16px;
+    }
+}
+
+.dashboard-header {
+    padding-top: 80px; /* Altere esse valor de acordo com a altura da sua navbar */
+}
