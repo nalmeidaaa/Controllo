@@ -1,14 +1,19 @@
-import { estaLogado } from "../src/storage/usuario/dados.storage.js"; // Usando o seu caminho do storage
+import { estaLogado } from "./storage/usuario/dados.storage.js";
 import { loginPage } from "./pages/usuario/login.page.js";
 import { dashboardPage } from "./pages/dashboard/dashboard.page.js";
+import { usuariosPage } from "./pages/usuario/usuarios.page.js";
 
-const appContainer = document.getElementById('app');
-appContainer.innerHTML = ''; // Limpa a tela inicial de forma global
+const app = document.getElementById('app');
+app.innerHTML = '';
+
+// Funções de navegação centralizadas — passadas para navbar e componentes
+const navegarPara = {
+    dashboard: () => dashboardPage(app, navegarPara),
+    usuarios: () => usuariosPage(app, navegarPara),
+};
 
 if (!estaLogado()) {
-    // Se não estiver logado, a página de login assume o controle do appContainer
-    loginPage(appContainer);
+    loginPage(app);
 } else {
-    // Se estiver logado, a página do dashboard assume o controle do appContainer
-    dashboardPage(appContainer); 
+    dashboardPage(app, navegarPara);
 }

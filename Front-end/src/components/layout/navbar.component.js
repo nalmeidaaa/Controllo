@@ -1,73 +1,119 @@
-import { estaLogado, deslogarUsuario } from "../../storage/usuario/dados.storage.js";
+import { estaLogado, deslogarUsuario, obterUsuarioAtual } from "../../storage/usuario/dados.storage.js";
 
-export default function criarNavbar() {
+// `navegarPara` é injetado pelo main.js para que a navbar não precise
+// conhecer a lógica de roteamento — mantém o acoplamento baixo.
+export default function criarNavbar(navegarPara = {}) {
     const header = document.querySelector('header');
-    
-    // Evita duplicar a navbar caso a função seja chamada mais de uma vez
+
+    // Evita duplicar navbar se já existir
     if (document.querySelector('.custom-navbar')) return;
 
-    const nav = document.createElement('nav');
-    nav.className = 'custom-navbar';
+    const usuario = obterUsuarioAtual();
+    const nomeUsuario = usuario?.nome || usuario?.name || '';
+    const tipoUsuario = usuario?.tipo_usuario || '';
 
-    // 1. Define o botão de ação (Login ou Sair) ANTES de montar o HTML completo
-    const botaoAcaoHTML = estaLogado() 
-        ? `<button class="nav-btn-action" id="navBtnSair">Sair</button>`
+    const botaoAcaoHTML = estaLogado()
+        ? `<button class="nav-btn-action btn-sair" id="navBtnSair">Sair</button>`
         : `<button class="nav-btn-action" id="navBtnLogin">Login</button>`;
 
-    // 2. Controla a exibição do botão de usuários para Admin
-    const tipoUsuario = localStorage.getItem('tipo_usuario'); 
-    const eAdmin = tipoUsuario === 'administracao';
-
-    const botaoUsuariosHTML = eAdmin ? `
-        <li>
-            <button class="nav-btn-link" id="btnUsuarios">Usuários</button>
-        </li>
-    ` : '';
-
-    // 3. MONTA TUDO JUNTO EM UM ÚNICO BLOCO (Logo, Menu e o Botão correto)
+    // Navbar
+    const nav = document.createElement('nav');
+    nav.className = 'custom-navbar';
     nav.innerHTML = `
-        <div class="nav-container">
+        <div class="nav-left">
+            <button class="nav-toggle" id="navToggle" aria-label="Menu">&#9776;</button>
             <a class="nav-logo" id="btnLogo">
+                <span class="logo-dot"></span>
                 Controllo
             </a>
-
-            <ul class="nav-menu">
-                <li>
-                    <button class="nav-btn-link active" id="btnHome">Home</button>
-                </li>
-                
-                ${botaoUsuariosHTML}
-            </ul>
-
-            <div class="nav-actions">
-                ${botaoAcaoHTML}
-            </div>
+        </div>
+        <div class="nav-right">
+            ${nomeUsuario ? `
+            <div class="nav-user-info">
+                <div class="nav-user-name">${nomeUsuario}</div>
+                <div class="nav-user-role">${tipoUsuario}</div>
+            </div>` : ''}
+            ${botaoAcaoHTML}
         </div>
     `;
-
-    // 4. Injeta a navbar completa de uma vez só no header
     header.appendChild(nav);
 
-    // 5. Configura todos os eventos de clique de forma segura
+    // Sidebar
+    const sidebar = document.createElement('aside');
+    sidebar.className = 'custom-sidebar';
+    sidebar.innerHTML = `
+        <div class="sidebar-section">
+            <div class="sidebar-section-label">Navegação</div>
+            <ul class="side-menu">
+                <li>
+                    <button class="side-btn-link" id="btnPaginaInicial" data-pagina="dashboard">
+                        <span class="menu-icon">⊞</span> Página Inicial
+                    </button>
+                </li>
+                <li>
+                    <button class="side-btn-link" id="btnGerenciarUsuarios" data-pagina="usuarios">
+                        <span class="menu-icon">👤</span> Gerenciar Usuários
+                    </button>
+                </li>
+            </ul>
+        </div>
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-section">
+            <div class="sidebar-section-label">Em breve</div>
+            <ul class="side-menu">
+                <li>
+                    <button class="side-btn-link" data-pagina="tarefas" disabled>
+                        <span class="menu-icon">📋</span> Aplicar Tarefas
+                    </button>
+                </li>
+                <li>
+                    <button class="side-btn-link" data-pagina="registros" disabled>
+                        <span class="menu-icon">📊</span> Ver Registros
+                    </button>
+                </li>
+            </ul>
+        </div>
+    `;
+    header.appendChild(sidebar);
+
+    // Toggle do menu
+    document.getElementById('navToggle')?.addEventListener('click', () => {
+        const isDesktop = window.innerWidth >= 769;
+        if (isDesktop) {
+            sidebar.classList.toggle('closed');
+            document.querySelector('.conteudo-principal')?.classList.toggle('sidebar-closed');
+        } else {
+            sidebar.classList.toggle('open');
+        }
+    });
+
+    // Logo -> dashboard
     document.getElementById('btnLogo')?.addEventListener('click', () => {
-        window.location.href = '/';
+        ativarItemMenu('dashboard');
+        navegarPara.dashboard?.();
     });
 
-    document.getElementById('btnHome')?.addEventListener('click', () => {
-        window.location.href = '/';
+    // Itens do menu
+    document.getElementById('btnPaginaInicial')?.addEventListener('click', () => {
+        ativarItemMenu('dashboard');
+        navegarPara.dashboard?.();
     });
 
-    document.getElementById('btnUsuarios')?.addEventListener('click', () => {
-        // Lógica para abrir a página de gerenciamento de usuários, se houver
-        console.log('Navegando para usuários...');
+    document.getElementById('btnGerenciarUsuarios')?.addEventListener('click', () => {
+        ativarItemMenu('usuarios');
+        navegarPara.usuarios?.();
     });
 
-    document.getElementById('navBtnLogin')?.addEventListener('click', () => {
-        window.location.href = './login.html'; 
-    });
-
+    // Sair
     document.getElementById('navBtnSair')?.addEventListener('click', () => {
         deslogarUsuario();
-        window.location.reload(); 
+        window.location.reload();
+    });
+}
+
+// Marca o item da sidebar correspondente à página atual como ativo
+export function ativarItemMenu(pagina) {
+    document.querySelectorAll('.side-btn-link').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.pagina === pagina);
     });
 }
