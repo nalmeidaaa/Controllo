@@ -1,4 +1,6 @@
 import { normalizarTipoUsuario } from "../utils/normalizarTipoUsuario.js";
+import usuarioRepository from "../repositories/usuarioRepository.js";
+
 
 export function autorizar(perfisPermitidos) {
     // Normaliza a lista de permissões uma única vez na inicialização da rota
