@@ -11,18 +11,36 @@ export async function logar(login, senha) {
     }
 }
 
-export async function criarUsuario(token, nome, cpf, email, tipo_usuario, senha) {
+export async function criarUsuario(token, formData) {
     try {
         if (!token) throw new Error("Erro: token inválido");
-        if (!cpf && !email) throw new Error("Erro: Nenhum CPF nem email informado.");
 
-        const resposta = await api.post('/usuarios',
-            { nome, cpf, email, tipo_usuario, senha },
-            { headers: { Authorization: `Bearer ${token}` } }
-        );
+        const resposta = await api.post('/usuarios', formData, {
+            headers: {
+                Authorization: `Bearer ${token}`
+                // O Axios define o Content-Type como multipart/form-data automaticamente aqui
+            }
+        });
         return resposta.data;
     } catch (error) {
         console.error("Erro ao criar usuário:", error.response?.data?.message || error.message);
+        throw error;
+    }
+}
+
+export async function atualizarUsuario(token, id, formData) {
+    try {
+        if (!token) throw new Error("Erro: token inválido");
+        if (!id) throw new Error("Erro: id inválido");
+
+        const resposta = await api.put(`/usuarios/${id}`, formData, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return resposta.data;
+    } catch (error) {
+        console.error("Erro ao atualizar usuário:", error.response?.data?.message || error.message);
         throw error;
     }
 }
@@ -40,22 +58,6 @@ export async function buscarUsuarios(token) {
     }
 }
 
-export async function atualizarUsuario(token, id, nome, cpf, email, tipo_usuario, senha) {
-    try {
-        if (!token) throw new Error("Erro: token inválido");
-        if (!id) throw new Error("Erro: id inválido");
-        if (!cpf && !email) throw new Error("Erro: Nenhum CPF nem email informado.");
-
-        const resposta = await api.put(`/usuarios/${id}`,
-            { nome, cpf, email, tipo_usuario, senha },
-            { headers: { Authorization: `Bearer ${token}` } }
-        );
-        return resposta.data;
-    } catch (error) {
-        console.error("Erro ao atualizar usuário:", error.response?.data?.message || error.message);
-        throw error;
-    }
-}
 
 export async function deletarUsuario(token, id) {
     try {

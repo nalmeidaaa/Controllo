@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 
-const ESTADO_INICIAL = { nome: '', cpf: '', email: '', tipo_usuario: 'administracao', senha: '' };
+const ESTADO_INICIAL = { nome: '', cpf: '', email: '', tipo_usuario: 'administracao', senha: '', imagem: null };
 
 export default function ModalUsuario({ aberto, usuario, onSalvar, onFechar }) {
     const [form, setForm] = useState(ESTADO_INICIAL);
     const [erro, setErro] = useState('');
     const [salvando, setSalvando] = useState(false);
+    const [previewFoto, setPreviewFoto] = useState('');
 
     const editando = Boolean(usuario);
 
@@ -20,8 +21,10 @@ export default function ModalUsuario({ aberto, usuario, onSalvar, onFechar }) {
                     email: usuario.email || '',
                     tipo_usuario: usuario.tipo_usuario || 'geral',
                     senha: '',
+                    imagem: usuario.imagem || null,
                 }
                 : ESTADO_INICIAL);
+            setPreviewFoto(usuario?.imagem || '');
         }
     }, [aberto, usuario]);
 
@@ -29,6 +32,14 @@ export default function ModalUsuario({ aberto, usuario, onSalvar, onFechar }) {
 
     function atualizar(campo, valor) {
         setForm((f) => ({ ...f, [campo]: valor }));
+    }
+
+    function handleMudarFoto(e) {
+        const arquivo = e.target.files[0];
+        if (arquivo) {
+            atualizar('imagem', arquivo);
+            setPreviewFoto(URL.createObjectURL(arquivo));
+        }
     }
 
     async function handleSubmit(e) {
@@ -43,25 +54,28 @@ export default function ModalUsuario({ aberto, usuario, onSalvar, onFechar }) {
             return;
         }
 
-        const payload = {
-            id: usuario?.id_usuario ?? null,
-            nome: form.nome.trim(),
-            cpf,
-            email,
-            tipo_usuario: form.tipo_usuario,
-            senha: form.senha,
-        };
+        // Cria o FormData exatamente como o Insomnia faz
+        const formData = new FormData();
+        formData.append('nome', form.nome.trim());
+        formData.append('cpf', cpf);
+        formData.append('email', email);
+        formData.append('tipo_usuario', form.tipo_usuario);
+        formData.append('senha', form.senha);
+
+        // Adiciona a imagem apenas se o usuário selecionou um arquivo novo
+        if (form.imagem instanceof File) {
+            formData.append('imagem', form.imagem);
+        }
 
         try {
             setSalvando(true);
-            await onSalvar(payload);
+            await onSalvar(formData);
         } catch (error) {
             setErro(error?.response?.data?.message || 'Ocorreu um erro. Tente novamente.');
         } finally {
             setSalvando(false);
         }
     }
-
     return (
         <div className="modal-overlay visible" onClick={(e) => { if (e.target === e.currentTarget) onFechar(); }}>
             <div className="modal-box">
@@ -71,6 +85,29 @@ export default function ModalUsuario({ aberto, usuario, onSalvar, onFechar }) {
                 </div>
                 <form onSubmit={handleSubmit} noValidate>
                     <div className="modal-body">
+                        <div className="form-group foto-group">
+                            <div className="foto-preview-container">
+                                {previewFoto ? (
+                                    <img
+                                        src={previewFoto}
+                                        alt="Preview"
+                                        className="foto-preview-img"
+                                    />
+                                ) : (
+                                    <div className="foto-placeholder">
+                                        Sem foto
+                                    </div>
+                                )}
+                            </div>
+                            <label className="form-label foto-label" htmlFor="modalFoto">
+                                Escolher foto de perfil
+                            </label>
+                            <input
+                                type="file" id="modalFoto" accept="image/*" className="foto-input"
+                                onChange={handleMudarFoto}
+                            />
+                        </div>
+
                         <div className="form-group">
                             <label className="form-label" htmlFor="modalNome">Nome Completo</label>
                             <input
@@ -79,7 +116,7 @@ export default function ModalUsuario({ aberto, usuario, onSalvar, onFechar }) {
                             />
                         </div>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                        <div className="form-row">
                             <div className="form-group">
                                 <label className="form-label" htmlFor="modalCpf">CPF</label>
                                 <input
@@ -120,7 +157,7 @@ export default function ModalUsuario({ aberto, usuario, onSalvar, onFechar }) {
                             </small>
                         </div>
 
-                        {erro && <div className="alert-error" style={{ display: 'block' }}>{erro}</div>}
+                        {erro && <div className="alert-error">{erro}</div>}
                     </div>
                     <div className="modal-footer">
                         <button type="button" className="btn-modal-cancel" onClick={onFechar}>Cancelar</button>

@@ -61,11 +61,14 @@ export default function UsuariosPage() {
         }
     }
 
-    async function salvarUsuarioModal(payload) {
-        if (payload.id) {
-            await atualizarUsuario(token, payload.id, payload.nome, payload.cpf, payload.email, payload.tipo_usuario, payload.senha || undefined);
+    async function salvarUsuarioModal(formData) {
+        // Verifica se é edição (pegando o ID diretamente de dentro do formData)
+        const id = formData.get('id');
+
+        if (id) {
+            await atualizarUsuario(token, id, formData);
         } else {
-            await criarUsuario(token, payload.nome, payload.cpf, payload.email, payload.tipo_usuario, payload.senha);
+            await criarUsuario(token, formData);
         }
         setModalAberto(false);
         await recarregar();

@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 
 const FILTROS = [
     { id: 'todos', label: 'Todos' },
-    { id: 'administracao', label: 'Admin' },
-    { id: 'manutencao', label: 'Manutenção' },
+    { id: 'administração', label: 'Admin' },
+    { id: 'manutenção', label: 'Manutenção' },
     { id: 'geral', label: 'Geral' },
 ];
 

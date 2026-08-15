@@ -2831,3 +2831,74 @@ body:has(.vs-selecao-barra--visivel) .page-salas-container {
         justify-content: center;
     }
 }
+
+/* Container principal da foto */
+.foto-group {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.foto-preview-container {
+    display: flex;
+}
+
+/* Estilo da imagem quando já tem foto escolhida */
+/* Estilo da imagem quando já tem foto escolhida */
+.foto-preview-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ccc; /* Contorno sólido adicionado aqui */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* A bola limpa quando não tem foto */
+.foto-placeholder {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: #f0f2f5;
+    border: 2px solid #ccc; /* Contorno sólido adicionado aqui */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: transparent; 
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Símbolo de "+" no meio da bola */
+.foto-placeholder::after {
+    content: '+';
+    position: absolute;
+    font-size: 40px;
+    color: #888;
+    font-weight: 300;
+    margin-top: -2px; /* Ajuste fino para o + ficar perfeitamente no centro */
+}
+
+/* 
+  O pulo do gato: transformamos o label que tinha texto 
+  em uma área clicável invisível que fica em cima da bola! 
+*/
+.foto-label {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    cursor: pointer;
+    color: transparent; /* Esconde o texto "Escolher foto..." */
+    z-index: 10;
+    margin: 0;
+}
+
+/* Esconde o input de arquivo padrão */
+.foto-input {
+    display: none;
+}

@@ -9,7 +9,6 @@ const usuarioController = {
    criar: async (req, res) => {
         try {
             let { nome, cpf, tipo_usuario, email, senha } = req.body;
-
             // Regra de segurança: Se não existir nenhum administrador, força o tipo para 'administracao'
             const admsExistentes = await usuarioRepository.selecionarAdministracao();
             if (admsExistentes.length === 0) {
@@ -17,7 +16,6 @@ const usuarioController = {
             }
 
             const hash_senha = await bcrypt.hash(senha, 10);
-
             // Monta o caminho da imagem se foi feito upload
             let caminhoImagem = null;
             if (req.file) {
