@@ -1,0 +1,663 @@
+type: collection.insomnia.rest/5.0
+schema_version: "5.1"
+name: Controllo
+meta:
+  id: wrk_0687c502a814434fb6b1e4b387bc3d37
+  created: 1780091421219
+  modified: 1780091421219
+  description: ""
+collection:
+  - name: Usuario
+    meta:
+      id: fld_02040f48a6c4468080c9a52c14e2bda2
+      created: 1778603691253
+      modified: 1778603693243
+      sortKey: -1778603691253
+      description: ""
+    children:
+      - name: Usuarios
+        meta:
+          id: fld_8202076bd41849cb80d06f8a5ebbda41
+          created: 1779474470032
+          modified: 1781209655576
+          sortKey: -1778603697675
+          description: ""
+        children:
+          - url: localhost:8000/usuarios
+            name: Criar Usuário
+            meta:
+              id: req_8f29a916834d4ad68817e58e11df6171
+              created: 1778603694453
+              modified: 1781216562082
+              isPrivate: false
+              description: ""
+              sortKey: -1779474527509
+            method: POST
+            body:
+              mimeType: multipart/form-data
+              params:
+                - name: nome
+                  value: Lady Gaga
+                  description: ""
+                  disabled: false
+                - name: cpf
+                  value: 777.516.770-07
+                  description: ""
+                  disabled: false
+                - name: tipo_usuario
+                  value: administracao
+                  description: ""
+                  disabled: false
+                - name: email
+                  value: ladygaga@controllo.com
+                  description: ""
+                  disabled: false
+                - name: senha
+                  value: "1234"
+                  description: ""
+                  disabled: false
+                - name: imagem
+                  value: ""
+                  description: ""
+                  disabled: false
+                  fileName: C:\Users\nabpe\Downloads\Lady Gaga.jpg
+                  type: file
+            headers:
+              - name: Content-Type
+                value: multipart/form-data
+              - name: User-Agent
+                value: insomnia/12.5.0
+                description: ""
+                disabled: false
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTcsInRpcG9fdXN1YXJpbyI6IkFkbWluaXN0cmHDp8OjbyIsImlhdCI6MTc4MTIxNjIyNiwiZXhwIjoxNzgxMjE5ODI2fQ.MTBy3slI3jLDL3QfDmS4C_GVA95a3sJh3WrnvQ9uVko
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: localhost:8000/usuarios
+            name: Buscar Usuários
+            meta:
+              id: req_791fca27b26d452dbbad4e06a486ad62
+              created: 1778604248971
+              modified: 1781216592043
+              isPrivate: false
+              description: ""
+              sortKey: -1779474527484
+            method: GET
+            headers:
+              - name: User-Agent
+                value: insomnia/12.5.0
+                description: ""
+                disabled: false
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTcsInRpcG9fdXN1YXJpbyI6IkFkbWluaXN0cmHDp8OjbyIsImlhdCI6MTc4MTIxNjIyNiwiZXhwIjoxNzgxMjE5ODI2fQ.MTBy3slI3jLDL3QfDmS4C_GVA95a3sJh3WrnvQ9uVko
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: localhost:8000/usuarios/18
+            name: Deletar Usuário
+            meta:
+              id: req_f99ee662adc7466688099e58b3c74493
+              created: 1778604658048
+              modified: 1781216662939
+              isPrivate: false
+              description: ""
+              sortKey: -1779474527421.5
+            method: DELETE
+            headers:
+              - name: User-Agent
+                value: insomnia/12.5.0
+                description: ""
+                disabled: false
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTcsInRpcG9fdXN1YXJpbyI6IkFkbWluaXN0cmHDp8OjbyIsImlhdCI6MTc4MTIxNjIyNiwiZXhwIjoxNzgxMjE5ODI2fQ.MTBy3slI3jLDL3QfDmS4C_GVA95a3sJh3WrnvQ9uVko
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: localhost:8000/usuarios/18
+            name: Atualizar Usuário
+            meta:
+              id: req_d76bf88b0a924865851edd87aa4d3d19
+              created: 1781216616055
+              modified: 1781216647996
+              isPrivate: false
+              description: ""
+              sortKey: -1779474527471.5
+            method: PUT
+            body:
+              mimeType: multipart/form-data
+              params:
+                - name: nome
+                  value: Lady Gaga veia
+                  description: ""
+                  disabled: false
+                - name: cpf
+                  value: 777.516.770-07
+                  description: ""
+                  disabled: false
+                - name: tipo_usuario
+                  value: administracao
+                  description: ""
+                  disabled: false
+                - name: email
+                  value: ladygaga@controllo.com
+                  description: ""
+                  disabled: false
+                - name: senha
+                  value: "1234"
+                  description: ""
+                  disabled: false
+                - name: imagem
+                  value: ""
+                  description: ""
+                  disabled: false
+                  fileName: C:\Users\nabpe\Downloads\Lady Gaga.jpg
+                  type: file
+            headers:
+              - name: Content-Type
+                value: multipart/form-data
+              - name: User-Agent
+                value: insomnia/12.5.0
+                description: ""
+                disabled: false
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTcsInRpcG9fdXN1YXJpbyI6IkFkbWluaXN0cmHDp8OjbyIsImlhdCI6MTc4MTIxNjIyNiwiZXhwIjoxNzgxMjE5ODI2fQ.MTBy3slI3jLDL3QfDmS4C_GVA95a3sJh3WrnvQ9uVko
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - name: Listar específicos
+            meta:
+              id: fld_1573bc910494493ba269451f29f2bade
+              created: 1778606531724
+              modified: 1779474527462
+              sortKey: -1779474527409
+              description: ""
+            children:
+              - url: localhost:8000/usuarios/administracao
+                name: Listar Administração
+                meta:
+                  id: req_94658da2e46b4e61990e72bb020d09a4
+                  created: 1778606540039
+                  modified: 1778607393112
+                  isPrivate: false
+                  description: ""
+                  sortKey: -1778606541820
+                method: GET
+                headers:
+                  - name: User-Agent
+                    value: insomnia/12.5.0
+                    description: ""
+                    disabled: false
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+              - url: localhost:8000/usuarios/geral
+                name: Listar Geral
+                meta:
+                  id: req_0f0769eee9904b29ac6fa43c63c810f8
+                  created: 1778607399150
+                  modified: 1778607428619
+                  isPrivate: false
+                  description: ""
+                  sortKey: -1778606541920
+                method: GET
+                headers:
+                  - name: User-Agent
+                    value: insomnia/12.5.0
+                    description: ""
+                    disabled: false
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+              - url: localhost:8000/usuarios/manutencao
+                name: Listar Manutenção
+                meta:
+                  id: req_ceb64a27c79540e08ae6272f9a6c8841
+                  created: 1778607404599
+                  modified: 1778607433807
+                  isPrivate: false
+                  description: ""
+                  sortKey: -1778606542020
+                method: GET
+                headers:
+                  - name: User-Agent
+                    value: insomnia/12.5.0
+                    description: ""
+                    disabled: false
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+      - name: Patrimonios
+        meta:
+          id: fld_303ffcbe5bbf4ac8b7be51bc442eb577
+          created: 1779474501056
+          modified: 1781205877650
+          sortKey: -1778603697775
+          description: ""
+        children:
+          - url: localhost:8000/patrimonios/6
+            name: Atualizar Patrimônio
+            meta:
+              id: req_304b17d756e2451c8e5d742912e1b0bf
+              created: 1779474626243
+              modified: 1781216370659
+              isPrivate: false
+              description: ""
+              sortKey: -1779474629601
+            method: PUT
+            body:
+              mimeType: multipart/form-data
+              params:
+                - name: nome
+                  value: Cadeira Debug
+                  description: ""
+                  disabled: false
+                - name: status
+                  value: Ok
+                  description: ""
+                  disabled: false
+                - name: id_sala
+                  value: "1"
+                  description: ""
+                  disabled: false
+                - name: imagem
+                  value: ""
+                  description: ""
+                  disabled: false
+                  multiline: true
+                  fileName: C:\Users\nabpe\Downloads\cadeira-para-escritorio-presidente-andaluzia-soline-moveis-rivatti-lateral-1500-1024x1024.png
+                  type: file
+            headers:
+              - name: Content-Type
+                value: multipart/form-data
+              - name: User-Agent
+                value: insomnia/12.6.0
+                description: ""
+                disabled: false
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTcsInRpcG9fdXN1YXJpbyI6IkFkbWluaXN0cmHDp8OjbyIsImlhdCI6MTc4MTIxNjEwOCwiZXhwIjoxNzgxMjE5NzA4fQ.XzNBVMCSQ5i11uY10uJ6Gb_5miJszoCBoYJOIOCngOs
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: localhost:8000/patrimonios/bloco/1
+            name: Buscar Patrimônios
+            meta:
+              id: req_d2e6c956c6224cffa7236ff1386d766b
+              created: 1779474649614
+              modified: 1781216261930
+              isPrivate: false
+              description: ""
+              sortKey: -1779474629701
+            method: GET
+            headers:
+              - name: User-Agent
+                value: insomnia/12.6.0
+                description: ""
+                disabled: false
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTcsInRpcG9fdXN1YXJpbyI6IkFkbWluaXN0cmHDp8OjbyIsImlhdCI6MTc4MTIxNjIyNiwiZXhwIjoxNzgxMjE5ODI2fQ.MTBy3slI3jLDL3QfDmS4C_GVA95a3sJh3WrnvQ9uVko
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: localhost:8000/patrimonios/2
+            name: Deletar Patrimônio
+            meta:
+              id: req_949d1b25357b46afb322ad5f88777a38
+              created: 1779474680931
+              modified: 1781216340422
+              isPrivate: false
+              description: ""
+              sortKey: -1779474629501
+            method: DELETE
+            headers:
+              - name: User-Agent
+                value: insomnia/12.6.0
+                description: ""
+                disabled: false
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTcsInRpcG9fdXN1YXJpbyI6IkFkbWluaXN0cmHDp8OjbyIsImlhdCI6MTc4MTIxNjIyNiwiZXhwIjoxNzgxMjE5ODI2fQ.MTBy3slI3jLDL3QfDmS4C_GVA95a3sJh3WrnvQ9uVko
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: localhost:8000/patrimonios
+            name: Criar Patrimônio
+            meta:
+              id: req_76421360fc3f4d76a01701057dce41e3
+              created: 1781216175762
+              modified: 1781216367649
+              isPrivate: false
+              description: ""
+              sortKey: -1779474629901
+            method: POST
+            body:
+              mimeType: multipart/form-data
+              params:
+                - name: nome
+                  value: Cadeira Debug
+                  description: ""
+                  disabled: false
+                - name: status
+                  value: Ok
+                  description: ""
+                  disabled: false
+                - name: id_sala
+                  value: "1"
+                  description: ""
+                  disabled: false
+                - name: imagem
+                  value: ""
+                  description: ""
+                  disabled: false
+                  multiline: true
+                  fileName: C:\Users\nabpe\Downloads\cadeira-para-escritorio-presidente-andaluzia-soline-moveis-rivatti-lateral-1500-1024x1024.png
+                  type: file
+            headers:
+              - name: Content-Type
+                value: multipart/form-data
+              - name: User-Agent
+                value: insomnia/12.6.0
+                description: ""
+                disabled: false
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTcsInRpcG9fdXN1YXJpbyI6IkFkbWluaXN0cmHDp8OjbyIsImlhdCI6MTc4MTIxNjIyNiwiZXhwIjoxNzgxMjE5ODI2fQ.MTBy3slI3jLDL3QfDmS4C_GVA95a3sJh3WrnvQ9uVko
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: Autenticação
+        meta:
+          id: fld_4afce9bad43142748d00e2c6c12824f9
+          created: 1779474763559
+          modified: 1779476644221
+          sortKey: -1778603697875
+          description: ""
+        children:
+          - url: localhost:8000/usuarios/login
+            name: Gerar Token (Geral)
+            meta:
+              id: req_0270f601282e4f4d8ba11dffd76bfce8
+              created: 1779475139150
+              modified: 1779476391156
+              isPrivate: false
+              description: ""
+              sortKey: -1779475140488
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "login": "geral@controllo.com",
+                  "senha": "1234"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/12.6.0
+                description: ""
+                disabled: false
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: localhost:8000/usuarios/login
+            name: Gerar Token (Admin)
+            meta:
+              id: req_12192bbd7d61402d8f32677e16b15eb6
+              created: 1779476394742
+              modified: 1779476421711
+              isPrivate: false
+              description: ""
+              sortKey: -1779475140388
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "login": "admin@controllo.com",
+                  "senha": "1234"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/12.6.0
+                description: ""
+                disabled: false
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: Salas
+        meta:
+          id: fld_3b9e12ab21eb4ebbb5687f630b70ee11
+          created: 1781209644530
+          modified: 1781209649095
+          sortKey: -1778603697725
+          description: ""
+        children:
+          - url: localhost:8000/salas
+            name: Buscar Salas
+            meta:
+              id: req_5a935f93261a42de8f506bd21931a17b
+              created: 1781209658334
+              modified: 1781216684018
+              isPrivate: false
+              description: ""
+              sortKey: -1781209755853
+            method: GET
+            headers:
+              - name: User-Agent
+                value: insomnia/12.6.0
+                description: ""
+                disabled: false
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTcsInRpcG9fdXN1YXJpbyI6IkFkbWluaXN0cmHDp8OjbyIsImlhdCI6MTc4MTIxNjIyNiwiZXhwIjoxNzgxMjE5ODI2fQ.MTBy3slI3jLDL3QfDmS4C_GVA95a3sJh3WrnvQ9uVko
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: localhost:8000/salas
+            name: Criar Sala
+            meta:
+              id: req_16ca4fdd74ac42a0ac0169d3e13b5068
+              created: 1781209766636
+              modified: 1781209839513
+              isPrivate: false
+              description: ""
+              sortKey: -1781209755803
+            method: POST
+            body:
+              mimeType: multipart/form-data
+              params:
+                - name: descricao
+                  value: Sala debug 2
+                  description: ""
+                  disabled: false
+                - name: bloco
+                  value: "2"
+                  description: ""
+                  disabled: false
+                - name: imagem
+                  value: ""
+                  description: ""
+                  disabled: false
+                  fileName: C:\Users\nabpe\Downloads\gralha.jpg
+                  type: file
+            headers:
+              - name: Content-Type
+                value: multipart/form-data
+              - name: User-Agent
+                value: insomnia/12.6.0
+                description: ""
+                disabled: false
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTcsInRpcG9fdXN1YXJpbyI6IkFkbWluaXN0cmHDp8OjbyIsImlhdCI6MTc4MTIwOTY4MSwiZXhwIjoxNzgxMjEzMjgxfQ.A3xet3RerbruslCJ_x_WtL9ryLun6AhcRtVgSbKS1fY
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: localhost:8000/salas/2
+            name: Atualizar Sala
+            meta:
+              id: req_df6d919a38d04b85ae76cf153a11ba39
+              created: 1781209922038
+              modified: 1781209954914
+              isPrivate: false
+              description: ""
+              sortKey: -1780429437200
+            method: PUT
+            body:
+              mimeType: multipart/form-data
+              params:
+                - name: descricao
+                  value: Sala debug 222
+                  description: ""
+                  disabled: false
+                - name: bloco
+                  value: "2"
+                  description: ""
+                  disabled: false
+                - name: imagem
+                  value: ""
+                  description: ""
+                  disabled: false
+                  fileName: C:\Users\nabpe\Downloads\pink.jpg
+                  type: file
+            headers:
+              - name: Content-Type
+                value: multipart/form-data
+              - name: User-Agent
+                value: insomnia/12.6.0
+                description: ""
+                disabled: false
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTcsInRpcG9fdXN1YXJpbyI6IkFkbWluaXN0cmHDp8OjbyIsImlhdCI6MTc4MTIwOTY4MSwiZXhwIjoxNzgxMjEzMjgxfQ.A3xet3RerbruslCJ_x_WtL9ryLun6AhcRtVgSbKS1fY
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: localhost:8000/salas/2
+            name: Deletar Sala
+            meta:
+              id: req_2250622ceffd4366b8e8adac1c2e87b3
+              created: 1781209980748
+              modified: 1781216701868
+              isPrivate: false
+              description: ""
+              sortKey: -1780039277898.5
+            method: DELETE
+            headers:
+              - name: User-Agent
+                value: insomnia/12.6.0
+                description: ""
+                disabled: false
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTcsInRpcG9fdXN1YXJpbyI6IkFkbWluaXN0cmHDp8OjbyIsImlhdCI6MTc4MTIwOTY4MSwiZXhwIjoxNzgxMjEzMjgxfQ.A3xet3RerbruslCJ_x_WtL9ryLun6AhcRtVgSbKS1fY
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_1a978ccd74b14c2c976f8333224f2608
+    created: 1778603681718
+    modified: 1778603681718
+environments:
+  name: Base Environment
+  meta:
+    id: env_014a275edadc40d49228e8d22587349f
+    created: 1778603681714
+    modified: 1778603681714
+    isPrivate: false
