@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { estaLogado } from './storage/usuario/dados.storage.js';
+import { useState, useEffect } from 'react';
+import { estaLogado, deslogarUsuario } from './storage/usuario/dados.storage.js';
 import Navbar from './components/layout/Navbar.jsx';
 import LoginPage from './pages/usuario/LoginPage.jsx';
 import DashboardPage from './pages/dashboard/DashboardPage.jsx';
@@ -10,9 +10,24 @@ import EditarSalaPage from './pages/salas/EditarSalaPage.jsx';
 import VisualizarSalaPage from './pages/salas/VisualizarSalaPage.jsx';
 
 export default function App() {
-    const [logado, setLogado] = useState(estaLogado());
+    const [logado, setLogado] = useState(false);
     const [pagina, setPagina] = useState('dashboard');
     const [paramsPagina, setParamsPagina] = useState({});
+
+    // Sincroniza e valida se há uma sessão ativa ao carregar o app
+    useEffect(() => {
+        if (estaLogado()) {
+            setLogado(true);
+        } else {
+            setLogado(false);
+        }
+    }, []);
+
+    const handleLogout = () => {
+        deslogarUsuario();
+        setLogado(false);
+        setPagina('dashboard');
+    };
 
     const navegarPara = {
         dashboard: () => { setPagina('dashboard'); setParamsPagina({}); },
@@ -49,9 +64,9 @@ export default function App() {
         <>
             <header>
                 <Navbar
-                    paginaAtiva={pagina === 'criarSala' || pagina === 'editarSala' || pagina === 'visualizarSala' ? 'salas' : pagina}
+                    paginaAtiva={['criarSala', 'editarSala', 'visualizarSala'].includes(pagina) ? 'salas' : pagina}
                     navegarPara={navegarPara}
-                    onLogout={() => setLogado(false)}
+                    onLogout={handleLogout}
                 />
             </header>
             <main className="conteudo-principal">
