@@ -53,7 +53,7 @@ Este documento define os padrões visuais e de interface do sistema.
 
 ## 📦 Card
 
-<img src="./assets/Novo Card Controllo.png" width="300">
+<img src="./assets/NovoCardControllo.png" width="300">
 
 ### Uso
 Container para agrupar informações.
