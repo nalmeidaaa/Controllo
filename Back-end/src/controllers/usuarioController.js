@@ -92,13 +92,25 @@ const usuarioController = {
 
         // Atualiza o nome somente se foi enviado
         if (nome !== undefined) {
-            dadosAtualizados.nome = nome;
-        }
+         if (nome.trim() === '') {
+        return res.status(400).json({
+            erro: 'O nome não pode ficar em branco.'
+        });
+    }
+
+    dadosAtualizados.nome = nome.trim();
+}
 
         // Atualiza o CPF somente se foi enviado
         if (cpf !== undefined) {
-            dadosAtualizados.cpf = cpf;
-        }
+    if (cpf.trim() === '') {
+        return res.status(400).json({
+            erro: 'O CPF não pode ficar em branco.'
+        });
+    }
+
+    dadosAtualizados.cpf = cpf.trim();
+}
 
         // Atualiza o tipo de usuário somente se foi enviado
         if (tipo_usuario !== undefined) {
