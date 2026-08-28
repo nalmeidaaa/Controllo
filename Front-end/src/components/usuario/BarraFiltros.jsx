@@ -22,7 +22,9 @@ export default function BarraFiltros({ onBusca, onFiltro }) {
     return (
         <div className="filtros-barra">
             <div className="filtros-busca">
-                <span className="filtros-busca-icon">🔍</span>
+                <span className="filtros-busca-icon">
+                    <ion-icon name="search-outline" style={{ fontSize: '20px' }}></ion-icon>
+                </span>
                 <input
                     type="text"
                     className="filtros-input"
