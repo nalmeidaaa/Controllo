@@ -44,7 +44,7 @@ export default function CriarSalaPage({ navegarPara }) {
         const formData = new FormData();
         formData.append('descricao', desc);
         formData.append('bloco', blc);
-        if (arquivo) formData.append('imagem', arquivo);
+        if (arquivo) formData.append('imagem_sala', arquivo);
 
         try {
             setSalvando(true);
