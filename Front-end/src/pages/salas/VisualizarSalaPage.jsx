@@ -140,7 +140,9 @@ export default function VisualizarSalaPage({ navegarPara, idSala }) {
     }
 
     if (!token) {
-        return <div className="sala-empty"><div>🔒</div><p>Sessão inválida.</p></div>;
+        return <div className="sala-empty"><div>
+            <ion-icon name="lock-closed-outline" style={{ fontSize: '32px' }}></ion-icon>
+        </div><p>Sessão inválida.</p></div>;
     }
 
     if (carregando) {
@@ -158,7 +160,9 @@ export default function VisualizarSalaPage({ navegarPara, idSala }) {
         return (
             <div className="page-salas-container">
                 <div className="vs-empty">
-                    <span className="vs-empty-icon">⚠️</span>
+                    <span className="vs-empty-icon">
+                        <ion-icon name="warning-outline" style={{ fontSize: '20px' }}></ion-icon>
+                    </span>
                     <p>Não foi possível carregar a sala.</p>
                     <button className="btn-action" onClick={voltarParaSalas}>← Voltar para Salas</button>
                 </div>
@@ -232,7 +236,9 @@ export default function VisualizarSalaPage({ navegarPara, idSala }) {
                     <div>
                         {total === 0 ? (
                             <div className="vs-empty">
-                                <span className="vs-empty-icon">📦</span>
+                                <span className="vs-empty-icon">
+                                    <ion-icon name="cube-outline" style={{ fontSize: '28px' }}></ion-icon>
+                                </span>
                                 <p>Nenhum patrimônio vinculado a esta sala.</p>
                             </div>
                         ) : (

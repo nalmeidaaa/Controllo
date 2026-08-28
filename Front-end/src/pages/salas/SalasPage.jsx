@@ -20,7 +20,9 @@ export default function SalasPage({ navegarPara }) {
     if (!token) {
         return (
             <div className="page-salas-container">
-                <div className="sala-empty"><div>🔒</div><p>Sessão inválida. Faça login novamente.</p></div>
+                <div className="sala-empty"><div>
+                    <ion-icon name="lock-closed-outline" style={{ fontSize: '32px' }}></ion-icon>
+                </div><p>Sessão inválida. Faça login novamente.</p></div>
             </div>
         );
     }
@@ -42,11 +44,15 @@ export default function SalasPage({ navegarPara }) {
                 {carregando ? (
                     <div className="sala-empty"><p>Carregando salas...</p></div>
                 ) : erroCarregar ? (
-                    <div className="sala-empty"><div>⚠️</div><p>Não foi possível carregar as salas. Verifique a conexão com a API.</p></div>
+                    <div className="sala-empty"><div>
+                        <ion-icon name="warning-outline" style={{ fontSize: '32px' }}></ion-icon>
+                    </div><p>Não foi possível carregar as salas. Verifique a conexão com a API.</p></div>
                 ) : todas.length === 0 ? (
                     <div className="tabela-card">
                         <div className="tabela-empty">
-                            <div className="tabela-empty-icon">🚪</div>
+                            <div className="tabela-empty-icon">
+                                <ion-icon name="log-in-outline" style={{ fontSize: '32px' }}></ion-icon>
+                            </div>
                             <p>Nenhuma sala encontrada.</p>
                         </div>
                     </div>
