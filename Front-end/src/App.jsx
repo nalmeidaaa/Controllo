@@ -23,6 +23,41 @@ export default function App() {
         }
     }, []);
 
+    // Escuta a seta de voltar do navegador e atualiza o estado para a tela anterior do histórico
+    useEffect(() => {
+        if (!logado) return;
+
+        // Salva o estado inicial (Dashboard) ao logar
+        if (!window.history.state) {
+            window.history.replaceState({ pagina: 'dashboard', paramsPagina: {} }, '');
+        }
+
+        const handlePopState = (event) => {
+            if (event.state && event.state.pagina) {
+                // Restaura a página exatamente anterior guardada na pilha do navegador
+                setPagina(event.state.pagina);
+                setParamsPagina(event.state.paramsPagina || {});
+            } else {
+                setPagina('dashboard');
+                setParamsPagina({});
+            }
+        };
+
+        window.addEventListener('popstate', handlePopState);
+
+        return () => {
+            window.removeEventListener('popstate', handlePopState);
+        };
+    }, [logado]);
+
+    // Função central que muda a página E adiciona o passo no histórico do navegador
+    const mudarPagina = (novaPagina, novosParams = {}) => {
+        setPagina(novaPagina);
+        setParamsPagina(novosParams);
+        // Adiciona um novo item na pilha de voltar do navegador
+        window.history.pushState({ pagina: novaPagina, paramsPagina: novosParams }, '');
+    };
+
     const handleLogout = () => {
         deslogarUsuario();
         setLogado(false);
@@ -30,12 +65,12 @@ export default function App() {
     };
 
     const navegarPara = {
-        dashboard: () => { setPagina('dashboard'); setParamsPagina({}); },
-        usuarios: () => { setPagina('usuarios'); setParamsPagina({}); },
-        salas: () => { setPagina('salas'); setParamsPagina({}); },
-        criarSala: () => { setPagina('criarSala'); setParamsPagina({}); },
-        editarSala: (id) => { setPagina('editarSala'); setParamsPagina({ id }); },
-        visualizarSala: (id) => { setPagina('visualizarSala'); setParamsPagina({ id }); },
+        dashboard: () => mudarPagina('dashboard'),
+        usuarios: () => mudarPagina('usuarios'),
+        salas: () => mudarPagina('salas'),
+        criarSala: () => mudarPagina('criarSala'),
+        editarSala: (id) => mudarPagina('editarSala', { id }),
+        visualizarSala: (id) => mudarPagina('visualizarSala', { id }),
     };
 
     if (!logado) {

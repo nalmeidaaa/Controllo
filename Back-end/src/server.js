@@ -16,7 +16,7 @@ app.use(cors());
 app.use(express.json());
 
 // Servir arquivos estáticos (imagens de salas)
-app.use('/imagens', express.static(path.join(__dirname, '../uploads/imagens')));
+app.use('/imagens', express.static(path.join(__dirname, '../uploads')));
 
 // Rotas da API
 app.use('/', routes);
