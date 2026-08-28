@@ -58,7 +58,6 @@ export default function EditarSalaPage({ navegarPara, idSala }) {
             }
         }
         if (token) carregar();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [idSala]);
 
     if (!token) {
@@ -157,7 +156,7 @@ export default function EditarSalaPage({ navegarPara, idSala }) {
             const formData = new FormData();
             formData.append('descricao', descTrim);
             formData.append('bloco', blocoTrim);
-            if (arquivoImagem) formData.append('imagem_sala', arquivoImagem);
+            if (arquivoImagem) formData.append('imagem_sala', arquivoImagem); // Alinhado com o campo padrão do Multer no backend
             formData.append('patrimonios', JSON.stringify(patrimoniosMeta));
             fotosPorIndice.forEach(({ indice, arquivo }) => formData.append(`foto_${indice}`, arquivo));
 
@@ -230,7 +229,10 @@ export default function EditarSalaPage({ navegarPara, idSala }) {
                                             )}
                                         </div>
                                         <div className="imagem-upload-controls">
-                                            <label className="btn-upload-imagem" htmlFor="editImagem">📁 Selecionar nova imagem</label>
+                                            <label className="btn-upload-imagem" htmlFor="editImagem" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <ion-icon name="folder-open-outline" style={{ fontSize: '20px' }}></ion-icon>
+                                                Selecionar nova imagem
+                                            </label>
                                             <input type="file" id="editImagem" accept="image/*" style={{ display: 'none' }} onChange={handleImagemChange} ref={fileReaderRef} />
                                             <p className="imagem-hint">A imagem atual será mantida se nenhuma for selecionada.</p>
                                         </div>

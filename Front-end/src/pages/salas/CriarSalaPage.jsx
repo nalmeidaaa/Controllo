@@ -7,15 +7,26 @@ export default function CriarSalaPage({ navegarPara }) {
     const [descricao, setDescricao] = useState('');
     const [bloco, setBloco] = useState('');
     const [arquivo, setArquivo] = useState(null);
+    const [previewUrl, setPreviewUrl] = useState(null);
     const [erro, setErro] = useState('');
     const [salvando, setSalvando] = useState(false);
 
     const voltarParaSalas = () => navegarPara.salas();
 
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setArquivo(file);
+            setPreviewUrl(URL.createObjectURL(file));
+        }
+    };
+
     if (!token) {
         return (
             <div className="page-salas-container">
-                <div className="sala-empty"><div>🔒</div><p>Sessão inválida. Faça login novamente.</p></div>
+                <div className="sala-empty"><div>
+                    <ion-icon name="lock-closed-outline" style={{ fontSize: '32px' }}></ion-icon>
+                </div><p>Sessão inválida. Faça login novamente.</p></div>
             </div>
         );
     }
@@ -35,7 +46,7 @@ export default function CriarSalaPage({ navegarPara }) {
         const formData = new FormData();
         formData.append('descricao', desc);
         formData.append('bloco', blc);
-        if (arquivo) formData.append('imagem', arquivo);
+        if (arquivo) formData.append('imagem_sala', arquivo);
 
         try {
             setSalvando(true);
@@ -88,13 +99,26 @@ export default function CriarSalaPage({ navegarPara }) {
                         <div className="form-group">
                             <label className="form-label" htmlFor="inputImagem">Imagem da Sala</label>
                             <div className="form-file-input">
-                                <label className="form-file-label" htmlFor="inputImagem">📁 Selecionar imagem</label>
+                                <label className="form-file-label" htmlFor="inputImagem" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <ion-icon name="folder-open-outline" style={{ fontSize: '20px' }}></ion-icon>
+                                    Selecionar imagem
+                                </label>
                                 <input
                                     type="file" id="inputImagem" className="form-control" accept="image/*"
-                                    onChange={(e) => setArquivo(e.target.files[0] || null)}
+                                    onChange={handleFileChange}
                                 />
                             </div>
                             <p className="form-hint">PNG, JPG ou JPEG (até 5MB)</p>
+
+                            {previewUrl && (
+                                <div style={{ marginTop: '10px' }}>
+                                    <img 
+                                        src={previewUrl} 
+                                        alt="Prévia da Sala" 
+                                        style={{ maxWidth: '200px', maxHeight: '150px', borderRadius: '8px', objectFit: 'cover' }} 
+                                    />
+                                </div>
+                            )}
                         </div>
 
                         {erro && <div className="alert-error" style={{ display: 'block' }}>{erro}</div>}

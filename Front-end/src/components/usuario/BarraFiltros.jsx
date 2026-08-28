@@ -5,6 +5,7 @@ const FILTROS = [
     { id: 'administração', label: 'Admin' },
     { id: 'manutenção', label: 'Manutenção' },
     { id: 'geral', label: 'Geral' },
+    { id: 'desativado', label: 'Desativados' },
 ];
 
 export default function BarraFiltros({ onBusca, onFiltro }) {

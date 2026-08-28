@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from 'react';
-import { criarUsuario, atualizarUsuario, deletarUsuario } from '../../services/usuarioService.js';
+import { criarUsuario, atualizarUsuario, desativarUsuario } from '../../services/usuarioService.js';
 import { obterToken, obterUsuarioAtual } from '../../storage/usuario/dados.storage.js';
 import { ITENS_POR_PAGINA } from '../../config/app.config.js';
 import { useUsuarios } from '../../hooks/useUsuarios.jsx';
@@ -21,16 +21,40 @@ export default function UsuariosPage() {
 
     const tabelaRef = useRef(null);
 
-    const filtrados = useMemo(() => {
-        const termo = termoBusca.toLowerCase();
-        return todos.filter((usuario) => {
-            const bateTexto = !termo || [usuario.nome || '', usuario.cpf || '', usuario.email || '']
-                .some((campo) => campo.toLowerCase().includes(termo));
-            const bateTipo = filtroTipo === 'todos' || (usuario.tipo_usuario || '').toLowerCase().includes(filtroTipo);
-            return bateTexto && bateTipo;
-        });
-    }, [todos, termoBusca, filtroTipo]);
+   const filtrados = useMemo(() => {
+    const termo = termoBusca.toLowerCase();
 
+    return todos.filter((usuario) => {
+        // 1. Verifica se o usuário está inativo/desativado
+        const estaInativo =
+            usuario.status?.toLowerCase() === 'inativo' ||
+            usuario.status?.toLowerCase() === 'desativado' ||
+            usuario.tipo_usuario?.toLowerCase() === 'desativado' ||
+            usuario.ativo === false;
+
+        // 2. Filtro por texto (Nome, CPF ou E-mail)
+        const bateTexto =
+            !termo ||
+            [usuario.nome || '', usuario.cpf || '', usuario.email || ''].some((campo) =>
+                campo.toLowerCase().includes(termo)
+            );
+
+        if (!bateTexto) return false;
+
+        // 3. Regra dos Filtros por aba
+        if (filtroTipo === 'todos') {
+            return !estaInativo; // Esconde os desativados na aba "Todos"
+        }
+
+        if (filtroTipo === 'desativado') {
+            return estaInativo; // Mostra APENAS os desativados na aba "Desativados"
+        }
+
+        // Para as demais abas (Admin, Manutenção, Geral)
+        const tipo = (usuario.tipo_usuario || '').toLowerCase();
+        return !estaInativo && tipo.includes(filtroTipo);
+    });
+}, [todos, termoBusca, filtroTipo]);
     const inicio = (paginaAtual - 1) * ITENS_POR_PAGINA;
     const paginaDados = filtrados.slice(inicio, inicio + ITENS_POR_PAGINA);
 
@@ -44,20 +68,22 @@ export default function UsuariosPage() {
         setModalAberto(true);
     }
 
-    async function confirmarExclusao(id) {
+    // Função ajustada para aceitar (id, nome) conforme disparado pelo TabelaUsuarios
+    async function desativaroUsuario(id, nome) {
         const usuarioAtual = obterUsuarioAtual();
         if (String(usuarioAtual?.id_usuario) === String(id)) {
-            alert('Você não pode excluir a sua própria conta enquanto está logado.');
+            alert('Você não pode desativar a sua própria conta enquanto está logado.');
             return;
         }
-        if (!confirm('Tem certeza que deseja remover este usuário permanentemente?')) return;
+        const confirmacao = confirm(`Tem certeza que deseja desativar o usuário ${nome ? `"${nome}"` : ''}?`);
+        if (!confirmacao) return;
 
         try {
-            await deletarUsuario(token, id);
+            await desativarUsuario(token, id);
             await recarregar();
         } catch (error) {
-            alert('Não foi possível excluir o usuário. Tente novamente.');
-            console.error('Erro ao excluir:', error);
+            alert('Não foi possível desativar o usuário. Tente novamente.');
+            console.error('Erro ao desativar:', error);
         }
     }
 
@@ -113,7 +139,12 @@ export default function UsuariosPage() {
                         </div>
                     </div>
                 ) : (
-                    <TabelaUsuarios usuarios={paginaDados} onEditar={abrirEdicao} onExcluir={confirmarExclusao} />
+                    /* Corrigido aqui: trocado onExcluir por onDesativar */
+                    <TabelaUsuarios 
+                        usuarios={paginaDados} 
+                        onEditar={abrirEdicao} 
+                        onDesativar={desativaroUsuario} 
+                    />
                 )}
             </div>
 

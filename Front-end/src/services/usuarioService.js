@@ -1,4 +1,5 @@
 import { api } from "./api.js";
+import { obterUsuarioAtual } from "../storage/usuario/dados.storage.js"; 
 
 export async function logar(login, senha) {
     try {
@@ -6,7 +7,6 @@ export async function logar(login, senha) {
         const resposta = await api.post('/usuarios/login', { login, senha });
         return resposta.data;
     } catch (error) {
-        console.error("Erro no login:", error.response?.data?.message || error.message);
         throw error;
     }
 }
@@ -18,12 +18,10 @@ export async function criarUsuario(token, formData) {
         const resposta = await api.post('/usuarios', formData, {
             headers: {
                 Authorization: `Bearer ${token}`
-                // O Axios define o Content-Type como multipart/form-data automaticamente aqui
             }
         });
         return resposta.data;
     } catch (error) {
-        console.error("Erro ao criar usuário:", error.response?.data?.message || error.message);
         throw error;
     }
 }
@@ -40,7 +38,6 @@ export async function atualizarUsuario(token, id, formData) {
         });
         return resposta.data;
     } catch (error) {
-        console.error("Erro ao atualizar usuário:", error.response?.data?.message || error.message);
         throw error;
     }
 }
@@ -53,23 +50,83 @@ export async function buscarUsuarios(token) {
         });
         return resposta.data;
     } catch (error) {
-        console.error("Erro ao buscar usuários:", error.response?.data?.message || error.message);
         throw error;
     }
 }
+function obterPayloadToken(tokenInput) {
+    try {
+        if (!tokenInput) return null;
 
+        // Se veio um objeto { token: "..." }, extrai a string do token
+        const tokenString = typeof tokenInput === 'object' ? tokenInput.token : tokenInput;
 
-export async function deletarUsuario(token, id) {
+        if (!tokenString || typeof tokenString !== 'string') return null;
+
+        const payloadBase64 = tokenString.split('.')[1];
+        const payloadDecodificado = atob(payloadBase64.replace(/-/g, '+').replace(/_/g, '/'));
+        return JSON.parse(payloadDecodificado);
+    } catch (e) {
+        return null;
+    }
+}
+
+export async function excluirUsuario(token, id) {
     try {
         if (!token) throw new Error("Erro: token inválido");
         if (!id) throw new Error("Erro: id inválido");
 
-        const resposta = await api.delete(`/usuarios/${id}`, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
+        // 1. Obtém os dados e resolve a string do token
+        const dadosStorage = obterUsuarioAtual();
+        const payload = obterPayloadToken(dadosStorage || token);
+
+        // 2. O token do seu log possui a propriedade 'id'
+        const idUsuarioLogado = payload?.id || payload?.id_usuario;
+
+        // 3. Validação de segurança
+        if (idUsuarioLogado && String(idUsuarioLogado) === String(id)) {
+            throw new Error("Você não pode alterar o tipo da sua própria conta.");
+        }
+
+        const resposta = await api.delete(
+            `/usuarios/${id}`,
+            {
+                headers: { Authorization: `Bearer ${token}` }
+            }
+        );
+
         return resposta.data;
     } catch (error) {
-        console.error("Erro ao deletar usuário:", error.response?.data?.message || error.message);
+        throw error;
+    }
+}
+
+export async function desativarUsuario(token, id) {
+    try {
+        if (!token) throw new Error("Erro: token inválido");
+        if (!id) throw new Error("Erro: id inválido");
+
+        // 1. Obtém os dados e resolve a string do token
+        const dadosStorage = obterUsuarioAtual();
+        const payload = obterPayloadToken(dadosStorage || token);
+
+        // 2. O token do seu log possui a propriedade 'id'
+        const idUsuarioLogado = payload?.id || payload?.id_usuario;
+
+        // 3. Validação de segurança
+        if (idUsuarioLogado && String(idUsuarioLogado) === String(id)) {
+            throw new Error("Você não pode desativar a sua própria conta.");
+        }
+
+        const resposta = await api.put(
+            `/usuarios/${id}`,
+            { tipo_usuario: "desativado" },
+            {
+                headers: { Authorization: `Bearer ${token}` }
+            }
+        );
+
+        return resposta.data;
+    } catch (error) {
         throw error;
     }
 }

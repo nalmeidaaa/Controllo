@@ -43,8 +43,7 @@ export async function criarSala(formData, token) {
         if (!token) throw new Error("Erro: token inválido");
         const resposta = await api.post('/salas', formData, {
             headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'multipart/form-data'
+                Authorization: `Bearer ${token}`
             }
         });
         return resposta.data;
@@ -59,8 +58,7 @@ export async function editarSala(id, formData, token) {
         if (!token) throw new Error("Erro: token inválido");
         const resposta = await api.put(`/salas/${id}`, formData, {
             headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'multipart/form-data' 
+                Authorization: `Bearer ${token}`
             }
         });
         return resposta.data;

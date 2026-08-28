@@ -16,6 +16,7 @@ export default function VisualizarSalaPage({ navegarPara, idSala }) {
     const [selecionados, setSelecionados] = useState(new Set());
     const [excluindoLote, setExcluindoLote] = useState(false);
 
+    // Controla o estado do modal: null = fechado, { id_sala: ... } = novo patrimonio, patrimonioObj = editando
     const [modalPatrimonio, setModalPatrimonio] = useState(null);
 
     const containerRef = useRef(null);
@@ -102,22 +103,46 @@ export default function VisualizarSalaPage({ navegarPara, idSala }) {
         if (erros > 0) alert(`${erros} item(ns) não puderam ser excluídos.`);
     }
 
+    // Abre o modal para ADICIONAR um novo patrimônio (passando a sala atual)
+    function abrirNovoPatrimonio() {
+        setModalPatrimonio({ id_sala: sala.id_sala || sala.id });
+    }
+
+    // Abre o modal para EDITAR um patrimônio existente
     function editarPatrimonio(patrimonio) {
         setModalPatrimonio(patrimonio);
     }
 
-    function handlePatrimonioSalvo(atualizado) {
-        setSala((s) => ({
-            ...s,
-            patrimonios: s.patrimonios.map((p) =>
-                (p.id_patrimonio || p.id) === (modalPatrimonio.id_patrimonio || modalPatrimonio.id) ? { ...p, ...atualizado } : p
-            ),
-        }));
+    function handlePatrimonioSalvo(patrimonioSalvo) {
+        const idSalvo = patrimonioSalvo.id_patrimonio || patrimonioSalvo.id;
+
+        setSala((s) => {
+            const jaExiste = s.patrimonios.some((p) => (p.id_patrimonio || p.id) === idSalvo);
+
+            if (jaExiste) {
+                // Se já existia, atualiza os dados na lista
+                return {
+                    ...s,
+                    patrimonios: s.patrimonios.map((p) =>
+                        (p.id_patrimonio || p.id) === idSalvo ? { ...p, ...patrimonioSalvo } : p
+                    ),
+                };
+            } else {
+                // Se é novo, adiciona à lista atual da sala
+                return {
+                    ...s,
+                    patrimonios: [patrimonioSalvo, ...s.patrimonios],
+                };
+            }
+        });
+
         setModalPatrimonio(null);
     }
 
     if (!token) {
-        return <div className="sala-empty"><div>🔒</div><p>Sessão inválida.</p></div>;
+        return <div className="sala-empty"><div>
+            <ion-icon name="lock-closed-outline" style={{ fontSize: '32px' }}></ion-icon>
+        </div><p>Sessão inválida.</p></div>;
     }
 
     if (carregando) {
@@ -135,7 +160,9 @@ export default function VisualizarSalaPage({ navegarPara, idSala }) {
         return (
             <div className="page-salas-container">
                 <div className="vs-empty">
-                    <span className="vs-empty-icon">⚠️</span>
+                    <span className="vs-empty-icon">
+                        <ion-icon name="warning-outline" style={{ fontSize: '20px' }}></ion-icon>
+                    </span>
                     <p>Não foi possível carregar a sala.</p>
                     <button className="btn-action" onClick={voltarParaSalas}>← Voltar para Salas</button>
                 </div>
@@ -189,22 +216,29 @@ export default function VisualizarSalaPage({ navegarPara, idSala }) {
                 <section className="visualizar-sala-patrimonios-col">
                     <div className="vs-patrimonios-header">
                         <h2>Patrimônios Vinculados <span className="vs-count">{total}</span></h2>
-                        {total > 0 && (
-                            <label className="vs-selecionar-todos-label" title="Selecionar todos desta página">
-                                <input
-                                    type="checkbox" className="vs-cb-todos"
-                                    checked={todosDaPaginaSelecionados}
-                                    onChange={(e) => selecionarPagina(e.target.checked)}
-                                />
-                                <span>Selecionar página</span>
-                            </label>
-                        )}
+                        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                            {total > 0 && (
+                                <label className="vs-selecionar-todos-label" title="Selecionar todos desta página">
+                                    <input
+                                        type="checkbox" className="vs-cb-todos"
+                                        checked={todosDaPaginaSelecionados}
+                                        onChange={(e) => selecionarPagina(e.target.checked)}
+                                    />
+                                    <span>Selecionar página</span>
+                                </label>
+                            )}
+                            <button className="btn-primary-custom" onClick={abrirNovoPatrimonio} style={{ padding: '6px 12px', fontSize: '13px' }}>
+                                + Adicionar
+                            </button>
+                        </div>
                     </div>
 
                     <div>
                         {total === 0 ? (
                             <div className="vs-empty">
-                                <span className="vs-empty-icon">📦</span>
+                                <span className="vs-empty-icon">
+                                    <ion-icon name="cube-outline" style={{ fontSize: '28px' }}></ion-icon>
+                                </span>
                                 <p>Nenhum patrimônio vinculado a esta sala.</p>
                             </div>
                         ) : (

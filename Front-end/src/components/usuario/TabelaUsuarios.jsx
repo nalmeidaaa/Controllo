@@ -5,6 +5,7 @@ function getBadge(tipo) {
     const type = (tipo || '').toLowerCase();
     if (type === 'administração' || type === 'administracao') return { cls: 'badge-admin', texto: 'Admin' };
     if (type === 'manutenção' || type === 'manutencao') return { cls: 'badge-manutencao', texto: 'Manutenção' };
+    if (type === 'desativado') return { cls: 'badge-desativado', texto: 'Desativado' };
     return { cls: 'badge-geral', texto: 'Geral' };
 }
 
@@ -13,7 +14,7 @@ function buscarInicial(nome) {
     return nome.split(' ').slice(0, 2).map((n) => n[0]).join('').toUpperCase();
 }
 
-export default function TabelaUsuarios({ usuarios = [], onEditar, onExcluir }) {
+export default function TabelaUsuarios({ usuarios = [], onEditar, onDesativar }) {
     const usuarioAtual = obterUsuarioAtual();
 
     if (!usuarios || usuarios.length === 0) {
@@ -49,18 +50,49 @@ export default function TabelaUsuarios({ usuarios = [], onEditar, onExcluir }) {
                         const srcImagem = urlImagemUsuario(usuario);
                         const ehVoce = String(usuarioAtual?.id_usuario) === String(id);
 
+                        // Verifica se o usuário está inativo/desativado
+                        const estaInativo =
+                            usuario.status?.toLowerCase() === 'inativo' ||
+                            usuario.status?.toLowerCase() === 'desativado' ||
+                            usuario.tipo_usuario?.toLowerCase() === 'desativado' ||
+                            usuario.ativo === false;
+
                         return (
-                            <tr key={id} className={ehVoce ? 'linha-usuario-ativo' : ''}>
+                            <tr
+                                key={id}
+                                className={ehVoce ? 'linha-usuario-ativo' : ''}
+                                style={{
+                                    opacity: estaInativo ? 0.45 : 1,
+                                    filter: estaInativo ? 'grayscale(80%)' : 'none',
+                                    transition: 'all 0.2s ease-in-out'
+                                }}
+                            >
                                 <td>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                                         <div className="user-avatar" title={nome}>
-                                            {srcImagem
-                                                ? <img className="usuario-card-img" alt={nome} src={srcImagem} />
-                                                : buscarInicial(nome)}
+                                            {srcImagem ? (
+                                                <img className="usuario-card-img" alt={nome} src={srcImagem} />
+                                            ) : (
+                                                buscarInicial(nome)
+                                            )}
                                         </div>
                                         <div>
                                             <span className="user-name">{nome}</span>
                                             {ehVoce && <span className="badge-voce">você</span>}
+                                            {estaInativo && (
+                                                <span
+                                                    style={{
+                                                        marginLeft: 6,
+                                                        fontSize: '11px',
+                                                        background: '#fee2e2',
+                                                        color: '#991b1b',
+                                                        padding: '2px 6px',
+                                                        borderRadius: '4px'
+                                                    }}
+                                                >
+                                                    Inativo
+                                                </span>
+                                            )}
                                         </div>
                                     </div>
                                 </td>
@@ -68,17 +100,33 @@ export default function TabelaUsuarios({ usuarios = [], onEditar, onExcluir }) {
                                 <td><span className="user-email">{email}</span></td>
                                 <td><span className={`badge-perfil ${badge.cls}`}>{badge.texto}</span></td>
                                 <td style={{ textAlign: 'right' }}>
-                                    <button className="btn-action" style={{ marginRight: 6 }} onClick={() => onEditar?.(usuario)}>
+                                    <button
+                                        className="btn-action"
+                                        style={{ marginRight: !estaInativo ? 6 : 0 }}
+                                        onClick={() => onEditar?.(usuario)}
+                                    >
                                         Editar
                                     </button>
-                                    {ehVoce ? (
-                                        <button className="btn-action btn-action-danger" disabled title="Você não pode excluir sua própria conta" style={{ opacity: 0.35, cursor: 'not-allowed' }}>
-                                            Excluir
-                                        </button>
-                                    ) : (
-                                        <button className="btn-action btn-action-danger" onClick={() => onExcluir?.(id)}>
-                                            Excluir
-                                        </button>
+
+                                    {/* Exibe o botão de desativar APENAS se o usuário NÃO estiver inativo */}
+                                    {!estaInativo && (
+                                        ehVoce ? (
+                                            <button
+                                                className="btn-action btn-action-danger"
+                                                disabled
+                                                title="Você não pode desativar sua própria conta"
+                                                style={{ opacity: 0.35, cursor: 'not-allowed' }}
+                                            >
+                                                Desativar
+                                            </button>
+                                        ) : (
+                                            <button
+                                                className="btn-action btn-action-danger"
+                                                onClick={() => onDesativar?.(id, nome)}
+                                            >
+                                                Desativar
+                                            </button>
+                                        )
                                     )}
                                 </td>
                             </tr>
