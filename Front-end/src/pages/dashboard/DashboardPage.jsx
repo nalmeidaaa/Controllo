@@ -11,7 +11,9 @@ export default function DashboardPage({ navegarPara }) {
 
                 <div className="dashboard-menu-grid">
                     <div className="menu-card" onClick={() => navegarPara.salas()}>
-                        <div className="card-icon">🚪</div>
+                        <div className="card-icon">
+                            <ion-icon name="log-in-outline" style={{ fontSize: '28px'}}></ion-icon>
+                        </div>
                         <div className="card-info">
                             <h3>Gerenciar Salas</h3>
                             <p>Cadastro, edição e controle de patrimônios por sala.</p>
@@ -19,7 +21,9 @@ export default function DashboardPage({ navegarPara }) {
                     </div>
 
                     <div className="menu-card" onClick={() => navegarPara.usuarios()}>
-                        <div className="card-icon">👥</div>
+                        <div className="card-icon">
+                            <ion-icon name="people-outline" style={{ fontSize: '28px'}}></ion-icon>
+                        </div>
                         <div className="card-info">
                             <h3>Gerenciar Usuários</h3>
                             <p>Controle de acessos, permissões e perfis do sistema.</p>
@@ -27,7 +31,9 @@ export default function DashboardPage({ navegarPara }) {
                     </div>
 
                     <div className="menu-card" aria-disabled="true">
-                        <div className="card-icon">📋</div>
+                        <div className="card-icon">
+                            <ion-icon name="clipboard-outline" style={{ fontSize: '28px'}}></ion-icon>
+                        </div>
                         <div className="card-info">
                             <h3>Aplicar Tarefas</h3>
                             <p>Crie, distribua e acompanhe ordens de serviço.</p>
@@ -35,7 +41,9 @@ export default function DashboardPage({ navegarPara }) {
                     </div>
 
                     <div className="menu-card" aria-disabled="true">
-                        <div className="card-icon">📊</div>
+                        <div className="card-icon">
+                            <ion-icon name="bar-chart-outline" style={{ fontSize: '28px'}}></ion-icon>
+                        </div>
                         <div className="card-info">
                             <h3>Ver Registros</h3>
                             <p>Consulte históricos, relatórios e logs de atividade.</p>
