@@ -168,7 +168,7 @@ small {
 /* ── FORMULÁRIOS ────────────────────────────────────────────────────────────── */
 
 .form-group {
-    margin-bottom: 18px;
+    margin-bottom: 10px;
 }
 
 .form-label {
@@ -210,17 +210,18 @@ small {
     display: block;
     font-size: 12px;
     color: var(--texto-suave);
-    margin-top: 5px;
+    margin-top: 3px;
 }
 
 .alert-error {
+    flex-shrink: 0;
+    margin: 0;
+    padding: 12px 24px;
     background: #fff3f3;
     color: #a02020;
     border: 1px solid #f5c6c6;
-    border-radius: var(--raio-sm);
-    padding: 10px 14px;
-    font-size: 13px;
-    margin-bottom: 16px;
+    border-radius: 0;
+    font-size: 14px;
 }
 
 /* ── BOTÕES ─────────────────────────────────────────────────────────────────── */
@@ -842,9 +843,9 @@ main,
     display: flex;
     align-items: center;
     justify-content: center;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s ease;
+    padding: 15px;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 .modal-overlay.visible {
@@ -856,12 +857,31 @@ main,
     background: var(--bg-superficie);
     border-radius: var(--raio-xl);
     width: 100%;
-    max-width: 480px;
+    max-width: 650px;
+    height: 90vh;
+    max-height: 90vh;
     box-shadow: var(--sombra-lg);
     border: 1px solid var(--borda);
+    display: flex;
+    flex-direction: column;
     transform: scale(0.96) translateY(8px);
     transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
     overflow: hidden;
+    box-sizing: border-box;
+}
+
+.modal-body {
+    padding: 14px 24px;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+}
+
+.modal-box form {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
 }
 
 .modal-overlay.visible .modal-box {
@@ -869,32 +889,44 @@ main,
 }
 
 .modal-header {
-    padding: 22px 24px 18px;
-    border-bottom: 1px solid var(--borda);
+    flex-shrink: 0;
+    height: 70px;
+    padding: 0px 24px;
+
     display: flex;
     align-items: center;
     justify-content: space-between;
+
+    box-sizing: border-box;
+    border-bottom: 1px solid var(--borda);
 }
 
 .modal-header h5 {
-    font-size: 16px;
+    margin: 0;
+    font-size: 22px;
     font-weight: 600;
     color: var(--texto-primario);
 }
 
 .modal-close {
-    background: none;
-    border: none;
-    width: 30px;
-    height: 30px;
-    border-radius: var(--raio-sm);
+   width: 40px;
+    height: 40px;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
-    color: var(--texto-suave);
+
+    padding: 0;
+    margin: 0;
+
+    font-size: 28px;
+    line-height: 1;
+
+    background: transparent;
+    border: none;
+
+    color: #92949d;
     cursor: pointer;
-    transition: var(--transicao);
 }
 
 .modal-close:hover {
@@ -903,16 +935,21 @@ main,
 }
 
 .modal-body {
-    padding: 24px;
+    padding: 14px 24px 8px;
 }
 
 .modal-footer {
-    padding: 16px 24px;
+    padding: 12px 24px;
     border-top: 1px solid var(--borda);
     display: flex;
     align-items: center;
     justify-content: flex-end;
     gap: 10px;
+    background: var(--bg-superficie);
+    flex-shrink: 0;
+
+    background: var(--bg-superficie);
+    z-index: 10;
 }
 
 .btn-modal-cancel {
@@ -2384,7 +2421,7 @@ body:has(.vs-selecao-barra--visivel) .page-salas-container {
     position: relative;
     display: flex;
     justify-content: center;
-    margin-bottom: 24px;
+    margin-bottom: 10px;
 }
 
 .foto-preview-container {
@@ -2751,4 +2788,25 @@ body:has(.vs-selecao-barra--visivel) .page-salas-container {
         max-width: 400px;
         padding: 48px 40px;
     }
+}
+
+/* =========================
+   CAMPO COM ERRO
+   ========================= */
+
+.form-control.campo-erro {
+    border: 2px solid #dc2626 !important;
+    background-color: #fff5f5 !important;
+    box-shadow: 0 0 0 1px #dc2626 !important;
+}
+
+.form-control.campo-erro:hover {
+    border: 2px solid #dc2626 !important;
+}
+
+.form-control.campo-erro:focus {
+    border: 2px solid #dc2626 !important;
+    background-color: #fff5f5 !important;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15) !important;
+    outline: none !important;
 }
