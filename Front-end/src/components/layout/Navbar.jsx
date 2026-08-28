@@ -30,11 +30,10 @@ export default function Navbar({ paginaAtiva, navegarPara, onLogout, onSidebarCh
         deslogarUsuario();
         if (typeof onLogout === 'function') onLogout();
     }
-
     const itensMenu = [
-        { id: 'dashboard', icone: '⊞', label: 'Página Inicial' },
-        { id: 'salas', icone: '🚪', label: 'Gerenciar Salas' },
-        { id: 'usuarios', icone: '👤', label: 'Gerenciar Usuários' },
+        { id: 'dashboard', icone: 'grid-outline', label: 'Página Inicial' },
+        { id: 'salas', icone: 'log-in-outline', label: 'Gerenciar Salas' },
+        { id: 'usuarios', icone: 'people-outline', label: 'Gerenciar Usuários' },
     ];
 
     return (
@@ -46,7 +45,7 @@ export default function Navbar({ paginaAtiva, navegarPara, onLogout, onSidebarCh
                         aria-label="Menu"
                         onClick={alternarMenu}
                     >
-                        &#9776;
+                        <ion-icon name="menu-outline" style={{ fontSize: '24px' }}></ion-icon>
                     </button>
 
                     <a
@@ -92,7 +91,7 @@ export default function Navbar({ paginaAtiva, navegarPara, onLogout, onSidebarCh
                                     onClick={() => navegarPara[item.id]?.()}
                                 >
                                     <span className="menu-icon">
-                                        {item.icone}
+                                        <ion-icon name={item.icone} style={{ fontSize: '20px' }}></ion-icon>
                                     </span>
 
                                     {item.label}
@@ -112,14 +111,18 @@ export default function Navbar({ paginaAtiva, navegarPara, onLogout, onSidebarCh
                     <ul className="side-menu">
                         <li>
                             <button className="side-btn-link" disabled>
-                                <span className="menu-icon">📋</span>
+                                <span className="menu-icon">
+                                    <ion-icon name="clipboard-outline" style={{ fontSize: '20px' }}></ion-icon>
+                                </span>
                                 Aplicar Tarefas
                             </button>
                         </li>
 
                         <li>
                             <button className="side-btn-link" disabled>
-                                <span className="menu-icon">📊</span>
+                                <span className="menu-icon">
+                                    <ion-icon name="bar-chart-outline" style={{ fontSize: '20px' }}></ion-icon>
+                                </span>
                                 Ver Registros
                             </button>
                         </li>

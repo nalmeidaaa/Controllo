@@ -229,7 +229,10 @@ export default function EditarSalaPage({ navegarPara, idSala }) {
                                             )}
                                         </div>
                                         <div className="imagem-upload-controls">
-                                            <label className="btn-upload-imagem" htmlFor="editImagem">📁 Selecionar nova imagem</label>
+                                            <label className="btn-upload-imagem" htmlFor="editImagem" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <ion-icon name="folder-open-outline" style={{ fontSize: '20px' }}></ion-icon>
+                                                Selecionar nova imagem
+                                            </label>
                                             <input type="file" id="editImagem" accept="image/*" style={{ display: 'none' }} onChange={handleImagemChange} ref={fileReaderRef} />
                                             <p className="imagem-hint">A imagem atual será mantida se nenhuma for selecionada.</p>
                                         </div>
