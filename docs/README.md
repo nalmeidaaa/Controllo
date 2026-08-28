@@ -4,7 +4,7 @@ Este documento define os padrões visuais e de interface do sistema.
 
 # 🎨 Paleta de Cores
 
-<img src="./assets/paleta de cor.png" width="300">
+<img src="C:\Users\49218628852\Pictures\Screenshots\Nova Paleta de Cores Controllo.png" width="300">
 
 ## 📌 Cores principais
 
@@ -12,12 +12,12 @@ Este documento define os padrões visuais e de interface do sistema.
   Primary Color - #ffffff
 </div>
 
-<div style="margin:2px; background-color:#41d1d6; padding:10px; color:black; border-radius:10px;">
-  Secondary Color - #41d1d6
+<div style="margin:2px; background-color:#121214 ; padding:10px; color:black; border-radius:10px;">
+  Secondary Color - #121214 
 </div>
 
-<div style="margin:2px; background-color:#006569; padding:10px; color:white; border-radius:10px;">
-  Danger Color - #006569
+<div style="margin:2px; background-color:#e30613; padding:10px; color:white; border-radius:10px;">
+  Danger Color - #e30613
 </div>
 
 # 🔤 Tipografia
@@ -39,7 +39,7 @@ Este documento define os padrões visuais e de interface do sistema.
 
 ## 🔘 Button
 
-<img src="./assets/Botão.png" width="300">
+<img src="C:\Users\49218628852\Pictures\Novo Botão Controllo.png" width="300">
 
 ### Variações
 - Primary
@@ -53,14 +53,14 @@ Este documento define os padrões visuais e de interface do sistema.
 
 ## 📦 Card
 
-<img src="./assets/Card TAP Controllo.png" width="300">
+<img src="C:\Users\49218628852\Pictures\Novo Card Controllo.png" width="300">
 
 ### Uso
 Container para agrupar informações.
 
 # 📐 Espaçamento
 
-<img src="./assets/Exemplo espaçamento.png" width="300">
+<img src="C:\Users\49218628852\Pictures\Novo espaçamento Controllo.webp" width="300">
 
 ## 📏 Escala de espaçamento
 
