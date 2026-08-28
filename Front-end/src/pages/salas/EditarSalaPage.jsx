@@ -156,7 +156,7 @@ export default function EditarSalaPage({ navegarPara, idSala }) {
             const formData = new FormData();
             formData.append('descricao', descTrim);
             formData.append('bloco', blocoTrim);
-            if (arquivoImagem) formData.append('imagem', arquivoImagem); // Alinhado com o campo padrão do Multer no backend
+            if (arquivoImagem) formData.append('imagem_sala', arquivoImagem); // Alinhado com o campo padrão do Multer no backend
             formData.append('patrimonios', JSON.stringify(patrimoniosMeta));
             fotosPorIndice.forEach(({ indice, arquivo }) => formData.append(`foto_${indice}`, arquivo));
 
