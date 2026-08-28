@@ -7,8 +7,7 @@ import upload from '../middlewares/upload.middleware.js';
 const salaRoutes = Router();
 
 // Criar sala com múltiplos uploads (imagem da sala + fotos individuais dos patrimônios)
-// Alterado de upload.single('imagem') para upload.any()
-salaRoutes.post('/', authMiddleware, autorizar(['administracao']), upload.any(), salaController.criar);
+salaRoutes.post('/', authMiddleware, autorizar(['administracao']), upload.single('imagem'), salaController.criar);
 
 // Listar todas as salas (Lógica normal legada - Mantida)
 salaRoutes.get('/', authMiddleware, autorizar(['administracao', 'manutencao', 'geral']), salaController.selecionar);
@@ -36,8 +35,7 @@ salaRoutes.get('/:id', authMiddleware, autorizar(['administracao', 'manutencao',
 salaRoutes.get('/bloco/:bloco', authMiddleware, autorizar(['administracao', 'manutencao', 'geral']), salaController.selecionarPorBloco);
 
 // Editar sala e sincronizar patrimônios (aceitando novas fotos para qualquer um deles)
-// Alterado de upload.single('imagem') para upload.any()
-salaRoutes.put('/:id', authMiddleware, autorizar(['administracao']), upload.any(), salaController.editar);
+salaRoutes.put('/:id', authMiddleware, autorizar(['administracao']), upload.single('imagem'), salaController.editar);
 
 // Deletar sala e patrimônios atrelados (Limpa arquivos do HD e tabelas)
 salaRoutes.delete('/:id', authMiddleware, autorizar(['administracao']), salaController.deletar);

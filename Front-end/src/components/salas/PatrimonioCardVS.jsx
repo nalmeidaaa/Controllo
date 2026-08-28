@@ -23,7 +23,15 @@ export default function PatrimonioCardVS({ patrimonio, selecionado, onToggleSele
                 <span className="vs-pat-checkbox-custom"></span>
             </label>
             <div className="vs-pat-img-area">
-                {srcImagem && <img className="patrimonio-card-img" alt={nome} src={srcImagem} />}
+                {srcImagem && (
+                    <img 
+                        className="patrimonio-card-img" 
+                        alt={nome} 
+                        src={srcImagem} 
+                        // Se o link falhar (404), oculta a imagem quebrada
+                        onError={(e) => e.target.style.display = 'none'} 
+                    />
+                )}
             </div>
             <div className="vs-pat-info">
                 <div className="vs-pat-nome">{nome}</div>
