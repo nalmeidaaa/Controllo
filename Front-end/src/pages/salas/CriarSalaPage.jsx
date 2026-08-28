@@ -15,7 +15,9 @@ export default function CriarSalaPage({ navegarPara }) {
     if (!token) {
         return (
             <div className="page-salas-container">
-                <div className="sala-empty"><div>🔒</div><p>Sessão inválida. Faça login novamente.</p></div>
+                <div className="sala-empty"><div>
+                    <ion-icon name="lock-closed-outline" style={{ fontSize: '32px' }}></ion-icon>
+                </div><p>Sessão inválida. Faça login novamente.</p></div>
             </div>
         );
     }
@@ -88,7 +90,10 @@ export default function CriarSalaPage({ navegarPara }) {
                         <div className="form-group">
                             <label className="form-label" htmlFor="inputImagem">Imagem da Sala</label>
                             <div className="form-file-input">
-                                <label className="form-file-label" htmlFor="inputImagem">📁 Selecionar imagem</label>
+                                <label className="form-file-label" htmlFor="inputImagem" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <ion-icon name="folder-open-outline" style={{ fontSize: '20px' }}></ion-icon>
+                                    Selecionar imagem
+                                </label>
                                 <input
                                     type="file" id="inputImagem" className="form-control" accept="image/*"
                                     onChange={(e) => setArquivo(e.target.files[0] || null)}

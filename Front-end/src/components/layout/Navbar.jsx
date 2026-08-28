@@ -24,16 +24,18 @@ export default function Navbar({ paginaAtiva, navegarPara, onLogout }) {
     }
 
     const itensMenu = [
-        { id: 'dashboard', icone: '⊞', label: 'Página Inicial' },
-        { id: 'salas', icone: '🚪', label: 'Gerenciar Salas' },
-        { id: 'usuarios', icone: '👤', label: 'Gerenciar Usuários' },
+        { id: 'dashboard', icone: 'grid-outline', label: 'Página Inicial' },
+        { id: 'salas', icone: 'log-in-outline', label: 'Gerenciar Salas' },
+        { id: 'usuarios', icone: 'people-outline', label: 'Gerenciar Usuários' },
     ];
 
     return (
         <>
             <nav className="custom-navbar">
                 <div className="nav-left">
-                    <button className="nav-toggle" aria-label="Menu" onClick={alternarMenu}>&#9776;</button>
+                    <button className="nav-toggle" aria-label="Menu" onClick={alternarMenu}>
+                        <ion-icon name="menu-outline" style={{ fontSize: '24px' }}></ion-icon>
+                    </button>
                     <a className="nav-logo" role="button" onClick={() => navegarPara.dashboard()}>
                         <span className="logo-dot"></span>
                         Controllo
@@ -60,7 +62,10 @@ export default function Navbar({ paginaAtiva, navegarPara, onLogout }) {
                                     className={`side-btn-link ${paginaAtiva === item.id ? 'active' : ''}`}
                                     onClick={() => navegarPara[item.id]?.()}
                                 >
-                                    <span className="menu-icon">{item.icone}</span> {item.label}
+                                    <span className="menu-icon">
+                                        <ion-icon name={item.icone} style={{ fontSize: '20px' }}></ion-icon>
+                                    </span> 
+                                    {item.label}
                                 </button>
                             </li>
                         ))}
@@ -70,8 +75,22 @@ export default function Navbar({ paginaAtiva, navegarPara, onLogout }) {
                 <div className="sidebar-section">
                     <div className="sidebar-section-label">Em breve</div>
                     <ul className="side-menu">
-                        <li><button className="side-btn-link" disabled><span className="menu-icon">📋</span> Aplicar Tarefas</button></li>
-                        <li><button className="side-btn-link" disabled><span className="menu-icon">📊</span> Ver Registros</button></li>
+                        <li>
+                            <button className="side-btn-link" disabled>
+                                <span className="menu-icon">
+                                    <ion-icon name="clipboard-outline" style={{ fontSize: '20px' }}></ion-icon>
+                                </span> 
+                                Aplicar Tarefas
+                            </button>
+                        </li>
+                        <li>
+                            <button className="side-btn-link" disabled>
+                                <span className="menu-icon">
+                                    <ion-icon name="bar-chart-outline" style={{ fontSize: '20px' }}></ion-icon>
+                                </span> 
+                                Ver Registros
+                            </button>
+                        </li>
                     </ul>
                 </div>
             </aside>

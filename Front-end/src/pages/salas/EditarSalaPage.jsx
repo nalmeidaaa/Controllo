@@ -62,7 +62,9 @@ export default function EditarSalaPage({ navegarPara, idSala }) {
     }, [idSala]);
 
     if (!token) {
-        return <div className="sala-empty"><div>🔒</div><p>Sessão inválida. Faça login novamente.</p></div>;
+        return <div className="sala-empty"><div>
+            <ion-icon name="lock-closed-outline" style={{ fontSize: '32px' }}></ion-icon>
+        </div><p>Sessão inválida. Faça login novamente.</p></div>;
     }
 
     if (carregando) {
@@ -80,7 +82,9 @@ export default function EditarSalaPage({ navegarPara, idSala }) {
         return (
             <div className="page-salas-container">
                 <div className="sala-empty">
-                    <div>⚠️</div>
+                    <div>
+                        <ion-icon name="warning-outline" style={{ fontSize: '32px' }}></ion-icon>
+                    </div>
                     <p>Não foi possível carregar a sala. <button className="btn-link" onClick={voltarParaSalas}>Voltar</button></p>
                 </div>
             </div>
@@ -230,7 +234,10 @@ export default function EditarSalaPage({ navegarPara, idSala }) {
                                             )}
                                         </div>
                                         <div className="imagem-upload-controls">
-                                            <label className="btn-upload-imagem" htmlFor="editImagem">📁 Selecionar nova imagem</label>
+                                            <label className="form-file-label" htmlFor="inputImagem" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <ion-icon name="folder-open-outline" style={{ fontSize: '20px' }}></ion-icon>
+                                                Selecionar imagem
+                                            </label>
                                             <input type="file" id="editImagem" accept="image/*" style={{ display: 'none' }} onChange={handleImagemChange} ref={fileReaderRef} />
                                             <p className="imagem-hint">A imagem atual será mantida se nenhuma for selecionada.</p>
                                         </div>
