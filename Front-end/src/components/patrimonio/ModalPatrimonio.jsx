@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { editarPatrimonio } from '../../services/patrimonioService.js';
+import { editarPatrimonio, criarPatrimonio } from '../../services/patrimonioService.js';
 import { obterUsuarioAtual } from '../../storage/usuario/dados.storage.js';
 
 export default function ModalPatrimonio({ aberto, patrimonio, salas = [], onSalvar, onFechar }) {
@@ -9,14 +9,27 @@ export default function ModalPatrimonio({ aberto, patrimonio, salas = [], onSalv
     const [arquivo, setArquivo] = useState(null);
     const [salvando, setSalvando] = useState(false);
 
+    // Valida se é edição verificando se existe um ID válido no patrimônio
+    const ehEdicao = Boolean(
+        patrimonio && 
+        Object.keys(patrimonio).length > 0 && 
+        (patrimonio.id_patrimonio || patrimonio.id)
+    );
+
     useEffect(() => {
         if (aberto && patrimonio) {
             setNome(patrimonio.nome || '');
             setStatus(patrimonio.status || '');
-            const salaAtual = salas.find((s) => s.patrimonios?.some(
-                (p) => (p.id_patrimonio || p.id) === (patrimonio.id_patrimonio || patrimonio.id)
-            ));
-            setIdSala(salaAtual ? String(salaAtual.id_sala) : '');
+            
+            // Prioriza o id_sala já vindo no patrimonio (seja na criação ou edição)
+            const idSalaInicial = patrimonio.id_sala || 
+                salas.find((s) => s.patrimonios?.some(
+                    (p) => (p.id_patrimonio || p.id) === (patrimonio.id_patrimonio || patrimonio.id)
+                ))?.id_sala || 
+                salas.find((s) => s.id_sala || s.id)?.id_sala || 
+                salas.find((s) => s.id_sala || s.id)?.id;
+
+            setIdSala(idSalaInicial ? String(idSalaInicial) : '');
             setArquivo(null);
             setSalvando(false);
         }
@@ -45,16 +58,22 @@ export default function ModalPatrimonio({ aberto, patrimonio, salas = [], onSalv
             dadosAtualizados.append('id_sala', idSala);
             if (arquivo) dadosAtualizados.append('imagem', arquivo);
 
-            const idPatrimonio = patrimonio.id_patrimonio || patrimonio.id;
-
             setSalvando(true);
-            const resultado = await editarPatrimonio(idPatrimonio, dadosAtualizados, token);
-            setSalvando(false);
+            let resultado;
 
-            alert('Patrimônio atualizado com sucesso!');
+            if (ehEdicao) {
+                const idPatrimonio = patrimonio.id_patrimonio || patrimonio.id;
+                resultado = await editarPatrimonio(idPatrimonio, dadosAtualizados, token);
+                alert('Patrimônio atualizado com sucesso!');
+            } else {
+                resultado = await criarPatrimonio(dadosAtualizados, token);
+                alert('Patrimônio cadastrado com sucesso!');
+            }
+
+            setSalvando(false);
             onSalvar?.(resultado);
         } catch (erro) {
-            console.error('Erro ao editar patrimônio:', erro);
+            console.error('Erro ao salvar patrimônio:', erro);
             alert('Ocorreu um erro ao salvar as alterações. Tente novamente.');
             setSalvando(false);
         }
@@ -71,7 +90,9 @@ export default function ModalPatrimonio({ aberto, patrimonio, salas = [], onSalv
                 style={{ background: '#fff', width: '100%', maxWidth: 500, borderRadius: 8, display: 'flex', flexDirection: 'column', overflow: 'hidden', fontFamily: 'sans-serif', boxShadow: '0 4px 15px rgba(0,0,0,0.2)' }}
             >
                 <div style={{ padding: 20, borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h2 style={{ margin: 0, fontSize: 20, color: '#333' }}>Editar Patrimônio</h2>
+                    <h2 style={{ margin: 0, fontSize: 20, color: '#333' }}>
+                        {ehEdicao ? 'Editar Patrimônio' : 'Adicionar Patrimônio'}
+                    </h2>
                     <button onClick={onFechar} style={{ cursor: 'pointer', background: 'none', border: 'none', fontSize: 24, color: '#888' }}>&times;</button>
                 </div>
 
@@ -110,11 +131,14 @@ export default function ModalPatrimonio({ aberto, patrimonio, salas = [], onSalv
                                 required
                             >
                                 <option value="">Selecione uma sala</option>
-                                {salas.map((sala) => (
-                                    <option key={sala.id_sala} value={sala.id_sala}>
-                                        {sala.descricao} (Bloco {sala.bloco})
-                                    </option>
-                                ))}
+                                {salas.map((s) => {
+                                    const id = s.id_sala || s.id;
+                                    return (
+                                        <option key={id} value={id}>
+                                            {s.descricao} (Bloco {s.bloco})
+                                        </option>
+                                    );
+                                })}
                             </select>
                         </div>
 
@@ -125,7 +149,7 @@ export default function ModalPatrimonio({ aberto, patrimonio, salas = [], onSalv
                                 onChange={(e) => setArquivo(e.target.files[0] || null)}
                                 style={{ padding: 10, border: '1px solid #ccc', borderRadius: 4, fontSize: 14 }}
                             />
-                            <small style={{ color: '#666', marginTop: 5 }}>Deixe em branco para manter a imagem atual</small>
+                            {ehEdicao && <small style={{ color: '#666', marginTop: 5 }}>Deixe em branco para manter a imagem atual</small>}
                         </div>
                     </div>
                 </div>
@@ -134,9 +158,9 @@ export default function ModalPatrimonio({ aberto, patrimonio, salas = [], onSalv
                     <button onClick={onFechar} style={{ padding: '8px 16px', border: '1px solid #ccc', background: 'white', borderRadius: 4, cursor: 'pointer', fontWeight: 500 }}>Cancelar</button>
                     <button
                         onClick={handleSalvar} disabled={salvando}
-                        style={{ padding: '8px 16px', border: 'none', background: '#28a745', color: 'white', borderRadius: 4, cursor: 'pointer', fontWeight: 'bold' }}
+                        style={{ padding: '8px 16px', border: 'none', background: '#dc2626', color: 'white', borderRadius: 4, cursor: 'pointer', fontWeight: 'bold' }}
                     >
-                        {salvando ? 'Salvando...' : 'Salvar Alterações'}
+                        {salvando ? 'Salvando...' : (ehEdicao ? 'Salvar Alterações' : 'Cadastrar Patrimônio')}
                     </button>
                 </div>
             </div>

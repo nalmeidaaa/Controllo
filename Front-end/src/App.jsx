@@ -23,23 +23,34 @@ export default function App() {
         }
     }, []);
 
-    // Escuta a seta de voltar do navegador e atualiza o estado para a tela anterior do histórico
+    // Gerencia o histórico do navegador e cria a trava no Dashboard
     useEffect(() => {
         if (!logado) return;
 
-        // Salva o estado inicial (Dashboard) ao logar
-        if (!window.history.state) {
-            window.history.replaceState({ pagina: 'dashboard', paramsPagina: {} }, '');
+        // Função para prender a navegação quando estiver no Dashboard
+        const aplicarTravaDashboard = () => {
+            window.history.pushState({ pagina: 'dashboard', paramsPagina: {} }, '');
+        };
+
+        // Garante que o estado inicial seja a trava do Dashboard
+        if (!window.history.state || window.history.state.pagina === 'dashboard') {
+            aplicarTravaDashboard();
         }
 
         const handlePopState = (event) => {
             if (event.state && event.state.pagina) {
-                // Restaura a página exatamente anterior guardada na pilha do navegador
                 setPagina(event.state.pagina);
                 setParamsPagina(event.state.paramsPagina || {});
+
+                // Se ao voltar a pessoa chegou no Dashboard, injeta a trava para bloquear novas voltas
+                if (event.state.pagina === 'dashboard') {
+                    aplicarTravaDashboard();
+                }
             } else {
+                // Se o usuário tentar voltar além do histórico interno, força a permanência no Dashboard
                 setPagina('dashboard');
                 setParamsPagina({});
+                aplicarTravaDashboard();
             }
         };
 
@@ -50,11 +61,10 @@ export default function App() {
         };
     }, [logado]);
 
-    // Função central que muda a página E adiciona o passo no histórico do navegador
+    // Registra cada alteração de página na pilha de histórico do navegador
     const mudarPagina = (novaPagina, novosParams = {}) => {
         setPagina(novaPagina);
         setParamsPagina(novosParams);
-        // Adiciona um novo item na pilha de voltar do navegador
         window.history.pushState({ pagina: novaPagina, paramsPagina: novosParams }, '');
     };
 
@@ -74,7 +84,14 @@ export default function App() {
     };
 
     if (!logado) {
-        return <LoginPage onLoginSucesso={() => { setLogado(true); setPagina('dashboard'); }} />;
+        return (
+            <LoginPage
+                onLoginSucesso={() => {
+                    setLogado(true);
+                    setPagina('dashboard');
+                }}
+            />
+        );
     }
 
     function renderPagina() {
