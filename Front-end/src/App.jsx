@@ -13,6 +13,9 @@ export default function App() {
     const [logado, setLogado] = useState(false);
     const [pagina, setPagina] = useState('dashboard');
     const [paramsPagina, setParamsPagina] = useState({});
+    
+    // ALTERADO: estado para saber se a sidebar está fechada
+    const [sidebarClosed, setSidebarClosed] = useState(false);
 
     // Sincroniza e valida se há uma sessão ativa ao carregar o app
     useEffect(() => {
@@ -102,9 +105,14 @@ export default function App() {
                     paginaAtiva={['criarSala', 'editarSala', 'visualizarSala'].includes(pagina) ? 'salas' : pagina}
                     navegarPara={navegarPara}
                     onLogout={handleLogout}
+                    
+                    // ALTERADO: recebe do Navbar a informação de que a sidebar fechou/abriu
+                    onSidebarChange={setSidebarClosed}
                 />
             </header>
-            <main className="conteudo-principal">
+
+            {/* ALTERADO: adiciona a classe sidebar-closed quando a sidebar estiver fechada */}
+            <main className={`conteudo-principal ${sidebarClosed ? 'sidebar-closed' : ''}`}>
                 <div id="app">{renderPagina()}</div>
             </main>
         </>
