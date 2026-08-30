@@ -1,18 +1,22 @@
 import { useEffect, useState } from 'react';
 import { editarPatrimonio, criarPatrimonio } from '../../services/patrimonioService.js';
+import { urlImagemPatrimonio } from '../../services/imagemService.js';
 import { obterUsuarioAtual } from '../../storage/usuario/dados.storage.js';
 
 export default function ModalPatrimonio({ aberto, patrimonio, salas = [], onSalvar, onFechar }) {
     const [nome, setNome] = useState('');
     const [status, setStatus] = useState('');
     const [idSala, setIdSala] = useState('');
+    const [numeroPatrimonio, setNumeroPatrimonio] = useState('');
     const [arquivo, setArquivo] = useState(null);
+    const [previewImagem, setPreviewImagem] = useState(null);
+    const [erro, setErro] = useState('');
     const [salvando, setSalvando] = useState(false);
 
     // Valida se é edição verificando se existe um ID válido no patrimônio
     const ehEdicao = Boolean(
-        patrimonio && 
-        Object.keys(patrimonio).length > 0 && 
+        patrimonio &&
+        Object.keys(patrimonio).length > 0 &&
         (patrimonio.id_patrimonio || patrimonio.id)
     );
 
@@ -20,27 +24,35 @@ export default function ModalPatrimonio({ aberto, patrimonio, salas = [], onSalv
         if (aberto && patrimonio) {
             setNome(patrimonio.nome || '');
             setStatus(patrimonio.status || '');
-            
+            setNumeroPatrimonio(patrimonio.numero_patrimonio || '');
+
             // Prioriza o id_sala já vindo no patrimonio (seja na criação ou edição)
-            const idSalaInicial = patrimonio.id_sala || 
+            const idSalaInicial = patrimonio.id_sala ||
                 salas.find((s) => s.patrimonios?.some(
                     (p) => (p.id_patrimonio || p.id) === (patrimonio.id_patrimonio || patrimonio.id)
-                ))?.id_sala || 
-                salas.find((s) => s.id_sala || s.id)?.id_sala || 
+                ))?.id_sala ||
+                salas.find((s) => s.id_sala || s.id)?.id_sala ||
                 salas.find((s) => s.id_sala || s.id)?.id;
 
             setIdSala(idSalaInicial ? String(idSalaInicial) : '');
             setArquivo(null);
+            setPreviewImagem(urlImagemPatrimonio(patrimonio));
+            setErro('');
             setSalvando(false);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [aberto, patrimonio]);
 
     if (!aberto || !patrimonio) return null;
 
+    function handleImagemChange(e) {
+        const file = e.target.files[0] || null;
+        setArquivo(file);
+        setPreviewImagem(file ? URL.createObjectURL(file) : urlImagemPatrimonio(patrimonio));
+    }
+
     async function handleSalvar() {
         if (!nome.trim() || !status || !idSala) {
-            alert('Por favor, preencha todos os campos obrigatórios');
+            setErro('Por favor, preencha todos os campos obrigatórios.');
             return;
         }
 
@@ -48,7 +60,7 @@ export default function ModalPatrimonio({ aberto, patrimonio, salas = [], onSalv
             const usuario = obterUsuarioAtual();
             const token = usuario?.token;
             if (!token) {
-                alert('Sessão expirada. Faça login novamente.');
+                setErro('Sessão expirada. Faça login novamente.');
                 return;
             }
 
@@ -56,66 +68,68 @@ export default function ModalPatrimonio({ aberto, patrimonio, salas = [], onSalv
             dadosAtualizados.append('nome', nome.trim());
             dadosAtualizados.append('status', status);
             dadosAtualizados.append('id_sala', idSala);
+            if (numeroPatrimonio.trim()) dadosAtualizados.append('numero_patrimonio', numeroPatrimonio.trim());
             if (arquivo) dadosAtualizados.append('imagem', arquivo);
 
+            setErro('');
             setSalvando(true);
             let resultado;
 
             if (ehEdicao) {
                 const idPatrimonio = patrimonio.id_patrimonio || patrimonio.id;
                 resultado = await editarPatrimonio(idPatrimonio, dadosAtualizados, token);
-                alert('Patrimônio atualizado com sucesso!');
             } else {
                 resultado = await criarPatrimonio(dadosAtualizados, token);
-                alert('Patrimônio cadastrado com sucesso!');
             }
 
             setSalvando(false);
-            onSalvar?.(resultado);
-        } catch (erro) {
-            console.error('Erro ao salvar patrimônio:', erro);
-            alert('Ocorreu um erro ao salvar as alterações. Tente novamente.');
+            onSalvar?.(resultado?.result ?? resultado);
+        } catch (erroSalvar) {
+            console.error('Erro ao salvar patrimônio:', erroSalvar);
+            setErro('Ocorreu um erro ao salvar as alterações. Tente novamente.');
             setSalvando(false);
         }
     }
 
     return (
         <div
-            className="modal-overlay-editar-patrimonio"
-            style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.6)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100, padding: 20, boxSizing: 'border-box' }}
+            className="modal-overlay visible"
             onClick={(e) => { if (e.target === e.currentTarget) onFechar?.(); }}
         >
-            <div
-                className="modal-content-editar-patrimonio"
-                style={{ background: '#fff', width: '100%', maxWidth: 500, borderRadius: 8, display: 'flex', flexDirection: 'column', overflow: 'hidden', fontFamily: 'sans-serif', boxShadow: '0 4px 15px rgba(0,0,0,0.2)' }}
-            >
-                <div style={{ padding: 20, borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h2 style={{ margin: 0, fontSize: 20, color: '#333' }}>
-                        {ehEdicao ? 'Editar Patrimônio' : 'Adicionar Patrimônio'}
-                    </h2>
-                    <button onClick={onFechar} style={{ cursor: 'pointer', background: 'none', border: 'none', fontSize: 24, color: '#888' }}>&times;</button>
+            <div className="modal-box" style={{ maxWidth: 480, height: 'auto', maxHeight: '90vh' }}>
+                <div className="modal-header">
+                    <h5>{ehEdicao ? 'Editar Patrimônio' : 'Adicionar Patrimônio'}</h5>
+                    <button className="modal-close" aria-label="Fechar" onClick={onFechar}>&times;</button>
                 </div>
 
-                <div style={{ padding: 20, overflowY: 'auto', flexGrow: 1 }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 15 }}>
-                        <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <label style={{ marginBottom: 5, fontWeight: 500, color: '#333' }}>Nome do Patrimônio *</label>
-                            <input
-                                type="text" value={nome} onChange={(e) => setNome(e.target.value)}
-                                placeholder="Ex: Computador, Mesa, Cadeira"
-                                style={{ padding: 10, border: '1px solid #ccc', borderRadius: 4, fontSize: 14 }}
-                                required
-                            />
-                        </div>
+                {erro && (
+                    <div className="alert-error">{erro}</div>
+                )}
 
-                        <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <label style={{ marginBottom: 5, fontWeight: 500, color: '#333' }}>Status *</label>
+                <div className="modal-body">
+                    <div className="form-group">
+                        <label className="form-label" htmlFor="patNome">
+                            Nome do Patrimônio <span className="required-mark">*</span>
+                        </label>
+                        <input
+                            type="text" id="patNome" className="form-control"
+                            value={nome} onChange={(e) => setNome(e.target.value)}
+                            placeholder="Ex: Computador, Mesa, Cadeira"
+                            required
+                        />
+                    </div>
+
+                    <div className="form-row">
+                        <div className="form-group">
+                            <label className="form-label" htmlFor="patStatus">
+                                Status <span className="required-mark">*</span>
+                            </label>
                             <select
+                                id="patStatus" className="form-control"
                                 value={status} onChange={(e) => setStatus(e.target.value)}
-                                style={{ padding: 10, border: '1px solid #ccc', borderRadius: 4, fontSize: 14 }}
                                 required
                             >
-                                <option value="">Selecione um status</option>
+                                <option value="">Selecione</option>
                                 <option value="Ok">Ok</option>
                                 <option value="Danificado">Danificado</option>
                                 <option value="Manutenção">Manutenção</option>
@@ -123,14 +137,16 @@ export default function ModalPatrimonio({ aberto, patrimonio, salas = [], onSalv
                             </select>
                         </div>
 
-                        <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <label style={{ marginBottom: 5, fontWeight: 500, color: '#333' }}>Sala *</label>
+                        <div className="form-group">
+                            <label className="form-label" htmlFor="patSala">
+                                Sala <span className="required-mark">*</span>
+                            </label>
                             <select
+                                id="patSala" className="form-control"
                                 value={idSala} onChange={(e) => setIdSala(e.target.value)}
-                                style={{ padding: 10, border: '1px solid #ccc', borderRadius: 4, fontSize: 14 }}
                                 required
                             >
-                                <option value="">Selecione uma sala</option>
+                                <option value="">Selecione</option>
                                 {salas.map((s) => {
                                     const id = s.id_sala || s.id;
                                     return (
@@ -141,26 +157,50 @@ export default function ModalPatrimonio({ aberto, patrimonio, salas = [], onSalv
                                 })}
                             </select>
                         </div>
+                    </div>
 
-                        <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <label style={{ marginBottom: 5, fontWeight: 500, color: '#333' }}>Imagem do Patrimônio</label>
-                            <input
-                                type="file" accept="image/*"
-                                onChange={(e) => setArquivo(e.target.files[0] || null)}
-                                style={{ padding: 10, border: '1px solid #ccc', borderRadius: 4, fontSize: 14 }}
-                            />
-                            {ehEdicao && <small style={{ color: '#666', marginTop: 5 }}>Deixe em branco para manter a imagem atual</small>}
+                    <div className="form-group">
+                        <label className="form-label" htmlFor="patNumero">Número do Patrimônio</label>
+                        <input
+                            type="text" id="patNumero" className="form-control"
+                            value={numeroPatrimonio} onChange={(e) => setNumeroPatrimonio(e.target.value)}
+                            placeholder="Ex: 2024-00123"
+                            maxLength={20}
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label className="form-label">Imagem do Patrimônio</label>
+                        <div className="patrimonio-img-upload-row">
+                            <div className="patrimonio-img-preview">
+                                {previewImagem ? (
+                                    <img src={previewImagem} alt={nome || 'Prévia do patrimônio'} />
+                                ) : (
+                                    <span className="patrimonio-img-preview-placeholder">Sem imagem</span>
+                                )}
+                            </div>
+                            <div className="patrimonio-img-upload-controls">
+                                <label className="btn-upload-imagem" htmlFor="patImagem" style={{ width: 'fit-content' }}>
+                                    <ion-icon name="folder-open-outline" style={{ fontSize: '18px' }}></ion-icon>
+                                    Selecionar imagem
+                                </label>
+                                <input
+                                    type="file" id="patImagem" accept="image/*"
+                                    className="foto-input"
+                                    onChange={handleImagemChange}
+                                />
+                                <small className="form-hint">
+                                    {ehEdicao ? 'Deixe em branco para manter a imagem atual.' : 'PNG, JPG ou JPEG.'}
+                                </small>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div style={{ padding: '15px 20px', borderTop: '1px solid #eee', background: '#fafafa', display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
-                    <button onClick={onFechar} style={{ padding: '8px 16px', border: '1px solid #ccc', background: 'white', borderRadius: 4, cursor: 'pointer', fontWeight: 500 }}>Cancelar</button>
-                    <button
-                        onClick={handleSalvar} disabled={salvando}
-                        style={{ padding: '8px 16px', border: 'none', background: '#dc2626', color: 'white', borderRadius: 4, cursor: 'pointer', fontWeight: 'bold' }}
-                    >
-                        {salvando ? 'Salvando...' : (ehEdicao ? 'Salvar Alterações' : 'Cadastrar Patrimônio')}
+                <div className="modal-footer">
+                    <button className="btn-modal-cancel" onClick={onFechar}>Cancelar</button>
+                    <button className="btn-modal-save" onClick={handleSalvar} disabled={salvando}>
+                        {salvando ? 'Salvando…' : (ehEdicao ? 'Salvar Alterações' : 'Cadastrar Patrimônio')}
                     </button>
                 </div>
             </div>

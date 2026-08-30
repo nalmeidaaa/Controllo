@@ -83,7 +83,8 @@ export class Patrimonio {
 
     set numero_patrimonio(value) {
         this.#validarNumeroPatrimonio(value);
-        this.#numero_patrimonio = value ?? null;
+        const valorLimpo = (value === null || value === undefined || value === '') ? null : String(value).trim();
+        this.#numero_patrimonio = valorLimpo || null;
     }
 
     // VALIDAÇÕES
@@ -114,8 +115,13 @@ export class Patrimonio {
     }
 
     #validarNumeroPatrimonio(value) {
-        if (value !== null && value !== undefined && (Number(value) <= 0 || isNaN(Number(value))) && value.length > 12) {
-            throw new Error("Número do patrimônio informado é inválido");
+        if (value === null || value === undefined || value === '') return;
+        const valorStr = String(value).trim();
+        if (valorStr.length === 0) {
+            throw new Error("Número do patrimônio não pode ser vazio");
+        }
+        if (valorStr.length > 20) {
+            throw new Error("Número do patrimônio deve ter no máximo 20 caracteres");
         }
     }
 

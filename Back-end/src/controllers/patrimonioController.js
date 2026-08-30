@@ -8,7 +8,7 @@ import { error } from 'console';
 const patrimonioController = {
     criar: async (req, res) => {
         try {
-            const { nome, status, id_sala } = req.body;
+            const { nome, status, id_sala, numero_patrimonio } = req.body;
 
             // Monta o caminho da imagem se foi feito upload
             let caminhoImagem = null;
@@ -21,11 +21,24 @@ const patrimonioController = {
                 nome,
                 status: status ?? 'Ok',
                 id_sala,
-                caminho_imagem: caminhoImagem
+                caminho_imagem: caminhoImagem,
+                numero_patrimonio: numero_patrimonio || null
             });
 
             const result = await patrimonioRepository.criar(patrimonio);
-            res.status(201).json({ result });
+
+            // Devolve o objeto completo do patrimônio (não o retorno bruto do MySQL),
+            // para que o front consiga atualizar a lista sem precisar recarregar a página
+            const patrimonioCriado = {
+                id_patrimonio: result.insertId,
+                nome: patrimonio.nome,
+                status: patrimonio.status,
+                id_sala: patrimonio.idSala,
+                caminho_imagem: patrimonio.caminhoImagem,
+                numero_patrimonio: patrimonio.numero_patrimonio
+            };
+
+            res.status(201).json({ result: patrimonioCriado });
         } catch (error) {
             // Se houve upload mas ocorreu um erro no processo, deleta o arquivo para evitar lixo no servidor
             if (req.file) {
@@ -41,7 +54,7 @@ const patrimonioController = {
     editar: async (req, res) => {
         try {
             const { id } = req.params;
-            const { nome, status, id_sala } = req.body;
+            const { nome, status, id_sala, numero_patrimonio } = req.body;
 
             const existente = await patrimonioRepository.selecionarPorId(id);
             if (!existente) {
@@ -76,11 +89,23 @@ const patrimonioController = {
                 nome: nome || existente.nome,
                 status: status || existente.status,
                 id_sala: id_sala || existente.id_sala,
-                caminho_imagem: caminhoImagem
+                caminho_imagem: caminhoImagem,
+                numero_patrimonio: numero_patrimonio || existente.numero_patrimonio || null
             }, id);
 
             const result = await patrimonioRepository.editar(id, patrimonio);
-            res.status(200).json({ result });
+
+            // Mesmo motivo do criar: devolve o objeto atualizado completo, não o retorno bruto do MySQL
+            const patrimonioAtualizado = {
+                id_patrimonio: Number(id),
+                nome: patrimonio.nome,
+                status: patrimonio.status,
+                id_sala: patrimonio.idSala,
+                caminho_imagem: patrimonio.caminhoImagem,
+                numero_patrimonio: patrimonio.numero_patrimonio
+            };
+
+            res.status(200).json({ result: patrimonioAtualizado });
         } catch (error) {
             // Fallback de erro: se falhar o update na base, remove a imagem recém-enviada
             if (req.file) {

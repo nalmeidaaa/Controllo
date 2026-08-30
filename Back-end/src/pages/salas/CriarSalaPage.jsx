@@ -98,30 +98,27 @@ export default function CriarSalaPage({ navegarPara }) {
 
                         <div className="form-group">
                             <label className="form-label" htmlFor="inputImagem">Imagem da Sala</label>
-                            <div className="imagem-upload-area">
-                                <div className="imagem-preview-wrapper">
-                                    {previewUrl ? (
-                                        <img src={previewUrl} alt="Prévia da sala" />
-                                    ) : (
-                                        <div className="imagem-preview-placeholder">
-                                            <ion-icon name="image-outline"></ion-icon>
-                                            <span>Sem imagem</span>
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="imagem-upload-controls">
-                                    <label className="btn-upload-imagem" htmlFor="inputImagem" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                                        <ion-icon name="folder-open-outline" style={{ fontSize: '18px' }}></ion-icon>
-                                        Selecionar imagem
-                                    </label>
-                                    <input
-                                        type="file" id="inputImagem" accept="image/*"
-                                        style={{ display: 'none' }}
-                                        onChange={handleFileChange}
-                                    />
-                                    <p className="imagem-hint">PNG, JPG ou JPEG (até 5MB)</p>
-                                </div>
+                            <div className="form-file-input">
+                                <label className="form-file-label" htmlFor="inputImagem" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <ion-icon name="folder-open-outline" style={{ fontSize: '20px' }}></ion-icon>
+                                    Selecionar imagem
+                                </label>
+                                <input
+                                    type="file" id="inputImagem" className="form-control" accept="image/*"
+                                    onChange={handleFileChange}
+                                />
                             </div>
+                            <p className="form-hint">PNG, JPG ou JPEG (até 5MB)</p>
+
+                            {previewUrl && (
+                                <div style={{ marginTop: '10px' }}>
+                                    <img 
+                                        src={previewUrl} 
+                                        alt="Prévia da Sala" 
+                                        style={{ maxWidth: '200px', maxHeight: '150px', borderRadius: '8px', objectFit: 'cover' }} 
+                                    />
+                                </div>
+                            )}
                         </div>
 
                         {erro && <div className="alert-error" style={{ display: 'block' }}>{erro}</div>}

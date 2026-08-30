@@ -59,10 +59,11 @@ export class Sala {
 
     set bloco(bloco) {
         if (bloco !== null && bloco !== undefined) {
-            if (!Number.isInteger(Number(bloco)) || Number(bloco) <= 0) {
-                throw new Error('Bloco deve ser um número inteiro positivo.');
+            const blocoStr = String(bloco).trim();
+            if (blocoStr.length === 0) {
+                throw new Error('Bloco não pode ser vazio.');
             }
-            this.#bloco = Number(bloco);
+            this.#bloco = blocoStr;
         }
     }
 

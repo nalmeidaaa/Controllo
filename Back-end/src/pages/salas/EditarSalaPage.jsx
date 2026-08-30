@@ -167,7 +167,7 @@ export default function EditarSalaPage({ navegarPara, idSala }) {
             fotosPorIndice.forEach(({ indice, arquivo }) => formData.append(`foto_${indice}`, arquivo));
 
             await editarSala(idSalaReal, formData, token);
-            navegarPara.visualizarSala(idSalaReal);
+            voltarParaSalas();
         } catch (error) {
             const msg = error?.response?.data?.errorMessage
                 || error?.response?.data?.erro
@@ -197,93 +197,89 @@ export default function EditarSalaPage({ navegarPara, idSala }) {
             </header>
 
             <div className="editar-sala-layout">
-                <form onSubmit={handleSubmit} noValidate className="editar-sala-form-col">
+                <div className="editar-sala-form-col">
                     <div className="form-section-card">
                         <div className="form-section-header"><h2>Dados da Sala</h2></div>
                         <div className="form-section-body">
-                            <div className="form-group-edit">
-                                <label className="form-label-edit" htmlFor="editDescricao">
-                                    Descrição <span className="required-mark">*</span>
-                                </label>
-                                <input
-                                    type="text" id="editDescricao" className="form-input-edit"
-                                    value={descricao} onChange={(e) => setDescricao(e.target.value)}
-                                    placeholder="Ex: Laboratório de Informática"
-                                />
-                            </div>
+                            <form onSubmit={handleSubmit} noValidate>
+                                <div className="form-group-edit">
+                                    <label className="form-label-edit" htmlFor="editDescricao">
+                                        Descrição <span className="required-mark">*</span>
+                                    </label>
+                                    <input
+                                        type="text" id="editDescricao" className="form-input-edit"
+                                        value={descricao} onChange={(e) => setDescricao(e.target.value)}
+                                        placeholder="Ex: Laboratório de Informática"
+                                    />
+                                </div>
 
-                            <div className="form-group-edit">
-                                <label className="form-label-edit" htmlFor="editBloco">
-                                    Bloco <span className="required-mark">*</span>
-                                </label>
-                                <input
-                                    type="text" id="editBloco" className="form-input-edit"
-                                    value={bloco} onChange={(e) => setBloco(e.target.value)}
-                                    placeholder="Ex: A, B, 3"
-                                />
-                            </div>
+                                <div className="form-group-edit">
+                                    <label className="form-label-edit" htmlFor="editBloco">
+                                        Bloco <span className="required-mark">*</span>
+                                    </label>
+                                    <input
+                                        type="text" id="editBloco" className="form-input-edit"
+                                        value={bloco} onChange={(e) => setBloco(e.target.value)}
+                                        placeholder="Ex: A, B, 3"
+                                    />
+                                </div>
 
-                            <div className="form-group-edit">
-                                <label className="form-label-edit">Imagem da Sala</label>
-                                <div className="imagem-upload-area">
-                                    {previewImagem ? (
-                                        <img src={previewImagem} alt="Prévia da sala" className="imagem-preview" />
-                                    ) : (
-                                        <div className="imagem-preview-placeholder">
-                                            <ion-icon name="image-outline"></ion-icon>
-                                            <span>Sem imagem</span>
+                                <div className="form-group-edit">
+                                    <label className="form-label-edit">Imagem da Sala</label>
+                                    <div className="imagem-upload-area">
+                                        <div className="imagem-preview-wrapper">
+                                            {previewImagem && (
+                                                <img
+                                                    src={previewImagem} alt="Prévia da sala"
+                                                    style={{ width: '100%', height: 160, objectFit: 'cover', borderRadius: 8, display: 'block' }}
+                                                />
+                                            )}
                                         </div>
+                                        <div className="imagem-upload-controls">
+                                            <label className="btn-upload-imagem" htmlFor="editImagem" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <ion-icon name="folder-open-outline" style={{ fontSize: '20px' }}></ion-icon>
+                                                Selecionar nova imagem
+                                            </label>
+                                            <input type="file" id="editImagem" accept="image/*" style={{ display: 'none' }} onChange={handleImagemChange} ref={fileReaderRef} />
+                                            <p className="imagem-hint">A imagem atual será mantida se nenhuma for selecionada.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div style={{ marginTop: 32, borderTop: '1px solid #eee', paddingTop: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <h2 className="form-section-header" style={{ margin: 0 }}>Patrimônios Vinculados</h2>
+                                    <button type="button" className="btn-primary-custom" style={{ fontSize: 13, padding: '6px 14px' }} onClick={adicionarPatrimonio}>
+                                        + Adicionar
+                                    </button>
+                                </div>
+
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 12, marginBottom: 24 }}>
+                                    {linhas.length === 0 ? (
+                                        <p style={{ color: '#64748b', fontStyle: 'italic' }}>Nenhum patrimônio cadastrado nesta sala.</p>
+                                    ) : (
+                                        linhas.map((linha) => (
+                                            <PatrimonioFormRow
+                                                key={linha.chave}
+                                                linha={linha}
+                                                onAtualizar={atualizarLinha}
+                                                onRemover={() => removerPatrimonio(linha.chave)}
+                                            />
+                                        ))
                                     )}
                                 </div>
-                            </div>
-                            <div className="imagem-upload-controls">
-                                <label className="btn-upload-imagem" htmlFor="editImagem">
-                                    <ion-icon name="folder-open-outline" style={{ fontSize: '18px' }}></ion-icon>
-                                    Selecionar nova imagem
-                                </label>
-                                <input type="file" id="editImagem" accept="image/*" className="foto-input" onChange={handleImagemChange} ref={fileReaderRef} />
-                                <p className="imagem-hint">A imagem atual será mantida se nenhuma for selecionada.</p>
-                            </div>
+
+                                {erro && <div className="alert-error" style={{ display: 'block', marginTop: 8 }}>{erro}</div>}
+
+                                <div className="form-actions-edit">
+                                    <button type="button" className="btn-action" onClick={voltarParaSalas}>Cancelar</button>
+                                    <button type="submit" className="btn-primary-custom" disabled={salvando}>
+                                        {salvando ? 'Salvando...' : 'Salvar alterações'}
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
-
-                    <div className="form-section-card">
-                        <div className="form-section-header">
-                            <h2>
-                                Patrimônios Vinculados
-                                <span className="form-section-header-count">{linhas.length}</span>
-                            </h2>
-                            <button type="button" className="btn-primary-custom" style={{ fontSize: 13, padding: '6px 14px' }} onClick={adicionarPatrimonio}>
-                                + Adicionar
-                            </button>
-                        </div>
-                        <div className="form-section-body">
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                                {linhas.length === 0 ? (
-                                    <p className="patrimonios-vazio">Nenhum patrimônio cadastrado nesta sala.</p>
-                                ) : (
-                                    linhas.map((linha) => (
-                                        <PatrimonioFormRow
-                                            key={linha.chave}
-                                            linha={linha}
-                                            onAtualizar={atualizarLinha}
-                                            onRemover={() => removerPatrimonio(linha.chave)}
-                                        />
-                                    ))
-                                )}
-                            </div>
-                        </div>
-                    </div>
-
-                    {erro && <div className="alert-error" style={{ display: 'block', borderRadius: 'var(--raio)' }}>{erro}</div>}
-
-                    <div className="form-actions-edit">
-                        <button type="button" className="btn-action" onClick={voltarParaSalas}>Cancelar</button>
-                        <button type="submit" className="btn-primary-custom" disabled={salvando}>
-                            {salvando ? 'Salvando...' : 'Salvar alterações'}
-                        </button>
-                    </div>
-                </form>
+                </div>
 
                 <aside className="editar-sala-aside">
                     <div className="aside-info-card">

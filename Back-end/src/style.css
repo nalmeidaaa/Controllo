@@ -1282,10 +1282,12 @@ main,
 }
 
 .patrimonio-card-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
 }
 
 /* ── MODAL VISUALIZAR SALA ─────────────────────────────────────────────────── */
@@ -1670,10 +1672,6 @@ main,
     padding: 18px 24px;
     border-bottom: 1px solid var(--borda);
     background: var(--bg-pagina);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
 }
 
 .form-section-header h2 {
@@ -1683,44 +1681,6 @@ main,
     margin: 0;
     text-transform: uppercase;
     letter-spacing: 0.3px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.form-section-header-count {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 22px;
-    height: 20px;
-    padding: 0 6px;
-    background: var(--vermelho-principal);
-    color: #fff;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: none;
-    letter-spacing: 0;
-}
-
-.form-actions-edit {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    margin-top: 24px;
-    padding-top: 20px;
-    border-top: 1px solid var(--borda);
-}
-
-.patrimonios-vazio {
-    padding: 32px 20px;
-    text-align: center;
-    color: var(--texto-suave);
-    font-size: 13px;
-    background: var(--bg-pagina);
-    border: 1px dashed var(--borda-forte);
-    border-radius: var(--raio);
 }
 
 .form-section-body {
@@ -1788,75 +1748,29 @@ main,
     background: var(--bg-pagina);
     border: 1px solid var(--borda);
     border-radius: var(--raio);
-    display: flex;
-    align-items: stretch;
-    gap: 18px;
+    padding: 16px;
 }
 
 .imagem-preview-wrapper {
-    width: 200px;
-    height: 150px;
-    flex-shrink: 0;
+    width: 100%;
+    height: 160px;
     border-radius: var(--raio);
-    background: var(--bg-superficie);
-    border: 1px dashed var(--borda-forte);
+    background: var(--vermelho-suave);
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-bottom: 12px;
     overflow: hidden;
-    transition: var(--transicao);
-}
-
-.imagem-preview-wrapper:has(img) {
-    border-style: solid;
-    border-color: var(--borda);
-    box-shadow: var(--sombra-sm);
 }
 
 .imagem-preview-wrapper img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    padding: 10px;
-    box-sizing: border-box;
-    display: block;
-}
-
-.imagem-preview-placeholder {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    color: var(--texto-suave);
-}
-
-.imagem-preview-placeholder ion-icon {
-    font-size: 28px;
-}
-
-.imagem-preview-placeholder span {
-    font-size: 12px;
-    font-weight: 500;
-}
-
-.imagem-preview{
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    padding: 10px;
-    box-sizing: border-box;
-    display: block;
+    object-fit: cover;
 }
 
 .imagem-upload-controls {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 8px;
+    text-align: center;
 }
 
 .btn-upload-imagem {
@@ -1873,81 +1787,17 @@ main,
     font-family: inherit;
     cursor: pointer;
     transition: var(--transicao);
-    flex-shrink: 0;
 }
 
 .btn-upload-imagem:hover {
     background: var(--vermelho-hover);
-    transform: translateY(-1px);
 }
 
 .imagem-hint {
     font-size: 12px;
     color: var(--texto-suave);
-    margin: 0;
-}
-
-@media (max-width: 560px) {
-    .imagem-upload-area {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-    }
-
-    .imagem-preview-wrapper {
-        width: 100%;
-        height: 180px;
-    }
-
-    .imagem-upload-controls {
-        align-items: center;
-        width: 100%;
-    }
-}
-
-/* ── PREVIEW DE IMAGEM DE PATRIMÔNIO (QUADRADA) ───────────────────────────────── */
-
-.patrimonio-img-preview {
-    width: 96px;
-    height: 96px;
-    aspect-ratio: 1 / 1;
-    flex-shrink: 0;
-    border-radius: var(--raio);
-    background: var(--bg-pagina);
-    border: 1px solid var(--borda);
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.patrimonio-img-preview img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    margin-top: 8px;
     display: block;
-}
-
-.patrimonio-img-preview-placeholder {
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--texto-suave);
-    text-align: center;
-    padding: 0 6px;
-}
-
-.patrimonio-img-upload-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-}
-
-.patrimonio-img-upload-controls {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
 }
 
 .patrimonio-item-form {
@@ -2257,7 +2107,7 @@ main,
 
 .vs-pat-img-area {
     width: 100%;
-    aspect-ratio: 1 / 1;
+    height: 140px;
     overflow: hidden;
     background: var(--bg-pagina);
     flex-shrink: 0;

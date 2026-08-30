@@ -4,7 +4,6 @@ export default function PatrimonioFormRow({ linha, onAtualizar, onRemover }) {
     const { idPatrimonio, nome, status, numeroPatrimonio, novo, previewFoto, caminhoImagem } = linha;
 
     const imagemAtual = previewFoto || urlImagemPatrimonio({ caminho_imagem: caminhoImagem });
-    const inputId = `foto-patrimonio-${idPatrimonio || linha.chave}`;
 
     function handleFotoChange(e) {
         const file = e.target.files[0] || null;
@@ -18,25 +17,31 @@ export default function PatrimonioFormRow({ linha, onAtualizar, onRemover }) {
     }
 
     return (
-        <div className={`patrimonio-item-form ${novo ? 'patrimonio-novo' : ''}`}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                <span style={{ fontSize: 12, color: novo ? 'var(--vermelho-principal)' : 'var(--texto-suave)', fontWeight: novo ? 600 : 500 }}>
+        <div
+            className={`patrimonio-item-form ${novo ? 'patrimonio-novo' : ''}`}
+            style={{
+                border: novo ? '1px dashed #94a3b8' : '1px solid #e2e8f0',
+                padding: 14,
+                borderRadius: 8,
+                background: novo ? '#f0f9ff' : '#f8fafc',
+            }}
+        >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                <span style={{ fontSize: 12, color: novo ? '#3b82f6' : '#94a3b8', fontWeight: novo ? 500 : 400 }}>
                     {novo ? 'Novo patrimônio' : `ID: ${idPatrimonio || '—'}`}
                 </span>
                 <button
                     type="button"
-                    className="btn-remover-patrimonio"
                     onClick={onRemover}
+                    style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: 18, lineHeight: 1 }}
                     title="Remover"
-                    aria-label="Remover patrimônio"
                 >
                     ✕
                 </button>
             </div>
-
-            <div className="form-row" style={{ marginBottom: 10 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 10 }}>
                 <div>
-                    <label className="form-label-edit">Nome do Item <span className="required-mark">*</span></label>
+                    <label className="form-label-edit">Nome do Item *</label>
                     <input
                         type="text" className="form-input-edit"
                         value={nome}
@@ -44,12 +49,11 @@ export default function PatrimonioFormRow({ linha, onAtualizar, onRemover }) {
                         placeholder="Ex: Cadeira Pro"
                         style={linha.erro ? { borderColor: '#ef4444' } : undefined}
                     />
-                    {linha.erro && <span className="form-error-edit">Informe um nome com pelo menos 3 caracteres.</span>}
                 </div>
                 <div>
                     <label className="form-label-edit">Status</label>
                     <select
-                        className="form-input-edit"
+                        className="form-input-edit" style={{ height: 42 }}
                         value={status}
                         onChange={(e) => onAtualizar({ ...linha, status: e.target.value })}
                     >
@@ -61,8 +65,7 @@ export default function PatrimonioFormRow({ linha, onAtualizar, onRemover }) {
                     </select>
                 </div>
             </div>
-
-            <div className="form-group-edit" style={{ marginBottom: 10 }}>
+            <div style={{ marginBottom: 10 }}>
                 <label className="form-label-edit">Número do Patrimônio</label>
                 <input
                     type="text" className="form-input-edit"
@@ -72,35 +75,24 @@ export default function PatrimonioFormRow({ linha, onAtualizar, onRemover }) {
                     maxLength={20}
                 />
             </div>
-
-            <div className="form-group-edit" style={{ marginBottom: 0 }}>
+            <div>
                 <label className="form-label-edit">{novo ? 'Foto' : 'Foto (substituir)'}</label>
-                <div className="patrimonio-img-upload-row">
-                    <div className="patrimonio-img-preview">
-                        {imagemAtual ? (
-                            <img src={imagemAtual} alt={`Prévia de ${nome || 'patrimônio'}`} />
-                        ) : (
-                            <span className="patrimonio-img-preview-placeholder">Sem foto</span>
-                        )}
-                    </div>
-                    <div className="patrimonio-img-upload-controls">
-                        <label className="btn-upload-imagem" htmlFor={inputId} style={{ width: 'fit-content' }}>
-                            <ion-icon name="folder-open-outline" style={{ fontSize: '18px' }}></ion-icon>
-                            Selecionar foto
-                        </label>
-                        <input
-                            type="file" id={inputId} accept="image/*"
-                            className="foto-input"
-                            onChange={handleFotoChange}
-                        />
-                        {!novo && !imagemAtual && (
-                            <small className="form-hint">Sem foto cadastrada.</small>
-                        )}
-                        {!novo && imagemAtual && !previewFoto && (
-                            <small className="form-hint">A foto atual será mantida se nenhuma nova for selecionada.</small>
-                        )}
-                    </div>
-                </div>
+                {imagemAtual && (
+                    <img
+                        src={imagemAtual} alt={`Prévia de ${nome || 'patrimônio'}`}
+                        style={{ width: 96, height: 72, objectFit: 'cover', borderRadius: 6, display: 'block', marginBottom: 8 }}
+                    />
+                )}
+                <input
+                    type="file" accept="image/*"
+                    onChange={handleFotoChange}
+                />
+                {!novo && !imagemAtual && (
+                    <p style={{ fontSize: 12, color: '#94a3b8', marginTop: 4 }}>Sem foto cadastrada.</p>
+                )}
+                {!novo && imagemAtual && !previewFoto && (
+                    <p className="imagem-hint" style={{ fontSize: 12, marginTop: 4 }}>A foto atual será mantida se nenhuma nova for selecionada.</p>
+                )}
             </div>
         </div>
     );

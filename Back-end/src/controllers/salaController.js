@@ -41,7 +41,8 @@ const salaController = {
                     nome: p.nome,
                     status: p.status,
                     id_sala: null, // Sem improvisos. Nasce nulo na memória e o Repository vincula após o insertId
-                    caminhoImagem: caminhoImagemPatrimonio
+                    caminhoImagem: caminhoImagemPatrimonio,
+                    numero_patrimonio: p.numero_patrimonio || null
                 });
             });
 
@@ -98,6 +99,14 @@ const salaController = {
             if (patrimoniosRaw !== undefined) {
                 const patrimonios = typeof patrimoniosRaw === 'string' ? JSON.parse(patrimoniosRaw) : patrimoniosRaw;
 
+                // Busca o estado atual dos patrimônios da sala para poder reter a imagem
+                // de quem não recebeu um novo upload nesta edição (o front não reenvia o
+                // caminho_imagem existente, então sem isso a foto era apagada a cada save)
+                const patrimoniosExistentes = await patrimonioRepository.selecionarPorSala(id);
+                const mapaImagensExistentes = new Map(
+                    patrimoniosExistentes.map((p) => [String(p.id_patrimonio), p.caminho_imagem])
+                );
+
                 instanciasPatrimonio = patrimonios.map((p, index) => {
                     const arquivoPatrimonio = req.files?.find(f => f.fieldname === `foto_${index}`);
                     const caminhoImagemPatrimonio = arquivoPatrimonio ? `/imagens/${arquivoPatrimonio.filename}` : null;
@@ -106,11 +115,13 @@ const salaController = {
 
                     if (idPatrimonio) {
                         // Se já existe, edita passando o ID real e retém a foto antiga se nenhuma nova foi upada
+                        const imagemAtual = mapaImagensExistentes.get(String(idPatrimonio)) || null;
                         return Patrimonio.editar({ 
                             nome: p.nome, 
                             status: p.status, 
                             id_sala: id, // ID legítimo da sala vindo da URL
-                            caminhoImagem: caminhoImagemPatrimonio || p.caminho_imagem || null
+                            caminhoImagem: caminhoImagemPatrimonio || p.caminho_imagem || imagemAtual,
+                            numero_patrimonio: p.numero_patrimonio || null
                         }, idPatrimonio);
                     } else {
                         // Se for um item novo injetado durante a edição, cria associando ao ID real da sala
@@ -118,7 +129,8 @@ const salaController = {
                             nome: p.nome, 
                             status: p.status, 
                             id_sala: id, 
-                            caminhoImagem: caminhoImagemPatrimonio
+                            caminhoImagem: caminhoImagemPatrimonio,
+                            numero_patrimonio: p.numero_patrimonio || null
                         });
                     }
                 });

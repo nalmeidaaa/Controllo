@@ -125,14 +125,15 @@ const salaRepository = {
             const patrimoniosCriados = [];
             if (instanciasPatrimonio && instanciasPatrimonio.length > 0) {
                 for (const p of instanciasPatrimonio) {
-                    const sqlPatrimonio = `INSERT INTO patrimonio (nome, status, id_sala, caminho_imagem) VALUES (?, ?, ?, ?)`;
+                    const sqlPatrimonio = `INSERT INTO patrimonio (nome, status, id_sala, caminho_imagem, numero_patrimonio) VALUES (?, ?, ?, ?, ?)`;
                     const fotoPatrimonio = p.caminhoImagem ?? p.caminho_imagem ?? null;
                     
                     const valuesPatrimonio = [
                         p.nome ?? null, 
                         p.status ?? 'Ok', 
                         idSala, 
-                        fotoPatrimonio
+                        fotoPatrimonio,
+                        p.numero_patrimonio ?? null
                     ];
                     const [resultPatr] = await conn.execute(sqlPatrimonio, valuesPatrimonio);
 
@@ -141,7 +142,8 @@ const salaRepository = {
                         nome: p.nome ?? null,
                         status: p.status ?? 'Ok',
                         id_sala: idSala,
-                        caminho_imagem: fotoPatrimonio
+                        caminho_imagem: fotoPatrimonio,
+                        numero_patrimonio: p.numero_patrimonio ?? null
                     });
                 }
             }
@@ -202,11 +204,11 @@ const salaRepository = {
 
                     if (idPatr) {
                         // CORRIGIDO: Agora atualiza também o caminho da imagem do patrimônio na edição!
-                        const sqlUpdate = `UPDATE patrimonio SET nome = ?, status = ?, caminho_imagem = ? WHERE id_patrimonio = ? AND id_sala = ?`;
-                        await conn.execute(sqlUpdate, [p.nome ?? null, p.status ?? 'Ok', fotoPatrimonio, idPatr, id]);
+                        const sqlUpdate = `UPDATE patrimonio SET nome = ?, status = ?, caminho_imagem = ?, numero_patrimonio = ? WHERE id_patrimonio = ? AND id_sala = ?`;
+                        await conn.execute(sqlUpdate, [p.nome ?? null, p.status ?? 'Ok', fotoPatrimonio, p.numero_patrimonio ?? null, idPatr, id]);
                     } else {
-                        const sqlInsert = `INSERT INTO patrimonio (nome, status, id_sala, caminho_imagem) VALUES (?, ?, ?, ?)`;
-                        await conn.execute(sqlInsert, [p.nome ?? null, p.status ?? 'Ok', id, fotoPatrimonio]);
+                        const sqlInsert = `INSERT INTO patrimonio (nome, status, id_sala, caminho_imagem, numero_patrimonio) VALUES (?, ?, ?, ?, ?)`;
+                        await conn.execute(sqlInsert, [p.nome ?? null, p.status ?? 'Ok', id, fotoPatrimonio, p.numero_patrimonio ?? null]);
                     }
                 }
             }
@@ -245,7 +247,8 @@ const salaRepository = {
             const sql = `
                 SELECT 
                     s.id_sala, s.descricao, s.bloco, s.caminho_imagem AS sala_imagem,
-                    p.id_patrimonio, p.nome AS patrimonio_nome, p.status AS patrimonio_status, p.caminho_imagem AS patrimonio_imagem
+                    p.id_patrimonio, p.nome AS patrimonio_nome, p.status AS patrimonio_status, 
+                    p.caminho_imagem AS patrimonio_imagem, p.numero_patrimonio AS patrimonio_numero
                 FROM salas s
                 LEFT JOIN patrimonio p ON s.id_sala = p.id_sala
                 ${id ? 'WHERE s.id_sala = ?' : 'ORDER BY s.bloco, s.descricao'}
@@ -268,7 +271,8 @@ const salaRepository = {
                         id_patrimonio: row.id_patrimonio,
                         nome: row.patrimonio_nome,
                         status: row.patrimonio_status,
-                        caminho_imagem: row.patrimonio_imagem
+                        caminho_imagem: row.patrimonio_imagem,
+                        numero_patrimonio: row.patrimonio_numero
                     });
                 }
             }
