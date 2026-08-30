@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Search } from 'lucide-react'; // Importa o ícone de lupa profissional
 
 const FILTROS = [
     { id: 'todos', label: 'Todos' },
@@ -23,7 +24,9 @@ export default function BarraFiltros({ onBusca, onFiltro }) {
     return (
         <div className="filtros-barra">
             <div className="filtros-busca">
-                <span className="filtros-busca-icon">🔍</span>
+                <span className="filtros-busca-icon">
+                    <Search size={23} color="#99a1b1" />
+                </span>
                 <input
                     type="text"
                     className="filtros-input"

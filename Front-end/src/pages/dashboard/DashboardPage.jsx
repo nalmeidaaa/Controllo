@@ -10,7 +10,7 @@ export default function DashboardPage({ navegarPara }) {
                 <div className="dashboard-section-label">Módulos do sistema</div>
 
                 <div className="dashboard-menu-grid">
-                    <div className="menu-card" onClick={() => navegarPara.salas()}>
+                    <div className="menu-card" onClick={() => navegarPara?.salas?.()}>
                         <div className="card-icon">
                             <ion-icon name="log-in-outline" style={{ fontSize: '28px'}}></ion-icon>
                         </div>
@@ -20,7 +20,7 @@ export default function DashboardPage({ navegarPara }) {
                         </div>
                     </div>
 
-                    <div className="menu-card" onClick={() => navegarPara.usuarios()}>
+                    <div className="menu-card" onClick={() => navegarPara?.usuarios?.()}>
                         <div className="card-icon">
                             <ion-icon name="people-outline" style={{ fontSize: '28px'}}></ion-icon>
                         </div>
@@ -30,7 +30,7 @@ export default function DashboardPage({ navegarPara }) {
                         </div>
                     </div>
 
-                    <div className="menu-card" aria-disabled="true">
+                    <div className="menu-card disabled" aria-disabled="true">
                         <div className="card-icon">
                             <ion-icon name="clipboard-outline" style={{ fontSize: '28px'}}></ion-icon>
                         </div>
@@ -40,7 +40,7 @@ export default function DashboardPage({ navegarPara }) {
                         </div>
                     </div>
 
-                    <div className="menu-card" aria-disabled="true">
+                    <div className="menu-card disabled" aria-disabled="true">
                         <div className="card-icon">
                             <ion-icon name="bar-chart-outline" style={{ fontSize: '28px'}}></ion-icon>
                         </div>

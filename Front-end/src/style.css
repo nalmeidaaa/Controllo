@@ -593,6 +593,7 @@ main,
     overflow: hidden;
 }
 
+
 .menu-card::after {
     content: '';
     position: absolute;
@@ -617,6 +618,22 @@ main,
 
 .menu-card:active {
     transform: translateY(-1px);
+}
+
+.menu-card.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+    box-shadow: none;
+}
+
+.menu-card.disabled:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.menu-card.disabled:hover::after {
+    transform: scaleX(0);
 }
 
 .card-icon {
