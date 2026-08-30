@@ -90,7 +90,20 @@ const usuarioController = {
             });
         }
     },
+    verificarSetup: async (req, res) => {
+        try {
+            const result = await usuarioRepository.verificarSetup();
 
+            return res.status(200).json({
+                result
+            });
+        } catch (error) {
+            return res.status(500).json({
+                message: "Ocorreu um erro no servidor.",
+                error: error.message
+            })
+        }
+    },
 
     selecionar: async (req, res) => {
         try {
@@ -101,7 +114,6 @@ const usuarioController = {
             });
 
         } catch (error) {
-            console.error("ERRO AO SELECIONAR USUÁRIOS:", error);
 
             return res.status(500).json({
                 message: "Ocorreu um erro no servidor.",

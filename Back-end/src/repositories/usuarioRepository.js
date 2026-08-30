@@ -10,13 +10,13 @@ const usuarioRepository = {
             // Incluído caminho_imagem no INSERT
             const sqlInsertUser = `INSERT INTO usuarios (nome, cpf, tipo_usuario, email, hash_senha, caminho_imagem) VALUES (?, ?, ?, ?, ?, ?)`;
             const values = [usuario.nome, usuario.cpf, usuario.tipo_usuario, usuario.email, usuario.hash_senha, usuario.caminhoImagem];
-            
+
             const [result] = await conn.execute(sqlInsertUser, values);
-            const userId = result.insertId; 
+            const userId = result.insertId;
 
             const sql = `INSERT INTO ${usuario.tipo_usuario} (id_usuario) VALUES (?)`;
             await conn.execute(sql, [userId]);
-            
+
             await conn.commit();
             return result;
         } catch (error) {
@@ -40,6 +40,21 @@ const usuarioRepository = {
         }
     },
 
+    verificarSetup: async () => {
+        const conn = await connection.getConnection();
+        try {
+            const sql = 'SELECT COUNT(1) AS total FROM administracao';
+            const [rows] = await conn.execute(sql);
+
+            // Retorna true se houver registros, false se estiver vazio
+            return rows[0].total === 0;
+        } catch (error) {
+            throw error;
+        } finally {
+            conn.release();
+        }
+    },
+
     editar: async (id, usuario) => {
         const conn = await connection.getConnection();
         try {
@@ -56,7 +71,7 @@ const usuarioRepository = {
             if (usuario.tipo_usuario) {
                 sql += ` tipo_usuario = ?,`;
                 values.push(usuario.tipo_usuario);
-                
+
                 // Busca o tipo antigo para remover da tabela filha anterior
                 let usuarioAntigo = await usuarioRepository.selecionarPorId(id);
                 if (usuarioAntigo) {
@@ -116,7 +131,7 @@ const usuarioRepository = {
         const conn = await connection.getConnection();
         try {
             await conn.beginTransaction();
-            
+
             // Busca o tipo antes de deletar para remover da respectiva tabela filha se não houver ON DELETE CASCADE
             const usuarioAntigo = await usuarioRepository.selecionarPorId(id);
             if (usuarioAntigo) {
@@ -127,7 +142,7 @@ const usuarioRepository = {
 
             const sql = `DELETE FROM usuarios WHERE id_usuario = ?`;
             const [rows] = await conn.execute(sql, [id]);
-            
+
             await conn.commit();
             return rows;
         } catch (error) {

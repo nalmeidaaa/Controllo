@@ -6,6 +6,12 @@ import upload from '../middlewares/upload.middleware.js'; // Importação do mid
 
 const usuarioRoutes = Router();
 
+// Rota para verificar se tem algum admin cadastrado, isto é, se é o primeiro setup do sistema
+usuarioRoutes.get(
+    '/setup',
+    usuarioController.verificarSetup
+);
+
 // Criar usuário com upload de foto de perfil
 usuarioRoutes.post(
     '/', 

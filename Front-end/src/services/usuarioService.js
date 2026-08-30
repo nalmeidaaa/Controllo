@@ -1,6 +1,15 @@
 import { api } from "./api.js";
 import { obterUsuarioAtual } from "../storage/usuario/dados.storage.js"; 
 
+export async function verificarSetup() {
+    try {
+        const resposta = await api.get('/usuarios/setup');
+        return resposta.data; // Espera-se { result: true/false }
+    } catch (error) {
+        throw error;
+    }
+}
+
 export async function logar(login, senha) {
     try {
         if (!login || !senha) throw new Error("Login e senha são obrigatórios");
@@ -13,8 +22,6 @@ export async function logar(login, senha) {
 
 export async function criarUsuario(token, formData) {
     try {
-        if (!token) throw new Error("Erro: token inválido");
-
         const resposta = await api.post('/usuarios', formData, {
             headers: {
                 Authorization: `Bearer ${token}`

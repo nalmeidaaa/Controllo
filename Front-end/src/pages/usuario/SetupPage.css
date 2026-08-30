@@ -1,0 +1,447 @@
+/* ==========================================================================
+   DESIGN SYSTEM CONTROLLO - SPLIT SCREEN REDESIGN (RED THEME)
+   ========================================================================== */
+
+.setup-wrapper {
+  /* --- PALETA OFICIAL --- */
+  --bg-dark: #121214;
+  --bg-card: #18181b;
+  --bg-input: #202024;
+  --border-input: #323238;
+  
+  --color-primary: #ffffff;
+  --color-red: #ff3a48;        /* Vermelho vibrante */
+  --color-red-dark: #5c0f14;   /* Vermelho escuro harmonizado */
+  --color-danger: #e30613;
+
+  --text-title: #ffffff;
+  --text-body: #a1a1aa;
+  --text-muted: #71717a;
+
+  --font-family: Helvetica, Arial, sans-serif;
+  --transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+
+  min-height: 100vh;
+  width: 100vw;
+  background-color: var(--bg-dark);
+  display: flex;
+  font-family: var(--font-family);
+  overflow-x: hidden;
+}
+
+/* ==========================================================================
+   PAINEL ESQUERDO (BRANDING)
+   ========================================================================== */
+.setup-wrapper .setup-brand-panel {
+  position: relative;
+  flex: 1;
+  background: linear-gradient(135deg, #18181b 0%, #121214 100%);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.setup-wrapper .brand-glow-effect {
+  position: absolute;
+  top: -150px;
+  left: -150px;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(255, 58, 72, 0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.setup-wrapper .brand-content {
+  position: relative;
+  z-index: 1;
+  max-width: 480px;
+  margin: 0 auto 0 0;
+}
+
+.setup-wrapper .brand-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 64px;
+}
+
+.setup-wrapper .brand-logo-box {
+  width: 44px;
+  height: 44px;
+  background-color: var(--color-red);
+  color: var(--bg-dark);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 24px;
+  box-shadow: 0 0 20px rgba(255, 58, 72, 0.35);
+}
+
+.setup-wrapper .brand-logo-text {
+  color: var(--color-primary);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.setup-wrapper .brand-badge {
+  display: inline-block;
+  background-color: rgba(255, 58, 72, 0.12);
+  border: 1px solid var(--color-red-dark);
+  color: var(--color-red);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+}
+
+.setup-wrapper .brand-hero h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-title);
+  line-height: 1.2;
+  margin-bottom: 16px;
+}
+
+.setup-wrapper .brand-hero p {
+  font-size: 16px;
+  color: var(--text-body);
+  line-height: 1.6;
+  margin-bottom: 48px;
+}
+
+.setup-wrapper .brand-features {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.setup-wrapper .feature-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.setup-wrapper .feature-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-red);
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.setup-wrapper .feature-item strong {
+  display: block;
+  color: var(--text-title);
+  font-size: 15px;
+  margin-bottom: 2px;
+}
+
+.setup-wrapper .feature-item p {
+  color: var(--text-body);
+  font-size: 14px;
+  margin: 0;
+}
+
+.setup-wrapper .brand-footer {
+  position: relative;
+  z-index: 1;
+  color: var(--text-body);
+  font-size: 13px;
+}
+
+/* ==========================================================================
+   PAINEL DIREITO (FORMULÁRIO)
+   ========================================================================== */
+.setup-wrapper .setup-form-panel {
+  flex: 1.2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 32px;
+}
+
+.setup-wrapper .form-container {
+  width: 100%;
+  max-width: 520px;
+}
+
+.setup-wrapper .form-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.setup-wrapper .form-titles h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-title);
+  margin-bottom: 4px;
+}
+
+.setup-wrapper .form-titles p {
+  font-size: 14px;
+  color: var(--text-body);
+  margin: 0;
+}
+
+/* Avatar Compacto */
+.setup-wrapper .setup-avatar-compact .avatar-label {
+  cursor: pointer;
+}
+
+.setup-wrapper .avatar-circle {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: var(--bg-input);
+  border: 2px dashed var(--color-red);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-red);
+  font-size: 24px;
+  transition: var(--transition);
+}
+
+.setup-wrapper .avatar-circle.has-image {
+  border-style: solid;
+}
+
+.setup-wrapper .avatar-circle img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.setup-wrapper .avatar-badge {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 22px;
+  height: 22px;
+  background-color: var(--color-red-dark);
+  border: 2px solid var(--bg-dark);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  font-size: 12px;
+}
+
+.setup-wrapper .avatar-circle:hover {
+  border-color: var(--color-primary);
+  transform: scale(1.03);
+}
+
+/* ==========================================================================
+   INPUTS E ÍCONES (REACT-ICONS / SVG)
+   ========================================================================== */
+.setup-wrapper .setup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.setup-wrapper .setup-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.setup-wrapper .setup-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.setup-wrapper .setup-input-label {
+  color: var(--color-primary);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.setup-wrapper .required-star {
+  color: var(--color-danger);
+}
+
+/* Container do Input */
+.setup-wrapper .setup-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-input);
+  border-radius: 8px;
+  padding: 0 14px;
+  transition: var(--transition);
+}
+
+.setup-wrapper .setup-input-wrapper:focus-within {
+  border-color: var(--color-red);
+  background-color: #26262b;
+  box-shadow: 0 0 0 3px rgba(255, 58, 72, 0.2);
+}
+
+/* Ícones dos campos (react-icons) */
+.setup-wrapper .field-icon {
+  font-size: 20px;
+  color: #ffffff;
+  flex-shrink: 0;
+  transition: var(--transition);
+}
+
+/* Destaque em vermelho no foco */
+.setup-wrapper .setup-input-wrapper:focus-within .field-icon {
+  color: var(--color-red);
+}
+
+/* Input interno transparente */
+.setup-wrapper .setup-input-control {
+  width: 100%;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  padding: 12px 0 !important;
+  color: var(--color-primary);
+  font-size: 15px;
+}
+
+.setup-wrapper .setup-input-control::placeholder {
+  color: #71717a;
+}
+
+/* Estado de Erro */
+.setup-wrapper .setup-input-wrapper:has(.is-invalid),
+.setup-wrapper .setup-input-wrapper.is-invalid {
+  border-color: var(--color-danger) !important;
+  background-color: rgba(227, 6, 19, 0.08);
+}
+
+/* Alerta de Erro Geral */
+.setup-wrapper .setup-alert-error {
+  background-color: rgba(227, 6, 19, 0.12);
+  border: 1px solid var(--color-danger);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  color: #ff8a8e;
+  font-size: 14px;
+}
+
+.setup-wrapper .alert-icon {
+  font-size: 20px;
+  color: var(--color-danger);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.setup-wrapper .alert-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* ==========================================================================
+   BOTÃO PRINCIPAL
+   ========================================================================== */
+.setup-wrapper .setup-btn-primary {
+  width: 100%;
+  margin-top: 12px;
+  background-color: var(--color-red);
+  border: none;
+  border-radius: 8px;
+  padding: 14px 24px;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 4px 14px rgba(255, 58, 72, 0.25);
+}
+
+.setup-wrapper .setup-btn-primary svg {
+  font-size: 18px;
+  color: #ffffff;
+  transition: var(--transition);
+}
+
+.setup-wrapper .setup-btn-primary:hover:not(:disabled) {
+  background-color: #e02b38;
+  color: var(--color-primary);
+  box-shadow: 0 6px 20px rgba(255, 58, 72, 0.4);
+}
+
+.setup-wrapper .setup-btn-primary:hover:not(:disabled) svg {
+  transform: translateX(4px);
+}
+
+.setup-wrapper .setup-btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.setup-wrapper .setup-d-none {
+  display: none !important;
+}
+
+/* ==========================================================================
+   RESPONSIVIDADE (MOBILE / TABLET)
+   ========================================================================== */
+@media (max-width: 1023px) {
+  .setup-wrapper {
+    flex-direction: column;
+  }
+
+  .setup-wrapper .setup-brand-panel {
+    padding: 32px 24px;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .setup-wrapper .brand-header {
+    margin-bottom: 24px;
+  }
+
+  .setup-wrapper .brand-features,
+  .setup-wrapper .brand-footer {
+    display: none;
+  }
+
+  .setup-wrapper .setup-form-panel {
+    padding: 32px 24px;
+  }
+}
+
+@media (max-width: 600px) {
+  .setup-wrapper .setup-form-row {
+    grid-template-columns: 1fr;
+  }
+}
