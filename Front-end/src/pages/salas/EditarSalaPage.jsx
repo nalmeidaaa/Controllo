@@ -162,7 +162,7 @@ export default function EditarSalaPage({ navegarPara, idSala }) {
             const formData = new FormData();
             formData.append('descricao', descTrim);
             formData.append('bloco', blocoTrim);
-            if (arquivoImagem) formData.append('imagem_sala', arquivoImagem); // Alinhado com o campo padrão do Multer no backend
+            if (arquivoImagem) formData.append('imagem_sala', arquivoImagem);
             formData.append('patrimonios', JSON.stringify(patrimoniosMeta));
             fotosPorIndice.forEach(({ indice, arquivo }) => formData.append(`foto_${indice}`, arquivo));
 
@@ -271,6 +271,30 @@ export default function EditarSalaPage({ navegarPara, idSala }) {
                                         />
                                     ))
                                 )}
+
+                                {/* Botão vermelho abaixo da lista para adicionar outro patrimônio */}
+                                <button
+                                    type="button"
+                                    onClick={adicionarPatrimonio}
+                                    style={{
+                                        marginTop: 8,
+                                        width: '100%',
+                                        padding: '8px 12px',
+                                        backgroundColor: 'var(--vermelho-principal, #ef4444)',
+                                        border: 'none',
+                                        color: '#ffffff',
+                                        borderRadius: 'var(--raio, 6px)',
+                                        fontSize: '13px',
+                                        fontWeight: 600,
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: '6px'
+                                    }}
+                                >
+                                    <span style={{ fontSize: '16px', lineHeight: 1 }}>+</span> Adicionar outro patrimônio
+                                </button>
                             </div>
                         </div>
                     </div>

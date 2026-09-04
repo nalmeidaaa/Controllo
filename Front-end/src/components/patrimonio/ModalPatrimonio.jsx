@@ -4,12 +4,8 @@ import { urlImagemPatrimonio } from '../../services/imagemService.js';
 import { obterUsuarioAtual } from '../../storage/usuario/dados.storage.js';
 
 export default function ModalPatrimonio({ aberto, patrimonio, salas = [], onSalvar, onFechar }) {
-    const [nome, setNome] = useState('');
-    const [status, setStatus] = useState('');
+    const [itens, setItens] = useState([]);
     const [idSala, setIdSala] = useState('');
-    const [numeroPatrimonio, setNumeroPatrimonio] = useState('');
-    const [arquivo, setArquivo] = useState(null);
-    const [previewImagem, setPreviewImagem] = useState(null);
     const [erro, setErro] = useState('');
     const [salvando, setSalvando] = useState(false);
 
@@ -20,38 +16,79 @@ export default function ModalPatrimonio({ aberto, patrimonio, salas = [], onSalv
         (patrimonio.id_patrimonio || patrimonio.id)
     );
 
+    const criarNovoItem = (dadosIniciais = {}) => ({
+        key: Date.now() + Math.random(),
+        id_patrimonio: dadosIniciais.id_patrimonio || dadosIniciais.id || null,
+        nome: dadosIniciais.nome || '',
+        status: dadosIniciais.status || 'Ok',
+        numeroPatrimonio: dadosIniciais.numero_patrimonio || '',
+        arquivo: null,
+        previewImagem: urlImagemPatrimonio(dadosIniciais)
+    });
+
     useEffect(() => {
-        if (aberto && patrimonio) {
-            setNome(patrimonio.nome || '');
-            setStatus(patrimonio.status || '');
-            setNumeroPatrimonio(patrimonio.numero_patrimonio || '');
+        if (aberto) {
+            if (patrimonio && Object.keys(patrimonio).length > 0) {
+                setItens([criarNovoItem(patrimonio)]);
 
-            // Prioriza o id_sala já vindo no patrimonio (seja na criação ou edição)
-            const idSalaInicial = patrimonio.id_sala ||
-                salas.find((s) => s.patrimonios?.some(
-                    (p) => (p.id_patrimonio || p.id) === (patrimonio.id_patrimonio || patrimonio.id)
-                ))?.id_sala ||
-                salas.find((s) => s.id_sala || s.id)?.id_sala ||
-                salas.find((s) => s.id_sala || s.id)?.id;
+                // Prioriza o id_sala já vindo no patrimonio (seja na criação ou edição)
+                const idSalaInicial = patrimonio.id_sala ||
+                    salas.find((s) => s.patrimonios?.some(
+                        (p) => (p.id_patrimonio || p.id) === (patrimonio.id_patrimonio || patrimonio.id)
+                    ))?.id_sala ||
+                    salas.find((s) => s.id_sala || s.id)?.id_sala ||
+                    salas.find((s) => s.id_sala || s.id)?.id;
 
-            setIdSala(idSalaInicial ? String(idSalaInicial) : '');
-            setArquivo(null);
-            setPreviewImagem(urlImagemPatrimonio(patrimonio));
+                setIdSala(idSalaInicial ? String(idSalaInicial) : '');
+            } else {
+                setItens([criarNovoItem()]);
+                const primeiraSala = salas[0]?.id_sala || salas[0]?.id || '';
+                setIdSala(primeiraSala ? String(primeiraSala) : '');
+            }
+
             setErro('');
             setSalvando(false);
         }
-    }, [aberto, patrimonio]);
+    }, [aberto, patrimonio, salas]);
 
-    if (!aberto || !patrimonio) return null;
+    // Corrigido: Permite que a modal abra na criação mesmo sem a prop 'patrimonio'
+    if (!aberto) return null;
 
-    function handleImagemChange(e) {
+    function handleAtualizarItem(index, campo, valor) {
+        setItens((prev) => {
+            const novos = [...prev];
+            novos[index] = { ...novos[index], [campo]: valor };
+            return novos;
+        });
+    }
+
+    function handleImagemChange(index, e) {
         const file = e.target.files[0] || null;
-        setArquivo(file);
-        setPreviewImagem(file ? URL.createObjectURL(file) : urlImagemPatrimonio(patrimonio));
+        setItens((prev) => {
+            const novos = [...prev];
+            novos[index].arquivo = file;
+            novos[index].previewImagem = file ? URL.createObjectURL(file) : urlImagemPatrimonio(novos[index]);
+            return novos;
+        });
+    }
+
+    function handleAdicionarOutro() {
+        setItens((prev) => [...prev, criarNovoItem()]);
+    }
+
+    function handleRemoverItem(index) {
+        if (itens.length === 1) return;
+        setItens((prev) => prev.filter((_, i) => i !== index));
     }
 
     async function handleSalvar() {
-        if (!nome.trim() || !status || !idSala) {
+        if (!idSala) {
+            setErro('Por favor, selecione uma sala.');
+            return;
+        }
+
+        const temInvalido = itens.some((item) => !item.nome.trim() || !item.status);
+        if (temInvalido) {
             setErro('Por favor, preencha todos os campos obrigatórios.');
             return;
         }
@@ -64,26 +101,29 @@ export default function ModalPatrimonio({ aberto, patrimonio, salas = [], onSalv
                 return;
             }
 
-            const dadosAtualizados = new FormData();
-            dadosAtualizados.append('nome', nome.trim());
-            dadosAtualizados.append('status', status);
-            dadosAtualizados.append('id_sala', idSala);
-            if (numeroPatrimonio.trim()) dadosAtualizados.append('numero_patrimonio', numeroPatrimonio.trim());
-            if (arquivo) dadosAtualizados.append('imagem', arquivo);
-
             setErro('');
             setSalvando(true);
-            let resultado;
+            const resultados = [];
 
-            if (ehEdicao) {
-                const idPatrimonio = patrimonio.id_patrimonio || patrimonio.id;
-                resultado = await editarPatrimonio(idPatrimonio, dadosAtualizados, token);
-            } else {
-                resultado = await criarPatrimonio(dadosAtualizados, token);
+            for (const item of itens) {
+                const dadosAtualizados = new FormData();
+                dadosAtualizados.append('nome', item.nome.trim());
+                dadosAtualizados.append('status', item.status);
+                dadosAtualizados.append('id_sala', idSala);
+                if (item.numeroPatrimonio.trim()) dadosAtualizados.append('numero_patrimonio', item.numeroPatrimonio.trim());
+                if (item.arquivo) dadosAtualizados.append('imagem', item.arquivo);
+
+                let resultado;
+                if (ehEdicao && item.id_patrimonio) {
+                    resultado = await editarPatrimonio(item.id_patrimonio, dadosAtualizados, token);
+                } else {
+                    resultado = await criarPatrimonio(dadosAtualizados, token);
+                }
+                resultados.push(resultado?.result ?? resultado);
             }
 
             setSalvando(false);
-            onSalvar?.(resultado?.result ?? resultado);
+            onSalvar?.(resultados.length === 1 ? resultados[0] : resultados);
         } catch (erroSalvar) {
             console.error('Erro ao salvar patrimônio:', erroSalvar);
             setErro('Ocorreu um erro ao salvar as alterações. Tente novamente.');
@@ -96,105 +136,161 @@ export default function ModalPatrimonio({ aberto, patrimonio, salas = [], onSalv
             className="modal-overlay visible"
             onClick={(e) => { if (e.target === e.currentTarget) onFechar?.(); }}
         >
-            <div className="modal-box" style={{ maxWidth: 480, height: 'auto', maxHeight: '90vh' }}>
+            <div className="modal-box" style={{ maxWidth: 520, height: 'auto', maxHeight: '90vh', overflowY: 'auto' }}>
                 <div className="modal-header">
                     <h5>{ehEdicao ? 'Editar Patrimônio' : 'Adicionar Patrimônio'}</h5>
                     <button className="modal-close" aria-label="Fechar" onClick={onFechar}>&times;</button>
                 </div>
 
                 {erro && (
-                    <div className="alert-error">{erro}</div>
+                    <div className="alert-error" style={{ margin: '10px 20px 0' }}>{erro}</div>
                 )}
 
                 <div className="modal-body">
-                    <div className="form-group">
-                        <label className="form-label" htmlFor="patNome">
-                            Nome do Patrimônio <span className="required-mark">*</span>
+                    {/* Seleção de Sala */}
+                    <div className="form-group" style={{ marginBottom: 16 }}>
+                        <label className="form-label" htmlFor="patSala">
+                            Sala <span className="required-mark">*</span>
                         </label>
-                        <input
-                            type="text" id="patNome" className="form-control"
-                            value={nome} onChange={(e) => setNome(e.target.value)}
-                            placeholder="Ex: Computador, Mesa, Cadeira"
+                        <select
+                            id="patSala" className="form-control"
+                            value={idSala} onChange={(e) => setIdSala(e.target.value)}
                             required
-                        />
+                        >
+                            <option value="">Selecione a sala</option>
+                            {salas.map((s) => {
+                                const id = s.id_sala || s.id;
+                                return (
+                                    <option key={id} value={id}>
+                                        {s.descricao} (Bloco {s.bloco})
+                                    </option>
+                                );
+                            })}
+                        </select>
                     </div>
 
-                    <div className="form-row">
-                        <div className="form-group">
-                            <label className="form-label" htmlFor="patStatus">
-                                Status <span className="required-mark">*</span>
-                            </label>
-                            <select
-                                id="patStatus" className="form-control"
-                                value={status} onChange={(e) => setStatus(e.target.value)}
-                                required
+                    {/* Lista de cards dos patrimônios */}
+                    {itens.map((item, index) => {
+                        const ehUltimo = index === itens.length - 1;
+
+                        return (
+                            <div
+                                key={item.key}
+                                className={`patrimonio-item-form ${!ehEdicao ? 'patrimonio-novo' : ''}`}
+                                style={{ marginBottom: 16 }}
                             >
-                                <option value="">Selecione</option>
-                                <option value="Ok">Ok</option>
-                                <option value="Danificado">Danificado</option>
-                                <option value="Manutenção">Manutenção</option>
-                                <option value="Descartado">Descartado</option>
-                            </select>
-                        </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                                    <span style={{ fontSize: 12, color: 'var(--vermelho-principal, #ef4444)', fontWeight: 600 }}>
+                                        {ehEdicao ? `ID: ${item.id_patrimonio}` : 'Novo patrimônio'}
+                                    </span>
+                                    {itens.length > 1 && (
+                                        <button
+                                            type="button"
+                                            className="btn-remover-patrimonio"
+                                            onClick={() => handleRemoverItem(index)}
+                                            title="Remover"
+                                            aria-label="Remover patrimônio"
+                                        >
+                                            ✕
+                                        </button>
+                                    )}
+                                </div>
 
-                        <div className="form-group">
-                            <label className="form-label" htmlFor="patSala">
-                                Sala <span className="required-mark">*</span>
-                            </label>
-                            <select
-                                id="patSala" className="form-control"
-                                value={idSala} onChange={(e) => setIdSala(e.target.value)}
-                                required
-                            >
-                                <option value="">Selecione</option>
-                                {salas.map((s) => {
-                                    const id = s.id_sala || s.id;
-                                    return (
-                                        <option key={id} value={id}>
-                                            {s.descricao} (Bloco {s.bloco})
-                                        </option>
-                                    );
-                                })}
-                            </select>
-                        </div>
-                    </div>
+                                <div className="form-row" style={{ marginBottom: 10 }}>
+                                    <div>
+                                        <label className="form-label-edit">
+                                            Nome do Item <span className="required-mark">*</span>
+                                        </label>
+                                        <input
+                                            type="text" className="form-input-edit"
+                                            value={item.nome}
+                                            onChange={(e) => handleAtualizarItem(index, 'nome', e.target.value)}
+                                            placeholder="Ex: Cadeira Pro"
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="form-label-edit">Status</label>
+                                        <select
+                                            className="form-input-edit"
+                                            value={item.status}
+                                            onChange={(e) => handleAtualizarItem(index, 'status', e.target.value)}
+                                        >
+                                            <option value="Ok">Ok</option>
+                                            <option value="Pendente">Pendente</option>
+                                            <option value="Danificado">Danificado</option>
+                                            <option value="Manutenção">Manutenção</option>
+                                            <option value="Descartado">Descartado</option>
+                                        </select>
+                                    </div>
+                                </div>
 
-                    <div className="form-group">
-                        <label className="form-label" htmlFor="patNumero">Número do Patrimônio</label>
-                        <input
-                            type="text" id="patNumero" className="form-control"
-                            value={numeroPatrimonio} onChange={(e) => setNumeroPatrimonio(e.target.value)}
-                            placeholder="Ex: 2024-00123"
-                            maxLength={20}
-                        />
-                    </div>
+                                <div className="form-group-edit" style={{ marginBottom: 10 }}>
+                                    <label className="form-label-edit">Número do Patrimônio</label>
+                                    <input
+                                        type="text" className="form-input-edit"
+                                        value={item.numeroPatrimonio}
+                                        onChange={(e) => handleAtualizarItem(index, 'numeroPatrimonio', e.target.value)}
+                                        placeholder="Ex: 2024-00123"
+                                        maxLength={20}
+                                    />
+                                </div>
 
-                    <div className="form-group">
-                        <label className="form-label">Imagem do Patrimônio</label>
-                        <div className="patrimonio-img-upload-row">
-                            <div className="patrimonio-img-preview">
-                                {previewImagem ? (
-                                    <img src={previewImagem} alt={nome || 'Prévia do patrimônio'} />
-                                ) : (
-                                    <span className="patrimonio-img-preview-placeholder">Sem imagem</span>
+                                <div className="form-group-edit" style={{ marginBottom: 0 }}>
+                                    <label className="form-label-edit">
+                                        {!ehEdicao ? 'Foto' : 'Foto (substituir)'}
+                                    </label>
+                                    <div className="patrimonio-img-upload-row">
+                                        <div className="patrimonio-img-preview">
+                                            {item.previewImagem ? (
+                                                <img src={item.previewImagem} alt={item.nome || 'Prévia'} />
+                                            ) : (
+                                                <span className="patrimonio-img-preview-placeholder">Sem foto</span>
+                                            )}
+                                        </div>
+                                        <div className="patrimonio-img-upload-controls">
+                                            <label className="btn-upload-imagem" htmlFor={`foto-patrimonio-${index}`} style={{ width: 'fit-content' }}>
+                                                <ion-icon name="folder-open-outline" style={{ fontSize: '18px' }}></ion-icon>
+                                                Selecionar foto
+                                            </label>
+                                            <input
+                                                type="file" id={`foto-patrimonio-${index}`} accept="image/*"
+                                                className="foto-input"
+                                                onChange={(e) => handleImagemChange(index, e)}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Botão para adicionar o próximo patrimônio dentro do card */}
+                                {!ehEdicao && ehUltimo && (
+                                    <button
+                                        type="button"
+                                        onClick={handleAdicionarOutro}
+                                        style={{
+                                            marginTop: 12,
+                                            width: '100%',
+                                            padding: '4px 8px',
+                                            height: '32px',
+                                            backgroundColor: 'var(--vermelho-principal, #ef4444)', // Fundo vermelho
+                                            border: 'none', // Remove a borda pontilhada
+                                            color: '#ffffff', // Letras brancas
+                                            borderRadius: '4px',
+                                            fontSize: '12px',
+                                            fontWeight: 600,
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            gap: '4px'
+                                        }}
+                                    >
+                                        <span>+</span> Adicionar outro patrimônio
+                                    </button>
                                 )}
                             </div>
-                            <div className="patrimonio-img-upload-controls">
-                                <label className="btn-upload-imagem" htmlFor="patImagem" style={{ width: 'fit-content' }}>
-                                    <ion-icon name="folder-open-outline" style={{ fontSize: '18px' }}></ion-icon>
-                                    Selecionar imagem
-                                </label>
-                                <input
-                                    type="file" id="patImagem" accept="image/*"
-                                    className="foto-input"
-                                    onChange={handleImagemChange}
-                                />
-                                <small className="form-hint">
-                                    {ehEdicao ? 'Deixe em branco para manter a imagem atual.' : 'PNG, JPG ou JPEG.'}
-                                </small>
-                            </div>
-                        </div>
-                    </div>
+                        );
+                    })}
                 </div>
 
                 <div className="modal-footer">
