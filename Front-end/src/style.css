@@ -809,9 +809,9 @@ main,
 }
 
 .badge-geral {
-    background: var(--vermelho-suave);
-    color: var(--vermelho-escuro);
-    border: 1px solid #f8c0c4;
+    background: #e0f2fe;
+    color: #0369a1;
+    border: 1px solid #bae6fd;
 }
 
 .badge-operacional {
@@ -910,7 +910,7 @@ main,
 }
 
 .modal-close {
-   width: 40px;
+    width: 40px;
     height: 40px;
 
     display: flex;
@@ -1131,6 +1131,12 @@ main,
 
 /* ── CARDS DE SALAS ─────────────────────────────────────────────────────────── */
 
+.salas-selecao-header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 14px;
+}
+
 .salas-grid-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -1148,12 +1154,22 @@ main,
     display: flex;
     flex-direction: column;
     position: relative;
+    cursor: pointer;
 }
 
 .sala-card-item:hover {
     box-shadow: var(--sombra);
     transform: translateY(-2px);
     border-color: var(--borda-forte);
+}
+
+.sala-card-item.selecionada {
+    border-color: var(--vermelho-principal);
+    box-shadow: 0 0 0 2px var(--vermelho-principal), var(--sombra-sm);
+}
+
+.sala-card-item.selecionada:hover {
+    box-shadow: 0 0 0 2px var(--vermelho-principal), var(--sombra);
 }
 
 .sala-card-imagem-wrapper {
@@ -1231,22 +1247,25 @@ main,
 .sala-card-acoes {
     display: flex;
     gap: 8px;
-    justify-content: flex-end;
     margin-top: 10px;
     padding-top: 12px;
     border-top: 1px solid var(--borda);
 }
 
 .btn-card-action {
-    border: none;
-    padding: 7px 16px;
+    flex: 1;
     border-radius: var(--raio-sm);
+    padding: 7px 10px;
     font-size: 13px;
     font-weight: 500;
     font-family: inherit;
     cursor: pointer;
     transition: var(--transicao);
     white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
 }
 
 .btn-card-excluir {
@@ -1260,13 +1279,118 @@ main,
     border-color: #fca5a5;
 }
 
+.btn-card-visualizar {
+    background: none;
+    color: var(--texto-secundario);
+    border: 1px solid var(--borda);
+}
+
+.btn-card-visualizar:hover {
+    background: var(--bg-pagina);
+    color: var(--texto-primario);
+    border-color: var(--borda-forte);
+}
+
 .btn-card-editar {
     background: var(--vermelho-principal);
     color: #fff;
+    border: 1px solid var(--vermelho-principal);
 }
 
 .btn-card-editar:hover {
     background: var(--vermelho-hover);
+    border-color: var(--vermelho-hover);
+}
+
+.btn-card-duplicar {
+    background: none;
+    color: var(--texto-secundario);
+    border: 1px solid var(--borda);
+}
+
+.btn-card-duplicar:hover {
+    background: var(--bg-pagina);
+    color: var(--texto-primario);
+    border-color: var(--borda-forte);
+}
+
+/* ── SELEÇÃO EM LOTE — SALAS ───────────────────────────────────────────────── */
+
+.sala-card-checkbox-label {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 3;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.sala-card-checkbox-label input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.sala-card-checkbox-custom {
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    border: 2px solid rgba(255, 255, 255, 0.85);
+    background: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+.sala-card-checkbox-label:hover .sala-card-checkbox-custom {
+    border-color: #fff;
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.sala-card-checkbox-label input:checked~.sala-card-checkbox-custom {
+    background: var(--vermelho-principal);
+    border-color: var(--vermelho-principal);
+}
+
+.sala-card-checkbox-label input:checked~.sala-card-checkbox-custom::after {
+    content: '✓';
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.btn-duplicar-lote {
+    background: var(--vermelho-principal);
+    color: #fff;
+    border: none;
+    padding: 9px 20px;
+    border-radius: var(--raio-sm);
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: var(--transicao);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-duplicar-lote:hover:not(:disabled) {
+    background: var(--vermelho-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--sombra);
+}
+
+.btn-duplicar-lote:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
 }
 
 .sala-empty {
@@ -1282,12 +1406,10 @@ main,
 }
 
 .patrimonio-card-img {
-    width: 80px;
-    height: 80px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
 /* ── MODAL VISUALIZAR SALA ─────────────────────────────────────────────────── */
@@ -1309,7 +1431,7 @@ main,
 }
 
 .modal-overlay-visualizar.visible,
-.modal-overlay-visualizar > * {
+.modal-overlay-visualizar>* {
     opacity: 1;
     pointer-events: all;
 }
@@ -1333,6 +1455,7 @@ main,
         opacity: 0;
         transform: scale(0.96) translateY(8px);
     }
+
     to {
         opacity: 1;
         transform: scale(1) translateY(0);
@@ -1509,8 +1632,9 @@ main,
 /* ── CRIAÇÃO / EDIÇÃO DE SALA - FORMULÁRIO ──────────────────────────────────── */
 
 .criacao-sala-content {
-    max-width: 800px;
+    max-width: 8000px;
     width: 100%;
+    margin: 0 auto;
 }
 
 .form-section-card {
@@ -1521,7 +1645,7 @@ main,
     box-shadow: var(--sombra-sm);
 }
 
-.form-section-card > form {
+.form-section-card>form {
     padding: 24px;
 }
 
@@ -1670,6 +1794,10 @@ main,
     padding: 18px 24px;
     border-bottom: 1px solid var(--borda);
     background: var(--bg-pagina);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
 }
 
 .form-section-header h2 {
@@ -1679,6 +1807,44 @@ main,
     margin: 0;
     text-transform: uppercase;
     letter-spacing: 0.3px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.form-section-header-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 20px;
+    padding: 0 6px;
+    background: var(--vermelho-principal);
+    color: #fff;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+.form-actions-edit {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--borda);
+}
+
+.patrimonios-vazio {
+    padding: 32px 20px;
+    text-align: center;
+    color: var(--texto-suave);
+    font-size: 13px;
+    background: var(--bg-pagina);
+    border: 1px dashed var(--borda-forte);
+    border-radius: var(--raio);
 }
 
 .form-section-body {
@@ -1749,22 +1915,63 @@ main,
     padding: 16px;
 }
 
-.imagem-preview-wrapper {
+.imagem-preview {
     width: 100%;
-    height: 160px;
     border-radius: var(--raio);
-    background: var(--vermelho-suave);
+    background: var(--bg-superficie);
+    border: 1px dashed var(--borda-forte);
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 12px;
     overflow: hidden;
+    transition: var(--transicao);
+}
+
+.imagem-preview-wrapper {
+    width: 100%;
+    height: 160px;
+    border-radius: var(--raio);
+    background: var(--bg-superficie);
+    border: 1px dashed var(--borda-forte);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    overflow: hidden;
+    transition: var(--transicao);
+}
+
+.imagem-preview-wrapper:has(img) {
+    border-style: solid;
+    border-color: var(--borda);
 }
 
 .imagem-preview-wrapper img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
+    padding: 8px;
+    box-sizing: border-box;
+    display: block;
+}
+
+.imagem-preview-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    color: var(--texto-suave);
+}
+
+.imagem-preview-placeholder ion-icon {
+    font-size: 28px;
+}
+
+.imagem-preview-placeholder span {
+    font-size: 12px;
+    font-weight: 500;
 }
 
 .imagem-upload-controls {
@@ -1789,6 +1996,7 @@ main,
 
 .btn-upload-imagem:hover {
     background: var(--vermelho-hover);
+    transform: translateY(-1px);
 }
 
 .imagem-hint {
@@ -1796,6 +2004,51 @@ main,
     color: var(--texto-suave);
     margin-top: 8px;
     display: block;
+}
+
+/* ── PREVIEW DE IMAGEM DE PATRIMÔNIO (QUADRADA) ───────────────────────────────── */
+
+.patrimonio-img-preview {
+    width: 96px;
+    height: 96px;
+    aspect-ratio: 1 / 1;
+    flex-shrink: 0;
+    border-radius: var(--raio);
+    background: var(--bg-pagina);
+    border: 1px solid var(--borda);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.patrimonio-img-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.patrimonio-img-preview-placeholder {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--texto-suave);
+    text-align: center;
+    padding: 0 6px;
+}
+
+.patrimonio-img-upload-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.patrimonio-img-upload-controls {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 
 .patrimonio-item-form {
@@ -1961,7 +2214,9 @@ main,
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 #msgSemPatrimonios {
@@ -2103,7 +2358,7 @@ main,
 
 .vs-pat-img-area {
     width: 100%;
-    height: 140px;
+    aspect-ratio: 1 / 1;
     overflow: hidden;
     background: var(--bg-pagina);
     flex-shrink: 0;
@@ -2253,7 +2508,7 @@ main,
     align-items: center;
     justify-content: center;
     transition: all 0.15s ease;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
 }
 
 .vs-pat-checkbox-label:hover .vs-pat-checkbox-custom {
@@ -2261,12 +2516,12 @@ main,
     background: rgba(0, 0, 0, 0.4);
 }
 
-.vs-pat-checkbox-label input:checked ~ .vs-pat-checkbox-custom {
+.vs-pat-checkbox-label input:checked~.vs-pat-checkbox-custom {
     background: var(--vermelho-principal);
     border-color: var(--vermelho-principal);
 }
 
-.vs-pat-checkbox-label input:checked ~ .vs-pat-checkbox-custom::after {
+.vs-pat-checkbox-label input:checked~.vs-pat-checkbox-custom::after {
     content: '✓';
     color: #fff;
     font-size: 12px;
@@ -2322,7 +2577,7 @@ main,
     background: var(--bg-superficie);
     border: 1px solid var(--borda-forte);
     border-radius: var(--raio-lg);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0, 0, 0, 0.1);
     padding: 14px 20px;
     transition: bottom 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
     opacity: 0;
@@ -2726,8 +2981,8 @@ body:has(.vs-selecao-barra--visivel) .page-salas-container {
         font-size: 20px;
     }
 
-    .header-usuarios > button,
-    .header-usuarios > a > button {
+    .header-usuarios>button,
+    .header-usuarios>a>button {
         width: 100%;
         text-align: center;
     }
@@ -2747,7 +3002,7 @@ body:has(.vs-selecao-barra--visivel) .page-salas-container {
         max-width: 100%;
     }
 
-    .form-section-card > form {
+    .form-section-card>form {
         padding: 16px;
     }
 
@@ -2756,7 +3011,7 @@ body:has(.vs-selecao-barra--visivel) .page-salas-container {
         gap: 8px;
     }
 
-    .form-actions > button {
+    .form-actions>button {
         width: 100%;
         text-align: center;
         justify-content: center;
@@ -2810,67 +3065,4 @@ body:has(.vs-selecao-barra--visivel) .page-salas-container {
     background-color: #fff5f5 !important;
     box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15) !important;
     outline: none !important;
-}
-
-/* =========================================
-   BOTÃO DUPLICAR DA SALA
-   ========================================= */
-
-.btn-card-duplicar {
-    background: #f3e8ff;
-    color: #7c3aed;
-    border: 1px solid #d8b4fe;
-}
-
-.btn-card-duplicar:hover {
-    background: #7c3aed;
-    color: white;
-    border-color: #7c3aed;
-}
-
-/* Mantém os botões do card organizados */
-.sala-card-acoes {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.sala-card-acoes .btn-card-action {
-    flex: 1;
-    min-width: 90px;
-}
-
-/* Botões de ação */
-.btn-action {
-    padding: 6px 12px;
-    border-radius: 6px;
-    border: 1px solid #d1d5db;
-    background-color: #ffffff;
-    color: #374151;
-    cursor: pointer;
-    font-size: 13px;
-    transition: all 0.2s ease;
-}
-
-/* Botão vermelho - Desativar e Ativar */
-.btn-action-danger {
-    background-color: #dc2626 !important;
-    border-color: #dc2626 !important;
-    color: #ffffff !important;
-    cursor: pointer;
-}
-
-/* Quando passar o mouse */
-.btn-action-danger:hover {
-    background-color: #b91c1c !important;
-    border-color: #b91c1c !important;
-}
-
-/* Botão desativado */
-.btn-action-danger:disabled {
-    background-color: #dc2626 !important;
-    border-color: #dc2626 !important;
-    color: #ffffff !important;
-    opacity: 0.35;
-    cursor: not-allowed;
 }
