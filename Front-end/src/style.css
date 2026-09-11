@@ -809,9 +809,9 @@ main,
 }
 
 .badge-geral {
-    background: var(--vermelho-suave);
-    color: var(--vermelho-escuro);
-    border: 1px solid #f8c0c4;
+    background: #e0f2fe;
+    color: #0369a1;
+    border: 1px solid #bae6fd;
 }
 
 .badge-operacional {

@@ -210,7 +210,7 @@ export default function EditarSalaPage({ navegarPara, idSala }) {
                                     value={descricao} onChange={(e) => setDescricao(e.target.value)}
                                     placeholder="Ex: Laboratório de Informática"
                                 />
-                            </div>
+                            </div> 
 
                             <div className="form-group-edit">
                                 <label className="form-label-edit" htmlFor="editBloco">
