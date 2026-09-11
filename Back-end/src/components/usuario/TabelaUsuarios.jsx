@@ -6,6 +6,7 @@ function getBadge(tipo) {
     if (type === 'administração' || type === 'administracao') return { cls: 'badge-admin', texto: 'Admin' };
     if (type === 'manutenção' || type === 'manutencao') return { cls: 'badge-manutencao', texto: 'Manutenção' };
     if (type === 'desativado') return { cls: 'badge-desativado', texto: 'Desativado' };
+    if (type === 'ativado') return {cls:'badge-ativado', texto: 'Ativar'}; 
     return { cls: 'badge-geral', texto: 'Geral' };
 }
 
@@ -14,7 +15,7 @@ function buscarInicial(nome) {
     return nome.split(' ').slice(0, 2).map((n) => n[0]).join('').toUpperCase();
 }
 
-export default function TabelaUsuarios({ usuarios = [], onEditar, onDesativar }) {
+export default function TabelaUsuarios({ usuarios = [], onEditar, onDesativar, onAtivar}) {
     const usuarioAtual = obterUsuarioAtual();
 
     if (!usuarios || usuarios.length === 0) {
@@ -108,26 +109,34 @@ export default function TabelaUsuarios({ usuarios = [], onEditar, onDesativar })
                                         Editar
                                     </button>
 
-                                    {/* Exibe o botão de desativar APENAS se o usuário NÃO estiver inativo */}
-                                    {!estaInativo && (
-                                        ehVoce ? (
-                                            <button
-                                                className="btn-action btn-action-danger"
-                                                disabled
-                                                title="Você não pode desativar sua própria conta"
-                                                style={{ opacity: 0.35, cursor: 'not-allowed' }}
-                                            >
-                                                Desativar
-                                            </button>
-                                        ) : (
-                                            <button
-                                                className="btn-action btn-action-danger"
-                                                onClick={() => onDesativar?.(id, nome)}
-                                            >
-                                                Desativar
-                                            </button>
-                                        )
-                                    )}
+                                    {/* Exibe o botão de ativar quando o usuário estiver inativo */}
+{estaInativo ? (
+    <button
+        className="btn-action"
+        onClick={() => onAtivar?.(id, nome)}
+    >
+        Ativar
+    </button>
+) : (
+    /* Exibe o botão de desativar APENAS se o usuário NÃO estiver inativo */
+    ehVoce ? (
+        <button
+            className="btn-action btn-action-danger"
+            disabled
+            title="Você não pode desativar sua própria conta"
+            style={{ opacity: 0.35, cursor: 'not-allowed' }}
+        >
+            Desativar
+        </button>
+    ) : (
+        <button
+            className="btn-action btn-action-danger"
+            onClick={() => onDesativar?.(id, nome)}
+        >
+            Desativar
+        </button>
+    )
+)}
                                 </td>
                             </tr>
                         );
