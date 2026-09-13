@@ -144,7 +144,7 @@ export default function UsuariosPage() {
     // ============================================================
     // ATIVAR USUÁRIO
     // ============================================================
-    async function ativaroUsuario(id, nome, tipo_usuario) {
+    async function ativaroUsuario(id, nome, tipoUsuarioAntigo) {
 
         const usuarioAtual = obterUsuarioAtual();
 
@@ -163,16 +163,23 @@ export default function UsuariosPage() {
 
         try {
 
-            // Se o usuário não tiver um tipo válido,
-            // ele será ativado como Geral.
-            const tipoOriginal =
-                tipo_usuario === 'administracao' ||
-                tipo_usuario === 'administração'
-                    ? 'administracao'
-                    : tipo_usuario === 'manutencao' ||
-                      tipo_usuario === 'manutenção'
-                        ? 'manutencao'
-                        : 'geral';
+            // Retorna o usuário para o tipo_usuario_antigo.
+            // Se não houver um tipo antigo válido, ele será ativado como Geral.
+            const tiposValidos = [
+                'administracao',
+                'manutencao',
+                'geral'
+            ];
+
+            const tipoNormalizado = (tipoUsuarioAntigo || '')
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .toLowerCase()
+                .trim();
+
+            const tipoOriginal = tiposValidos.includes(tipoNormalizado)
+                ? tipoNormalizado
+                : 'geral';
 
             await ativarUsuario(
                 token,
@@ -182,9 +189,8 @@ export default function UsuariosPage() {
 
             await recarregar();
 
-            // Depois de ativar, volta automaticamente
-            // para a aba Todos.
-            setFiltroTipo('todos');
+            // Mantém o usuário na aba de desativados,
+            // apenas atualizando a tabela.
             setPaginaAtual(1);
 
         } catch (error) {

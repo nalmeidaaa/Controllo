@@ -859,7 +859,6 @@ main,
     border-radius: var(--raio-xl);
     width: 100%;
     max-width: 650px;
-    height: 90vh;
     max-height: 90vh;
     box-shadow: var(--sombra-lg);
     border: 1px solid var(--borda);

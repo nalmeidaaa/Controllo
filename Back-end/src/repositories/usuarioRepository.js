@@ -30,7 +30,18 @@ const usuarioRepository = {
     selecionar: async () => {
         const conn = await connection.getConnection();
         try {
-            const sql = 'SELECT id_usuario, nome, cpf, tipo_usuario, email, caminho_imagem FROM usuarios';
+            const sql = `
+                SELECT
+                    u.id_usuario,
+                    u.nome,
+                    u.cpf,
+                    u.tipo_usuario,
+                    u.email,
+                    u.caminho_imagem,
+                    d.tipo_usuario_antigo
+                FROM usuarios u
+                LEFT JOIN desativado d ON d.id_usuario = u.id_usuario
+            `;
             const [rows] = await conn.execute(sql);
             return rows;
         } catch (error) {

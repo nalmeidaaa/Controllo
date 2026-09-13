@@ -286,7 +286,7 @@ export default function TabelaUsuarios({
                                                 onAtivar?.(
                                                     id,
                                                     nome,
-                                                    usuario.tipo_usuario
+                                                    usuario.tipo_usuario_antigo
                                                 )
                                             }
                                         >

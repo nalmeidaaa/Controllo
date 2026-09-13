@@ -9,6 +9,18 @@ const ESTADO_INICIAL = {
     imagem: null
 };
 
+const TIPOS_VALIDOS = ['administracao', 'manutencao', 'geral'];
+
+function normalizarTipo(tipo) {
+    if (!tipo) return '';
+
+    return tipo
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .trim();
+}
+
 export default function ModalUsuario({ aberto, usuario, onSalvar, onFechar }) {
     const [form, setForm] = useState(ESTADO_INICIAL);
     const [erro, setErro] = useState([]);
@@ -31,7 +43,18 @@ export default function ModalUsuario({ aberto, usuario, onSalvar, onFechar }) {
                         nome: usuario.nome || '',
                         cpf: usuario.cpf || '',
                         email: usuario.email || '',
-                        tipo_usuario: usuario.tipo_usuario || 'geral',
+                        tipo_usuario: (() => {
+                            const tipoBase =
+                                normalizarTipo(usuario.tipo_usuario) === 'desativado'
+                                    ? usuario.tipo_usuario_antigo
+                                    : usuario.tipo_usuario;
+
+                            const tipoNormalizado = normalizarTipo(tipoBase);
+
+                            return TIPOS_VALIDOS.includes(tipoNormalizado)
+                                ? tipoNormalizado
+                                : 'geral';
+                        })(),
                         senha: '',
                         imagem: usuario.imagem || null,
                     }
@@ -118,6 +141,12 @@ export default function ModalUsuario({ aberto, usuario, onSalvar, onFechar }) {
 
         // Cria o FormData exatamente como o Insomnia faz
         const formData = new FormData();
+
+        // Quando estiver editando, envia o ID do usuário
+        // para que a página saiba que deve atualizar e não criar
+        if (editando) {
+            formData.append('id', usuario.id_usuario);
+        }
 
         formData.append('nome', nome);
         formData.append('cpf', cpf);
