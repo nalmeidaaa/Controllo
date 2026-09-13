@@ -4,6 +4,7 @@ import { Usuario } from "../models/Usuario.js";
 import usuarioRepository from "../repositories/usuarioRepository.js";
 import fs from "fs";
 import path from "path";
+import { normalizarTipoUsuario } from "../utils/normalizarTipoUsuario.js";
 
 const usuarioController = {
 
@@ -18,6 +19,22 @@ const usuarioController = {
 
             if (admsExistentes.length === 0) {
                 tipo_usuario = "administracao";
+            } else if (
+                tipo_usuario &&
+                normalizarTipoUsuario(tipo_usuario) === "desativado"
+            ) {
+                if (req.file) {
+                    fs.unlink(req.file.path, (err) => {
+                        if (err) {
+                            console.error("Erro ao deletar arquivo:", err);
+                        }
+                    });
+                }
+
+                return res.status(400).json({
+                    message: "Não é possível criar um usuário já desativado.",
+                    campo: "tipo_usuario"
+                });
             }
 
             const hash_senha = await bcrypt.hash(senha, 10);

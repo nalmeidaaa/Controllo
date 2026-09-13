@@ -9,7 +9,7 @@ export class Usuario {
     #tipo_usuario;
     #email;
     #hash_senha;
-    #caminhoImagem; // Nova propriedade privada para a imagem de perfil
+    #caminhoImagem = null;
 
     constructor(
         nome,
@@ -18,7 +18,7 @@ export class Usuario {
         email = null,
         hash_senha = null,
         id = null,
-        caminhoImagem = null // Novo parâmetro posicional
+        caminhoImagem = null
     ) {
 
         this.nome = nome;
@@ -41,9 +41,7 @@ export class Usuario {
 
         this.id = id;
 
-        if (caminhoImagem !== null && caminhoImagem !== undefined) {
-            this.caminhoImagem = caminhoImagem;
-        }
+        this.caminhoImagem = caminhoImagem;
 
     }
 
@@ -73,7 +71,7 @@ export class Usuario {
         return this.#hash_senha;
     }
 
-    get caminhoImagem() { // Novo Getter
+    get caminhoImagem() {
         return this.#caminhoImagem;
     }
 
@@ -110,10 +108,8 @@ export class Usuario {
         this.#hash_senha = value;
     }
 
-    set caminhoImagem(value) { // Novo Setter
-        if (value !== null && value !== undefined) {
-            this.#caminhoImagem = value;
-        }
+    set caminhoImagem(value) {
+        this.#caminhoImagem = value ?? null;
     }
 
     // VALIDAÇÕES
@@ -187,8 +183,8 @@ export class Usuario {
         tipo_usuario,
         email,
         hash_senha,
-        caminho_imagem, // Suporta vindo mapeado do banco
-        caminhoImagem   // Suporta vindo mapeado da controller
+        caminho_imagem,
+        caminhoImagem
     }) {
 
         return new Usuario(
@@ -209,8 +205,8 @@ export class Usuario {
         tipo_usuario,
         email,
         hash_senha,
-        caminho_imagem, // Suporta vindo mapeado do banco
-        caminhoImagem   // Suporta vindo mapeado da controller
+        caminho_imagem,
+        caminhoImagem 
     }, id) {
 
         if (!id) {

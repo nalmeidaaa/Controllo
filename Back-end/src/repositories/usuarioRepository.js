@@ -62,6 +62,7 @@ const usuarioRepository = {
 
             let sql = `UPDATE usuarios SET `;
             let values = [];
+            let tipoUsuarioAntigoNormalizado = null;
 
             if (usuario.nome) {
                 sql += ` nome = ?,`;
@@ -75,8 +76,8 @@ const usuarioRepository = {
                 // Busca o tipo antigo para remover da tabela filha anterior
                 let usuarioAntigo = await usuarioRepository.selecionarPorId(id);
                 if (usuarioAntigo) {
-                    const tipo_usuario_antigo = normalizarTipoUsuario(usuarioAntigo.tipo_usuario);
-                    const sqlDelete = `DELETE FROM ${tipo_usuario_antigo} WHERE id_usuario = ?;`;
+                    tipoUsuarioAntigoNormalizado = normalizarTipoUsuario(usuarioAntigo.tipo_usuario);
+                    const sqlDelete = `DELETE FROM ${tipoUsuarioAntigoNormalizado} WHERE id_usuario = ?;`;
                     await conn.execute(sqlDelete, [id]);
                 }
             }
@@ -113,8 +114,16 @@ const usuarioRepository = {
 
             // 2º: Insere na nova tabela filha se o tipo mudou
             if (usuario.tipo_usuario) {
-                const sqlInsert = `INSERT INTO ${usuario.tipo_usuario} (id_usuario) VALUES (?)`;
-                await conn.execute(sqlInsert, [id]);
+                const tipoUsuarioNovoNormalizado = normalizarTipoUsuario(usuario.tipo_usuario);
+
+                if (tipoUsuarioNovoNormalizado === "desativado") {
+                    // Armazena o tipo de usuário antigo na tabela "desativado"
+                    const sqlInsert = `INSERT INTO desativado (id_usuario, tipo_usuario_antigo) VALUES (?, ?)`;
+                    await conn.execute(sqlInsert, [id, tipoUsuarioAntigoNormalizado]);
+                } else {
+                    const sqlInsert = `INSERT INTO ${tipoUsuarioNovoNormalizado} (id_usuario) VALUES (?)`;
+                    await conn.execute(sqlInsert, [id]);
+                }
             }
 
             await conn.commit();
