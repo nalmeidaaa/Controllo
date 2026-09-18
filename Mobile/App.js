@@ -6,6 +6,9 @@ import AdministracaoScreen from "./src/screens/Administracao";
 import ManutencaoScreen from "./src/screens/Manutencao";
 import GeralScreen from "./src/screens/Geral";
 import QrCodeScreen from "./src/screens/Camera";
+import SalasScreen from "./src/screens/Salas";
+import SalaDetalheScreen from "./src/screens/SalaDetalhe";
+import ItensPendentesScreen from "./src/screens/ItensPendentes";
 // import PosicaoGPS from "./src/screens/PosicaoGPS";
 // import RedesScreen from "./src/screens/RedesWifi";
 
@@ -39,6 +42,21 @@ export default function App() {
           name="QrCodeScreen"
           component={QrCodeScreen}
           options={{ title: "Leitura de QR Code" }}
+        />
+        <Stack.Screen
+          name="SalasScreen"
+          component={SalasScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="SalaDetalheScreen"
+          component={SalaDetalheScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ItensPendentesScreen"
+          component={ItensPendentesScreen}
+          options={{ headerShown: false }}
         />
         {/* <Stack.Screen
           name="PosicaoGPS"
