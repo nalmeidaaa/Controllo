@@ -1,13 +1,15 @@
 import React, { useCallback, useState } from "react";
 import {
     View,
-    StyleSheet,
     Text,
     TouchableOpacity,
     FlatList,
     ActivityIndicator,
     Alert,
+    Image, 
 } from "react-native";
+import { StyleSheet } from "react-native";
+
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation, useRoute, useFocusEffect } from "@react-navigation/native";
 import { ArrowLeft, Box } from "lucide-react-native";
@@ -17,9 +19,11 @@ import {
     buscarPatrimoniosPorSala,
     atualizarStatusPatrimonio,
 } from "../../services/patrimonioService.js";
+import { BASE_URL } from "../../services/api.js"; 
 import { criarRequisicao } from "../../storage/requisicao/requisicoes.storage.js";
 import { obterEstiloStatus } from "../../utils/statusPatrimonio.js";
 import ModalStatusPatrimonio from "../../components/ModalStatusPatrimonio.jsx";
+
 
 const iconColor = "#c9131c";
 
@@ -58,7 +62,6 @@ export default function SalaDetalheScreen() {
     useFocusEffect(
         useCallback(() => {
             carregarPatrimonios();
-            // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [idSala])
     );
 
@@ -78,7 +81,6 @@ export default function SalaDetalheScreen() {
 
         try {
             setSalvando(true);
-
             const token = await obterToken();
 
             await atualizarStatusPatrimonio(
@@ -100,7 +102,6 @@ export default function SalaDetalheScreen() {
 
             setModalVisivel(false);
             setPatrimonioSelecionado(null);
-
             await carregarPatrimonios();
         } catch (error) {
             console.error("Erro ao atualizar patrimônio", error);
@@ -156,6 +157,9 @@ export default function SalaDetalheScreen() {
                         contentContainerStyle={styles.lista}
                         renderItem={({ item }) => {
                             const estiloStatus = obterEstiloStatus(item.status);
+                            
+                            // Tenta mapear qualquer nome comum que venha da API de patrimônios
+                            const urlImagem = item.caminho_imagem || item.imagem || item.foto;
 
                             return (
                                 <TouchableOpacity
@@ -163,9 +167,16 @@ export default function SalaDetalheScreen() {
                                     activeOpacity={0.8}
                                     onPress={() => abrirModal(item)}
                                 >
-                                    <View style={styles.iconWrapper}>
-                                        <Box color={iconColor} size={22} />
-                                    </View>
+                                    {urlImagem ? (
+                                        <Image 
+                                            source={{ uri: `${BASE_URL}${urlImagem}` }} 
+                                            style={styles.patrimonioImagem} 
+                                        />
+                                    ) : (
+                                        <View style={styles.iconWrapper}>
+                                            <Box color={iconColor} size={22} />
+                                        </View>
+                                    )}
 
                                     <View style={styles.cardText}>
                                         <Text style={styles.cardTitle} numberOfLines={1}>
@@ -217,19 +228,16 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "#f4f7f7",
     },
-
     container: {
         flex: 1,
         paddingHorizontal: 28,
         paddingTop: 40,
     },
-
     headerRow: {
         flexDirection: "row",
         alignItems: "center",
         marginBottom: 28,
     },
-
     voltarButton: {
         width: 44,
         height: 44,
@@ -239,11 +247,9 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         marginRight: 14,
     },
-
     heading: {
         flex: 1,
     },
-
     eyebrow: {
         color: "#b01d2e",
         fontSize: 11,
@@ -251,83 +257,77 @@ const styles = StyleSheet.create({
         textTransform: "uppercase",
         letterSpacing: 0.7,
     },
-
     title: {
         color: "#2d0e0e",
-        fontSize: 22,
+        fontSize: 24,
         fontWeight: "600",
         letterSpacing: -0.5,
         marginTop: 4,
     },
-
     lista: {
-        gap: 14,
+        gap: 16,
         paddingBottom: 40,
     },
-
     card: {
-        minHeight: 76,
+        minHeight: 84,
         alignItems: "center",
         flexDirection: "row",
         backgroundColor: "#ffffff",
         borderRadius: 14,
-        paddingHorizontal: 18,
-        paddingVertical: 16,
+        paddingHorizontal: 22,
+        paddingVertical: 18,
         borderWidth: 1,
         borderColor: "#fce9e9",
-
         shadowColor: "#101010",
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.08,
         shadowRadius: 3,
         elevation: 2,
     },
-
     iconWrapper: {
-        width: 44,
-        height: 44,
+        width: 48,
+        height: 48,
         backgroundColor: "#ffd8d8",
         borderRadius: 10,
         alignItems: "center",
         justifyContent: "center",
-        marginRight: 14,
+        marginRight: 16,
     },
-
+    patrimonioImagem: {
+        width: 48,
+        height: 48,
+        borderRadius: 10,
+        marginRight: 16,
+        backgroundColor: "#ffd8d8", 
+    },
     cardText: {
         flex: 1,
     },
-
     cardTitle: {
         color: "#270d0d",
-        fontSize: 15,
+        fontSize: 16,
         fontWeight: "600",
     },
-
     cardSubtitle: {
         color: "#8a7373",
-        fontSize: 12,
+        fontSize: 13,
         marginTop: 2,
     },
-
     badge: {
-        paddingHorizontal: 10,
+        paddingHorizontal: 12,
         paddingVertical: 6,
-        borderRadius: 999,
-        marginLeft: 10,
+        borderRadius: 8,
     },
-
     badgeTexto: {
         fontSize: 12,
-        fontWeight: "700",
+        fontWeight: "600",
     },
-
     centro: {
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
         paddingBottom: 80,
     },
-
     mensagemVazia: {
         color: "#8a7373",
         fontSize: 14,
