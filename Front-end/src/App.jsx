@@ -8,12 +8,13 @@ import SalasPage from './pages/salas/SalasPage.jsx';
 import CriarSalaPage from './pages/salas/CriarSalaPage.jsx';
 import EditarSalaPage from './pages/salas/EditarSalaPage.jsx';
 import VisualizarSalaPage from './pages/salas/VisualizarSalaPage.jsx';
+import RegistrosPage  from './pages/registros/RegistrosPage.jsx';
 
 export default function App() {
     const [logado, setLogado] = useState(false);
     const [pagina, setPagina] = useState('dashboard');
     const [paramsPagina, setParamsPagina] = useState({});
-    
+
     // ALTERADO: estado para saber se a sidebar está fechada
     const [sidebarClosed, setSidebarClosed] = useState(false);
 
@@ -81,6 +82,8 @@ export default function App() {
         dashboard: () => mudarPagina('dashboard'),
         usuarios: () => mudarPagina('usuarios'),
         salas: () => mudarPagina('salas'),
+        registros: () => mudarPagina('registros'),
+        aplicarTarefas: () => mudarPagina('aplicarTarefas'),
         criarSala: () => mudarPagina('criarSala'),
         editarSala: (id) => mudarPagina('editarSala', { id }),
         visualizarSala: (id) => mudarPagina('visualizarSala', { id }),
@@ -103,6 +106,8 @@ export default function App() {
                 return <UsuariosPage />;
             case 'salas':
                 return <SalasPage navegarPara={navegarPara} />;
+            case 'registros':
+                return <RegistrosPage />;
             case 'criarSala':
                 return <CriarSalaPage navegarPara={navegarPara} />;
             case 'editarSala':
@@ -122,7 +127,7 @@ export default function App() {
                     paginaAtiva={['criarSala', 'editarSala', 'visualizarSala'].includes(pagina) ? 'salas' : pagina}
                     navegarPara={navegarPara}
                     onLogout={handleLogout}
-                    
+
                     // ALTERADO: recebe do Navbar a informação de que a sidebar fechou/abriu
                     onSidebarChange={setSidebarClosed}
                 />

@@ -3,7 +3,7 @@ import { obterUsuarioAtual, deslogarUsuario } from '../../storage/usuario/dados.
 
 export default function Navbar({ paginaAtiva, navegarPara, onLogout, onSidebarChange }) { // ALTERADO: adicionei onSidebarChange
     const [sidebarClosed, setSidebarClosed] = useState(false); // desktop: sidebar recolhida
-    const [sidebarOpen, setSidebarOpen] = useState(false);     // mobile: sidebar aberta
+    const [sidebarOpen, setSidebarOpen] = useState(false);     // mobile: sidebar aberta
 
     const usuario = obterUsuarioAtual();
     const nomeUsuario = usuario?.nome || usuario?.name || '';
@@ -34,7 +34,9 @@ export default function Navbar({ paginaAtiva, navegarPara, onLogout, onSidebarCh
         { id: 'dashboard', icone: 'grid-outline', label: 'Página Inicial' },
         { id: 'salas', icone: 'log-in-outline', label: 'Gerenciar Salas' },
         { id: 'usuarios', icone: 'people-outline', label: 'Gerenciar Usuários' },
+        { id: 'registros', icone: 'bar-chart-outline', label: 'Ver Registros' },
     ];
+
 
     return (
         <>
@@ -109,21 +111,14 @@ export default function Navbar({ paginaAtiva, navegarPara, onLogout, onSidebarCh
                     </div>
 
                     <ul className="side-menu">
-                        <li>
-                            <button className="side-btn-link" disabled>
-                                <span className="menu-icon">
-                                    <ion-icon name="clipboard-outline" style={{ fontSize: '20px' }}></ion-icon>
-                                </span>
-                                Aplicar Tarefas
-                            </button>
-                        </li>
+
 
                         <li>
                             <button className="side-btn-link" disabled>
                                 <span className="menu-icon">
                                     <ion-icon name="bar-chart-outline" style={{ fontSize: '20px' }}></ion-icon>
                                 </span>
-                                Ver Registros
+                                Aplicar Tarefas
                             </button>
                         </li>
                     </ul>

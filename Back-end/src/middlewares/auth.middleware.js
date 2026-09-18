@@ -25,6 +25,9 @@ async function authMiddleware(req, res, next) {
         }
 
         req.usuario = jwt.verify(token, process.env.JWT_SECRET);
+        
+        console.log("Usuário autenticado:", req.usuario);
+
         return next();
 
     } catch (error) {

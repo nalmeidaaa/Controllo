@@ -9,6 +9,7 @@ import CriarSalaPage from './pages/salas/CriarSalaPage.jsx';
 import EditarSalaPage from './pages/salas/EditarSalaPage.jsx';
 import VisualizarSalaPage from './pages/salas/VisualizarSalaPage.jsx';
 
+
 export default function App() {
     const [logado, setLogado] = useState(false);
     const [pagina, setPagina] = useState('dashboard');
