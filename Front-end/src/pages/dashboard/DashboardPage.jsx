@@ -32,16 +32,6 @@ export default function DashboardPage({ navegarPara }) {
 
                     <div className="menu-card disabled" aria-disabled="true">
                         <div className="card-icon">
-                            <ion-icon name="clipboard-outline" style={{ fontSize: '28px'}}></ion-icon>
-                        </div>
-                        <div className="card-info">
-                            <h3>Aplicar Tarefas</h3>
-                            <p>Crie, distribua e acompanhe ordens de serviço.</p>
-                        </div>
-                    </div>
-
-                    <div className="menu-card disabled" aria-disabled="true">
-                        <div className="card-icon">
                             <ion-icon name="bar-chart-outline" style={{ fontSize: '28px'}}></ion-icon>
                         </div>
                         <div className="card-info">

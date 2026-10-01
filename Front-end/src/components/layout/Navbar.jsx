@@ -112,15 +112,6 @@ export default function Navbar({ paginaAtiva, navegarPara, onLogout, onSidebarCh
                         <li>
                             <button className="side-btn-link" disabled>
                                 <span className="menu-icon">
-                                    <ion-icon name="clipboard-outline" style={{ fontSize: '20px' }}></ion-icon>
-                                </span>
-                                Aplicar Tarefas
-                            </button>
-                        </li>
-
-                        <li>
-                            <button className="side-btn-link" disabled>
-                                <span className="menu-icon">
                                     <ion-icon name="bar-chart-outline" style={{ fontSize: '20px' }}></ion-icon>
                                 </span>
                                 Ver Registros
