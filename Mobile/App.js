@@ -9,6 +9,8 @@ import QrCodeScreen from "./src/screens/Camera";
 import SalasScreen from "./src/screens/Salas";
 import SalaDetalheScreen from "./src/screens/SalaDetalhe";
 import ItensPendentesScreen from "./src/screens/ItensPendentes";
+import NovaRequisicaoScreen from "./src/screens/NovaRequisicao"
+import RequisicaoDetalheScreen from "./src/screens/RequisicaoDetalhe"
 // import PosicaoGPS from "./src/screens/PosicaoGPS";
 // import RedesScreen from "./src/screens/RedesWifi";
 
@@ -56,6 +58,16 @@ export default function App() {
         <Stack.Screen
           name="ItensPendentesScreen"
           component={ItensPendentesScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="NovaRequisicaoScreen"
+          component={NovaRequisicaoScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="RequisicaoDetalheScreen"
+          component={RequisicaoDetalheScreen}
           options={{ headerShown: false }}
         />
         {/* <Stack.Screen

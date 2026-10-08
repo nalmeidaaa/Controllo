@@ -1,6 +1,7 @@
 import React from "react";
-import { View, StyleSheet, Text } from "react-native";
-import { CheckCircle2, Clock, Bell } from "lucide-react-native";
+import { View, StyleSheet, Text, TouchableOpacity, ActivityIndicator } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { CheckCircle2, Clock, Bell, Send, AlertCircle } from "lucide-react-native";
 
 function formatarData(isoString) {
     if (!isoString) return "";
@@ -15,68 +16,118 @@ function formatarData(isoString) {
     });
 }
 
-export default function MuralAtualizacoes({ requisicao }) {
-    if (!requisicao) {
-        return (
-            <View style={styles.card}>
-                <View style={[styles.iconWrapper, styles.iconWrapperNeutro]}>
-                    <Bell color="#8a8a8a" size={22} />
-                </View>
+const TIPOS = {
+    Abertura: { titulo: "Requisição enviada", fundo: "#fff4d6", Icone: Send, cor: "#a5710a" },
+    Andamento: { titulo: "Requisição em andamento", fundo: "#ffd8d8", Icone: Clock, cor: "#c9131c" },
+    Finalizacao: { titulo: "Requisição concluída!", fundo: "#e3f7ea", Icone: CheckCircle2, cor: "#1f9254" },
+};
 
-                <View style={styles.textWrapper}>
-                    <Text style={styles.titulo}>Sem atualizações</Text>
-                    <Text style={styles.subtitulo}>
-                        Nenhuma requisição foi feita até o momento.
-                    </Text>
-                </View>
-            </View>
-        );
-    }
-
-    const concluida = requisicao.concluida;
-
+function CardMensagem({ titulo, subtitulo, children }) {
     return (
         <View style={styles.card}>
-            <View
-                style={[
-                    styles.iconWrapper,
-                    concluida ? styles.iconWrapperOk : styles.iconWrapperPendente,
-                ]}
-            >
-                {concluida ? (
-                    <CheckCircle2 color="#1f9254" size={22} />
-                ) : (
-                    <Clock color="#c9131c" size={22} />
-                )}
-            </View>
-
+            <View style={[styles.iconWrapper, styles.iconWrapperNeutro]}>{children}</View>
             <View style={styles.textWrapper}>
-                <Text style={styles.titulo}>
-                    {concluida ? "Requisição concluída!" : "Requisição em andamento"}
-                </Text>
-
-                <Text style={styles.subtitulo}>
-                    {requisicao.nomePatrimonio}
-                    {requisicao.nomeSala ? ` • ${requisicao.nomeSala}` : ""}
-                </Text>
-
-                {!!requisicao.descricao && (
-                    <Text style={styles.descricao} numberOfLines={2}>
-                        {requisicao.descricao}
-                    </Text>
-                )}
-
-                <Text style={styles.data}>
-                    {formatarData(
-                        concluida ? requisicao.concluidoEm : requisicao.criadoEm
-                    )}
-                </Text>
+                <Text style={styles.titulo}>{titulo}</Text>
+                {!!subtitulo && <Text style={styles.subtitulo}>{subtitulo}</Text>}
             </View>
         </View>
     );
 }
 
+export default function MuralAtualizacoes({ atualizacoes = [], carregando = false, erro = false }) {
+    const navigation = useNavigation();
+
+    if (carregando) {
+        return (
+            <View style={styles.wrapper}>
+                <CardMensagem titulo="Carregando atualizações...">
+                    <ActivityIndicator color="#c9131c" />
+                </CardMensagem>
+            </View>
+        );
+    }
+
+    if (erro) {
+        return (
+            <View style={styles.wrapper}>
+                <CardMensagem
+                    titulo="Não foi possível carregar o mural"
+                    subtitulo="Tente novamente mais tarde."
+                >
+                    <AlertCircle color="#c9131c" size={22} />
+                </CardMensagem>
+            </View>
+        );
+    }
+
+    if (!atualizacoes.length) {
+        return (
+            <View style={styles.wrapper}>
+                <CardMensagem
+                    titulo="Sem atualizações"
+                    subtitulo="Nenhuma atualização recente nas suas requisições."
+                >
+                    <Bell color="#8a8a8a" size={22} />
+                </CardMensagem>
+            </View>
+        );
+    }
+
+    return (
+        <View style={styles.wrapper}>
+            {atualizacoes.slice(0, 3).map((item) => {
+                const tipo = TIPOS[item.acao] || TIPOS.Abertura;
+                const Icone = tipo.Icone;
+                const requisicao = item.requisicao || {};
+                const descricao =
+                    item.acao === "Finalizacao"
+                        ? item.descricao || requisicao.descricao
+                        : requisicao.descricao;
+
+                return (
+                    <TouchableOpacity
+                        key={item.id_historico}
+                        activeOpacity={0.8}
+                        style={styles.card}
+                        onPress={() =>
+                            navigation.navigate("RequisicaoDetalheScreen", {
+                                idRequisicao: requisicao.id_requisicao,
+                            })
+                        }
+                    >
+                        <View style={[styles.iconWrapper, { backgroundColor: tipo.fundo }]}>
+                            <Icone color={tipo.cor} size={22} />
+                        </View>
+
+                        <View style={styles.textWrapper}>
+                            <Text style={styles.titulo}>{tipo.titulo}</Text>
+
+                            <Text style={styles.subtitulo}>
+                                {requisicao.patrimonio?.nome}
+                                {requisicao.sala?.descricao ? ` • ${requisicao.sala.descricao}` : ""}
+                            </Text>
+
+                            {!!descricao && (
+                                <Text style={styles.descricao} numberOfLines={2}>
+                                    {descricao}
+                                </Text>
+                            )}
+
+                            <Text style={styles.data}>{formatarData(item.horario)}</Text>
+                        </View>
+                    </TouchableOpacity>
+                );
+            })}
+        </View>
+    );
+}
+
 const styles = StyleSheet.create({
+    wrapper: {
+        marginBottom: 24,
+        gap: 10,
+    },
+
     card: {
         flexDirection: "row",
         alignItems: "flex-start",
@@ -86,7 +137,6 @@ const styles = StyleSheet.create({
         paddingVertical: 18,
         borderWidth: 1,
         borderColor: "#fce9e9",
-        marginBottom: 24,
 
         shadowColor: "#101010",
         shadowOffset: { width: 0, height: 1 },
@@ -102,14 +152,6 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         marginRight: 14,
-    },
-
-    iconWrapperOk: {
-        backgroundColor: "#e3f7ea",
-    },
-
-    iconWrapperPendente: {
-        backgroundColor: "#ffd8d8",
     },
 
     iconWrapperNeutro: {

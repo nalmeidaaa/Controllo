@@ -6,24 +6,24 @@ import {
     FlatList,
     ActivityIndicator,
     Alert,
-    Image, 
+    Image,
+    StyleSheet,
 } from "react-native";
-import { StyleSheet } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation, useRoute, useFocusEffect } from "@react-navigation/native";
 import { ArrowLeft, Box } from "lucide-react-native";
 
 import { obterToken } from "../../storage/usuario/dados.storage.js";
+import { buscarPatrimoniosPorSala } from "../../services/patrimonioService.js";
 import {
-    buscarPatrimoniosPorSala,
-    atualizarStatusPatrimonio,
-} from "../../services/patrimonioService.js";
-import { BASE_URL } from "../../services/api.js"; 
-import { criarRequisicao } from "../../storage/requisicao/requisicoes.storage.js";
+    buscarRequisicaoAbertaPorPatrimonio,
+    ehErroDeSessao,
+    encerrarSessaoExpirada,
+    mensagemDeErro,
+} from "../../services/requisicaoGeralService.js";
+import { BASE_URL } from "../../services/api.js";
 import { obterEstiloStatus } from "../../utils/statusPatrimonio.js";
-import ModalStatusPatrimonio from "../../components/ModalStatusPatrimonio.jsx";
-
 
 const iconColor = "#c9131c";
 
@@ -36,10 +36,7 @@ export default function SalaDetalheScreen() {
     const [patrimonios, setPatrimonios] = useState([]);
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState(false);
-
-    const [patrimonioSelecionado, setPatrimonioSelecionado] = useState(null);
-    const [modalVisivel, setModalVisivel] = useState(false);
-    const [salvando, setSalvando] = useState(false);
+    const [abrindoId, setAbrindoId] = useState(null);
 
     async function carregarPatrimonios() {
         try {
@@ -53,6 +50,10 @@ export default function SalaDetalheScreen() {
             setPatrimonios(resposta?.result ?? []);
         } catch (error) {
             console.error("Erro ao buscar patrimônios", error);
+            if (ehErroDeSessao(error)) {
+                encerrarSessaoExpirada(navigation);
+                return;
+            }
             setErro(true);
         } finally {
             setCarregando(false);
@@ -65,52 +66,58 @@ export default function SalaDetalheScreen() {
         }, [idSala])
     );
 
-    function abrirModal(patrimonio) {
-        setPatrimonioSelecionado(patrimonio);
-        setModalVisivel(true);
-    }
+    async function abrirPatrimonio(patrimonio) {
+        if (abrindoId) return;
 
-    function fecharModal() {
-        if (salvando) return;
-        setModalVisivel(false);
-        setPatrimonioSelecionado(null);
-    }
-
-    async function salvarAtualizacao({ status, descricao }) {
-        if (!patrimonioSelecionado) return;
-
-        try {
-            setSalvando(true);
-            const token = await obterToken();
-
-            await atualizarStatusPatrimonio(
-                token,
-                patrimonioSelecionado.id_patrimonio,
-                status
-            );
-
-            await criarRequisicao({
-                idPatrimonio: patrimonioSelecionado.id_patrimonio,
-                nomePatrimonio: patrimonioSelecionado.nome,
-                numeroPatrimonio: patrimonioSelecionado.numero_patrimonio,
+        if (patrimonio.status === "Ok") {
+            navigation.navigate("NovaRequisicaoScreen", {
+                patrimonio,
                 idSala,
                 nomeSala,
-                statusAnterior: patrimonioSelecionado.status,
-                statusNovo: status,
-                descricao,
             });
+            return;
+        }
 
-            setModalVisivel(false);
-            setPatrimonioSelecionado(null);
-            await carregarPatrimonios();
+        if (patrimonio.status !== "Pendente") return;
+
+        try {
+            setAbrindoId(patrimonio.id_patrimonio);
+            const token = await obterToken();
+            const resposta = await buscarRequisicaoAbertaPorPatrimonio(
+                token,
+                patrimonio.id_patrimonio
+            );
+            const aberta = resposta?.result;
+
+            if (!aberta) throw new Error("Resposta inválida");
+
+            if (aberta.propria === false) {
+                Alert.alert(
+                    "Requisição em aberto",
+                    `Este patrimônio já possui uma requisição em aberto (${aberta.status_requisicao}) feita por outro usuário.`
+                );
+                return;
+            }
+
+            navigation.navigate("RequisicaoDetalheScreen", {
+                idRequisicao: aberta.id_requisicao,
+            });
         } catch (error) {
-            console.error("Erro ao atualizar patrimônio", error);
+            console.error("Erro ao buscar requisição aberta", error);
+
+            if (ehErroDeSessao(error)) {
+                encerrarSessaoExpirada(navigation);
+                return;
+            }
+
             Alert.alert(
                 "Erro",
-                "Não foi possível atualizar o patrimônio. Tente novamente."
+                mensagemDeErro(error, "Não foi possível abrir a requisição deste patrimônio.")
             );
+
+            if (error?.response?.status === 404) carregarPatrimonios();
         } finally {
-            setSalvando(false);
+            setAbrindoId(null);
         }
     }
 
@@ -157,20 +164,19 @@ export default function SalaDetalheScreen() {
                         contentContainerStyle={styles.lista}
                         renderItem={({ item }) => {
                             const estiloStatus = obterEstiloStatus(item.status);
-                            
-                            // Tenta mapear qualquer nome comum que venha da API de patrimônios
                             const urlImagem = item.caminho_imagem || item.imagem || item.foto;
 
                             return (
                                 <TouchableOpacity
                                     style={styles.card}
                                     activeOpacity={0.8}
-                                    onPress={() => abrirModal(item)}
+                                    disabled={abrindoId !== null}
+                                    onPress={() => abrirPatrimonio(item)}
                                 >
                                     {urlImagem ? (
-                                        <Image 
-                                            source={{ uri: `${BASE_URL}${urlImagem}` }} 
-                                            style={styles.patrimonioImagem} 
+                                        <Image
+                                            source={{ uri: `${BASE_URL}${urlImagem}` }}
+                                            style={styles.patrimonioImagem}
                                         />
                                     ) : (
                                         <View style={styles.iconWrapper}>
@@ -190,35 +196,31 @@ export default function SalaDetalheScreen() {
                                         )}
                                     </View>
 
-                                    <View
-                                        style={[
-                                            styles.badge,
-                                            { backgroundColor: estiloStatus.bg },
-                                        ]}
-                                    >
-                                        <Text
+                                    {abrindoId === item.id_patrimonio ? (
+                                        <ActivityIndicator color={iconColor} />
+                                    ) : (
+                                        <View
                                             style={[
-                                                styles.badgeTexto,
-                                                { color: estiloStatus.texto },
+                                                styles.badge,
+                                                { backgroundColor: estiloStatus.bg },
                                             ]}
                                         >
-                                            {item.status}
-                                        </Text>
-                                    </View>
+                                            <Text
+                                                style={[
+                                                    styles.badgeTexto,
+                                                    { color: estiloStatus.texto },
+                                                ]}
+                                            >
+                                                {item.status}
+                                            </Text>
+                                        </View>
+                                    )}
                                 </TouchableOpacity>
                             );
                         }}
                     />
                 )}
             </View>
-
-            <ModalStatusPatrimonio
-                visivel={modalVisivel}
-                patrimonio={patrimonioSelecionado}
-                salvando={salvando}
-                onFechar={fecharModal}
-                onSalvar={salvarAtualizacao}
-            />
         </SafeAreaView>
     );
 }
