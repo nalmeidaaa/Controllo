@@ -185,3 +185,17 @@ export async function desativarUsuario(token, id) {
         throw error;
     }
 }
+
+// Cadastro público (sem token). Multipart; não envia tipo_usuario nem foto.
+export async function cadastrarUsuario({ nome, cpf, email, senha }) {
+    const formData = new FormData();
+    formData.append("nome", nome);
+    formData.append("cpf", cpf);
+    formData.append("email", email);
+    formData.append("senha", senha);
+
+    const resposta = await api.post("/usuarios/cadastro", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+    });
+    return resposta.data;
+}

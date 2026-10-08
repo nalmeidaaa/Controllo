@@ -36,7 +36,6 @@ export default function LoginScreen() {
         try {
             const dados = await logar(login.trim(), senha);
             await salvarUsuario(dados);
-            console.log("dados eviados: ",dados)
             const rota = rotasPorTipo[dados.tipo_usuario];
             if (!rota) throw new Error("Tipo de usuário não reconhecido.");
 
@@ -125,6 +124,17 @@ export default function LoginScreen() {
                                     Entrar no Painel
                                 </Text>
                             )}
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={styles.linkWrapper}
+                            activeOpacity={0.7}
+                            onPress={() => navigation.navigate("CadastroScreen")}
+                            disabled={carregando}
+                        >
+                            <Text style={styles.linkTexto}>
+                                Não tem conta? <Text style={styles.linkDestaque}>Criar conta</Text>
+                            </Text>
                         </TouchableOpacity>
                     </View>
                 </ScrollView>
@@ -252,6 +262,21 @@ const styles = StyleSheet.create({
     botaoTexto: {
         color: "#ffffff",
         fontSize: 16,
+        fontWeight: "700",
+    },
+
+    linkWrapper: {
+        alignItems: "center",
+        marginTop: 20,
+    },
+
+    linkTexto: {
+        color: "#6b6b73",
+        fontSize: 14,
+    },
+
+    linkDestaque: {
+        color: corPrincipal,
         fontWeight: "700",
     },
 });

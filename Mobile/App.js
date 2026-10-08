@@ -9,8 +9,11 @@ import QrCodeScreen from "./src/screens/Camera";
 import SalasScreen from "./src/screens/Salas";
 import SalaDetalheScreen from "./src/screens/SalaDetalhe";
 import ItensPendentesScreen from "./src/screens/ItensPendentes";
-import NovaRequisicaoScreen from "./src/screens/NovaRequisicao"
-import RequisicaoDetalheScreen from "./src/screens/RequisicaoDetalhe"
+import CadastroScreen from "./src/screens/Cadastro";
+import NovaRequisicaoScreen from "./src/screens/NovaRequisicao";
+import RequisicaoDetalheScreen from "./src/screens/RequisicaoDetalhe";
+import ManutencaoRequisicoesScreen from "./src/screens/ManutencaoRequisicoes";
+import ManutencaoRequisicaoDetalheScreen from "./src/screens/ManutencaoRequisicaoDetalhe";
 // import PosicaoGPS from "./src/screens/PosicaoGPS";
 // import RedesScreen from "./src/screens/RedesWifi";
 
@@ -61,6 +64,11 @@ export default function App() {
           options={{ headerShown: false }}
         />
         <Stack.Screen
+          name="CadastroScreen"
+          component={CadastroScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
           name="NovaRequisicaoScreen"
           component={NovaRequisicaoScreen}
           options={{ headerShown: false }}
@@ -68,6 +76,16 @@ export default function App() {
         <Stack.Screen
           name="RequisicaoDetalheScreen"
           component={RequisicaoDetalheScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ManutencaoRequisicoesScreen"
+          component={ManutencaoRequisicoesScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ManutencaoRequisicaoDetalheScreen"
+          component={ManutencaoRequisicaoDetalheScreen}
           options={{ headerShown: false }}
         />
         {/* <Stack.Screen
