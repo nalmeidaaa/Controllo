@@ -131,9 +131,7 @@ export default function ModalPatrimonio({ aberto, patrimonio, salas = [], onSalv
                             >
                                 <option value="">Selecione</option>
                                 <option value="Ok">Ok</option>
-                                <option value="Danificado">Danificado</option>
-                                <option value="Manutenção">Manutenção</option>
-                                <option value="Descartado">Descartado</option>
+                                <option value="Pendente">Pendente</option>
                             </select>
                         </div>
 
@@ -165,7 +163,7 @@ export default function ModalPatrimonio({ aberto, patrimonio, salas = [], onSalv
                             type="text" id="patNumero" className="form-control"
                             value={numeroPatrimonio} onChange={(e) => setNumeroPatrimonio(e.target.value)}
                             placeholder="Ex: 2024-00123"
-                            maxLength={20}
+                            maxLength={12}
                         />
                     </div>
 

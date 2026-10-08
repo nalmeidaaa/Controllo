@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { obterUsuarioAtual, deslogarUsuario } from '../../storage/usuario/dados.storage.js';
 
-export default function Navbar({ paginaAtiva, navegarPara, onLogout, onSidebarChange }) { // ALTERADO: adicionei onSidebarChange
+export default function Navbar({ paginaAtiva, navegarPara, onLogout, onSidebarChange, pendentes = 0 }) { // ALTERADO: adicionei onSidebarChange
     const [sidebarClosed, setSidebarClosed] = useState(false); // desktop: sidebar recolhida
     const [sidebarOpen, setSidebarOpen] = useState(false);     // mobile: sidebar aberta
 
@@ -34,6 +34,8 @@ export default function Navbar({ paginaAtiva, navegarPara, onLogout, onSidebarCh
         { id: 'dashboard', icone: 'grid-outline', label: 'Página Inicial' },
         { id: 'salas', icone: 'log-in-outline', label: 'Gerenciar Salas' },
         { id: 'usuarios', icone: 'people-outline', label: 'Gerenciar Usuários' },
+        { id: 'aprovacoes', icone: 'person-add-outline', label: 'Aprovar Cadastros' },
+        { id: 'historico', icone: 'time-outline', label: 'Histórico' },
     ];
 
     return (
@@ -95,28 +97,28 @@ export default function Navbar({ paginaAtiva, navegarPara, onLogout, onSidebarCh
                                     </span>
 
                                     {item.label}
+
+                                    {item.id === 'aprovacoes' && pendentes > 0 && (
+                                        <span
+                                            aria-label={`${pendentes} cadastros pendentes`}
+                                            style={{
+                                                marginLeft: 'auto',
+                                                minWidth: 20,
+                                                padding: '1px 7px',
+                                                borderRadius: 999,
+                                                background: '#c9131c',
+                                                color: '#fff',
+                                                fontSize: 11,
+                                                fontWeight: 700,
+                                                textAlign: 'center',
+                                            }}
+                                        >
+                                            {pendentes}
+                                        </span>
+                                    )}
                                 </button>
                             </li>
                         ))}
-                    </ul>
-                </div>
-
-                <div className="sidebar-divider"></div>
-
-                <div className="sidebar-section">
-                    <div className="sidebar-section-label">
-                        Em breve
-                    </div>
-
-                    <ul className="side-menu">
-                        <li>
-                            <button className="side-btn-link" disabled>
-                                <span className="menu-icon">
-                                    <ion-icon name="bar-chart-outline" style={{ fontSize: '20px' }}></ion-icon>
-                                </span>
-                                Ver Registros
-                            </button>
-                        </li>
                     </ul>
                 </div>
             </aside>

@@ -335,3 +335,52 @@ export async function ativarUsuario(token, id, tipo_usuario = "geral") {
         throw error;
     }
 }
+
+// ============================================================
+// CADASTRO PÚBLICO (sem token; não envia tipo_usuario)
+// ============================================================
+export async function cadastrarUsuario(formData) {
+    const resposta = await api.post('/usuarios/cadastro', formData);
+    return resposta.data;
+}
+
+
+// ============================================================
+// CADASTROS PENDENTES (somente administração)
+// ============================================================
+export async function buscarPendentes(token) {
+    if (!token) throw new Error("Erro: token inválido");
+    const resposta = await api.get('/usuarios/pendentes', {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+    return resposta.data; // { result: [...] }
+}
+
+export async function contarPendentes(token) {
+    if (!token) throw new Error("Erro: token inválido");
+    const resposta = await api.get('/usuarios/pendentes/contagem', {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+    return resposta.data; // { result: número }
+}
+
+// tipo_usuario: "geral" | "manutencao" | "administracao"
+export async function aprovarCadastro(token, id, tipo_usuario) {
+    if (!token) throw new Error("Erro: token inválido");
+    if (!id) throw new Error("Erro: id inválido");
+    const resposta = await api.put(
+        `/usuarios/${id}/aprovar`,
+        { tipo_usuario },
+        { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return resposta.data;
+}
+
+export async function recusarCadastro(token, id) {
+    if (!token) throw new Error("Erro: token inválido");
+    if (!id) throw new Error("Erro: id inválido");
+    const resposta = await api.delete(`/usuarios/${id}/recusar`, {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+    return resposta.data;
+}

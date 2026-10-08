@@ -1,0 +1,46 @@
+.setup-wrapper .cadastro-sucesso {
+  text-align: center;
+  padding: 24px 0;
+}
+
+.setup-wrapper .cadastro-sucesso-icone {
+  font-size: 56px;
+  color: #3ddc84;
+  margin-bottom: 16px;
+}
+
+.setup-wrapper .cadastro-sucesso h2 {
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.setup-wrapper .cadastro-sucesso p {
+  color: #a1a1aa;
+  font-size: 15px;
+  margin-bottom: 24px;
+}
+
+.setup-wrapper .cadastro-link-voltar {
+  background: none;
+  border: none;
+  color: #a1a1aa;
+  font-size: 14px;
+  margin-top: 16px;
+  cursor: pointer;
+  align-self: center;
+}
+
+.setup-wrapper .cadastro-link-voltar strong {
+  color: #ff3a48;
+}
+
+.setup-wrapper .setup-input-wrapper select {
+  width: 100%;
+}
+
+.setup-wrapper .campo-erro-texto {
+  color: #ff8a8e;
+  font-size: 12px;
+}

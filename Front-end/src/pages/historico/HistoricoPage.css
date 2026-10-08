@@ -1,0 +1,115 @@
+.hist-filtros {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    align-items: end;
+    margin-bottom: 20px;
+}
+
+.hist-filtro-limpar {
+    display: flex;
+    align-items: flex-end;
+}
+
+.hist-tabela-scroll {
+    overflow-x: auto;
+}
+
+.hist-tabela-scroll table {
+    min-width: 960px;
+}
+
+.hist-linha {
+    cursor: pointer;
+}
+
+.hist-linha:focus {
+    outline: 2px solid var(--vermelho-principal);
+    outline-offset: -2px;
+}
+
+.hist-descricao {
+    max-width: 280px;
+    white-space: normal;
+}
+
+.hist-estado {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--texto-suave);
+    font-size: 14px;
+}
+
+.hist-estado button {
+    margin-top: 14px;
+}
+
+.hist-paginacao {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.hist-paginacao-info {
+    font-size: 13px;
+    color: var(--texto-secundario);
+}
+
+.hist-resumo {
+    background: var(--bg-pagina);
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 18px;
+    font-size: 14px;
+}
+
+.hist-resumo-linha {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin-top: 6px;
+    font-size: 13px;
+}
+
+.hist-resumo-descricao {
+    margin: 10px 0 0;
+    color: var(--texto-secundario);
+}
+
+.hist-timeline {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 0 18px;
+    border-left: 2px solid var(--borda);
+}
+
+.hist-timeline-item {
+    position: relative;
+    padding: 0 0 18px 14px;
+}
+
+.hist-timeline-ponto {
+    position: absolute;
+    left: -25px;
+    top: 4px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--vermelho-principal);
+}
+
+.hist-timeline-topo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.hist-timeline-descricao {
+    margin: 6px 0 0;
+    font-size: 14px;
+}

@@ -1,4 +1,4 @@
-export default function DashboardPage({ navegarPara }) {
+export default function DashboardPage({ navegarPara, pendentes = 0 }) {
     return (
         <div className="dashboard-wrapper">
             <div className="dashboard-inner">
@@ -30,13 +30,27 @@ export default function DashboardPage({ navegarPara }) {
                         </div>
                     </div>
 
-                    <div className="menu-card disabled" aria-disabled="true">
+                    <div className="menu-card" onClick={() => navegarPara?.aprovacoes?.()}>
                         <div className="card-icon">
-                            <ion-icon name="bar-chart-outline" style={{ fontSize: '28px'}}></ion-icon>
+                            <ion-icon name="person-add-outline" style={{ fontSize: '28px'}}></ion-icon>
                         </div>
                         <div className="card-info">
-                            <h3>Ver Registros</h3>
-                            <p>Consulte históricos, relatórios e logs de atividade.</p>
+                            <h3>Aprovar Cadastros</h3>
+                            <p>
+                                {pendentes > 0
+                                    ? `${pendentes} cadastro${pendentes === 1 ? '' : 's'} aguardando aprovação.`
+                                    : 'Nenhum cadastro aguardando aprovação.'}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="menu-card" onClick={() => navegarPara?.historico?.()}>
+                        <div className="card-icon">
+                            <ion-icon name="time-outline" style={{ fontSize: '28px'}}></ion-icon>
+                        </div>
+                        <div className="card-info">
+                            <h3>Histórico</h3>
+                            <p>Consulte aberturas, andamentos e finalizações de manutenção.</p>
                         </div>
                     </div>
                 </div>
