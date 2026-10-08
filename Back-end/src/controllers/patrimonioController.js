@@ -84,10 +84,14 @@ const patrimonioController = {
                 caminhoImagem = existente.caminho_imagem;
             }
 
+            // Com requisição de manutenção em aberto, o status continua Pendente (só a manutenção o altera)
+            const possuiRequisicaoAberta = await patrimonioRepository.possuiRequisicaoAberta(id);
+            const statusFinal = possuiRequisicaoAberta ? 'Pendente' : (status || existente.status);
+
             // Cria a instância editada passando o caminho da imagem atualizado
             const patrimonio = Patrimonio.editar({
                 nome: nome || existente.nome,
-                status: status || existente.status,
+                status: statusFinal,
                 id_sala: id_sala || existente.id_sala,
                 caminho_imagem: caminhoImagem,
                 numero_patrimonio: numero_patrimonio || existente.numero_patrimonio || null

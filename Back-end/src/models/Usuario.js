@@ -1,5 +1,7 @@
-import { validarCPF } from "../utils/validarCpf.js";
+import { validarCPF } from "../utils/validarCPF.js";
 import { limparNumero } from "../utils/limparNumero.js";
+import { normalizarTipoUsuario } from "../utils/normalizarTipoUsuario.js";
+import { tipoUsuario } from "../enums/tipoUsuario.js";
 
 export class Usuario {
 
@@ -145,6 +147,12 @@ export class Usuario {
 
     #validarTipoUsuario(value) {
         if (!value || value.trim().length === 0) {
+            throw new Error("Tipo de usuário inválido");
+        }
+
+        // Somente perfis conhecidos (o valor vira nome de tabela no repository)
+        const tiposValidos = Object.values(tipoUsuario);
+        if (!tiposValidos.includes(normalizarTipoUsuario(value))) {
             throw new Error("Tipo de usuário inválido");
         }
     }

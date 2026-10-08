@@ -198,14 +198,31 @@ const salaRepository = {
                     await conn.execute(`DELETE FROM patrimonio WHERE id_patrimonio IN (${idsDeletar.map(() => '?').join(',')})`, idsDeletar);
                 }
 
+                // Patrimônios da sala com requisição de manutenção em aberto: o status deles não pode ser sobrescrito
+                const [comRequisicaoAberta] = await conn.execute(
+                    `SELECT DISTINCT r.id_patrimonio
+                     FROM requisicoes_manutencao r
+                     JOIN patrimonio p ON p.id_patrimonio = r.id_patrimonio
+                     WHERE p.id_sala = ? AND r.status_requisicao IN ('Pendente', 'Em andamento')`,
+                    [id]
+                );
+                const idsComRequisicaoAberta = new Set(comRequisicaoAberta.map((r) => String(r.id_patrimonio)));
+
                 for (const p of patrimoniosNovos) {
                     const idPatr = p.id ?? p.id_patrimonio;
                     const fotoPatrimonio = p.caminhoImagem ?? p.caminho_imagem ?? null;
 
                     if (idPatr) {
-                        // CORRIGIDO: Agora atualiza também o caminho da imagem do patrimônio na edição!
-                        const sqlUpdate = `UPDATE patrimonio SET nome = ?, status = ?, caminho_imagem = ?, numero_patrimonio = ? WHERE id_patrimonio = ? AND id_sala = ?`;
-                        await conn.execute(sqlUpdate, [p.nome ?? null, p.status ?? 'Ok', fotoPatrimonio, p.numero_patrimonio ?? null, idPatr, id]);
+                        if (idsComRequisicaoAberta.has(String(idPatr))) {
+                            // Mantém o status atual (Pendente) e atualiza apenas os demais campos
+                            const sqlUpdate = `UPDATE patrimonio SET nome = ?, caminho_imagem = ?, numero_patrimonio = ? WHERE id_patrimonio = ? AND id_sala = ?`;
+                            await conn.execute(sqlUpdate, [p.nome ?? null, fotoPatrimonio, p.numero_patrimonio ?? null, idPatr, id]);
+                        } else {
+                            // CORRIGIDO: Agora atualiza também o caminho da imagem do patrimônio na edição!
+                            // COALESCE: se o status não vier no formulário, mantém o atual (antes virava 'Ok')
+                            const sqlUpdate = `UPDATE patrimonio SET nome = ?, status = COALESCE(?, status), caminho_imagem = ?, numero_patrimonio = ? WHERE id_patrimonio = ? AND id_sala = ?`;
+                            await conn.execute(sqlUpdate, [p.nome ?? null, p.status ?? null, fotoPatrimonio, p.numero_patrimonio ?? null, idPatr, id]);
+                        }
                     } else {
                         const sqlInsert = `INSERT INTO patrimonio (nome, status, id_sala, caminho_imagem, numero_patrimonio) VALUES (?, ?, ?, ?, ?)`;
                         await conn.execute(sqlInsert, [p.nome ?? null, p.status ?? 'Ok', id, fotoPatrimonio, p.numero_patrimonio ?? null]);

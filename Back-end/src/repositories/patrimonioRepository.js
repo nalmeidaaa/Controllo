@@ -59,6 +59,21 @@ const patrimonioRepository = {
         }
     },
 
+    // Indica se o patrimônio possui requisição de manutenção em aberto (Pendente ou Em andamento)
+    possuiRequisicaoAberta: async (id) => {
+        const conn = await connection.getConnection();
+        try {
+            const sql = `SELECT 1 FROM requisicoes_manutencao
+                         WHERE id_patrimonio = ? AND status_requisicao IN ('Pendente', 'Em andamento') LIMIT 1`;
+            const [rows] = await conn.execute(sql, [id]);
+            return rows.length > 0;
+        } catch (error) {
+            throw error;
+        } finally {
+            conn.release();
+        }
+    },
+
     selecionarPorId: async (id) => {
         const conn = await connection.getConnection();
         try {

@@ -1,0 +1,1367 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-10-07T00:00:00.000Z",
+  "__export_source": "insomnia.desktop.app:v2023.5.8",
+  "resources": [
+    {
+      "_id": "wrk_controllo_requisicoes",
+      "_type": "workspace",
+      "parentId": null,
+      "name": "Controllo - Requisições (Dev 1)",
+      "description": "Rotas de requisições de manutenção. Faça os 4 logins, copie cada token para o ambiente (token_adm, token_man, token_geral, token_geral2) e ajuste id_patrimonio, id_patrimonio_2, id_requisicao e id_sala.",
+      "scope": "collection",
+      "created": 1791406390120,
+      "modified": 1791406390120
+    },
+    {
+      "_id": "env_controllo_base",
+      "_type": "environment",
+      "parentId": "wrk_controllo_requisicoes",
+      "name": "Base Environment",
+      "data": {
+        "base_url": "http://localhost:8000",
+        "login_adm": "CPF_OU_EMAIL_DO_ADMIN",
+        "senha_adm": "SENHA_DO_ADMIN",
+        "login_man": "CPF_OU_EMAIL_DA_MANUTENCAO",
+        "senha_man": "SENHA_DA_MANUTENCAO",
+        "login_geral": "CPF_OU_EMAIL_DO_GERAL",
+        "senha_geral": "SENHA_DO_GERAL",
+        "login_geral2": "CPF_OU_EMAIL_DO_GERAL_2",
+        "senha_geral2": "SENHA_DO_GERAL_2",
+        "token_adm": "",
+        "token_man": "",
+        "token_geral": "",
+        "token_geral2": "",
+        "id_patrimonio": 1,
+        "id_patrimonio_2": 2,
+        "id_requisicao": 1,
+        "id_sala": 1
+      },
+      "dataPropertyOrder": null,
+      "color": null,
+      "isPrivate": false,
+      "metaSortKey": 1791406390120,
+      "created": 1791406390120,
+      "modified": 1791406390120
+    },
+    {
+      "_id": "fld_ctl_1",
+      "_type": "request_group",
+      "parentId": "wrk_controllo_requisicoes",
+      "name": "0. Login (copie o token para o ambiente)",
+      "description": "",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -999,
+      "created": 1791406390120,
+      "modified": 1791406390120
+    },
+    {
+      "_id": "req_ctl_1",
+      "_type": "request",
+      "parentId": "fld_ctl_1",
+      "name": "Login Administração",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/usuarios/login",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -100,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"login\": \"{{ _.login_adm }}\",\n  \"senha\": \"{{ _.senha_adm }}\"\n}"
+      }
+    },
+    {
+      "_id": "req_ctl_2",
+      "_type": "request",
+      "parentId": "fld_ctl_1",
+      "name": "Login Manutenção",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/usuarios/login",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -200,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"login\": \"{{ _.login_man }}\",\n  \"senha\": \"{{ _.senha_man }}\"\n}"
+      }
+    },
+    {
+      "_id": "req_ctl_3",
+      "_type": "request",
+      "parentId": "fld_ctl_1",
+      "name": "Login Geral",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/usuarios/login",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -300,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"login\": \"{{ _.login_geral }}\",\n  \"senha\": \"{{ _.senha_geral }}\"\n}"
+      }
+    },
+    {
+      "_id": "req_ctl_4",
+      "_type": "request",
+      "parentId": "fld_ctl_1",
+      "name": "Login Geral 2",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/usuarios/login",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -400,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"login\": \"{{ _.login_geral2 }}\",\n  \"senha\": \"{{ _.senha_geral2 }}\"\n}"
+      }
+    },
+    {
+      "_id": "fld_ctl_2",
+      "_type": "request_group",
+      "parentId": "wrk_controllo_requisicoes",
+      "name": "1. Geral",
+      "description": "",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -998,
+      "created": 1791406390120,
+      "modified": 1791406390120
+    },
+    {
+      "_id": "req_ctl_5",
+      "_type": "request",
+      "parentId": "fld_ctl_2",
+      "name": "Criar requisição (Pendente + patrimônio Pendente)",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/requisicoes",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token_geral }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -500,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"id_patrimonio\": {{ _.id_patrimonio }},\n  \"descricao\": \"Descreva aqui o problema do patrimônio\",\n  \"prioridade\": \"Alta\"\n}"
+      }
+    },
+    {
+      "_id": "req_ctl_6",
+      "_type": "request",
+      "parentId": "fld_ctl_2",
+      "name": "Criar requisição sem prioridade (padrão Media)",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/requisicoes",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token_geral }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -600,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"id_patrimonio\": {{ _.id_patrimonio_2 }},\n  \"descricao\": \"Problema sem prioridade informada\"\n}"
+      }
+    },
+    {
+      "_id": "req_ctl_7",
+      "_type": "request",
+      "parentId": "fld_ctl_2",
+      "name": "Minhas requisições (abertas no topo)",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/requisicoes/minhas",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token_geral }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -700,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {}
+    },
+    {
+      "_id": "req_ctl_8",
+      "_type": "request",
+      "parentId": "fld_ctl_2",
+      "name": "Mural - atualizações",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/requisicoes/atualizacoes",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token_geral }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -800,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {}
+    },
+    {
+      "_id": "req_ctl_9",
+      "_type": "request",
+      "parentId": "fld_ctl_2",
+      "name": "Requisição em aberto do patrimônio",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/requisicoes/patrimonio/{{ _.id_patrimonio }}/aberta",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token_geral }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -900,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {}
+    },
+    {
+      "_id": "req_ctl_10",
+      "_type": "request",
+      "parentId": "fld_ctl_2",
+      "name": "Detalhe da requisição (linha do tempo)",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/requisicoes/{{ _.id_requisicao }}",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token_geral }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {}
+    },
+    {
+      "_id": "fld_ctl_3",
+      "_type": "request_group",
+      "parentId": "wrk_controllo_requisicoes",
+      "name": "2. Manutenção",
+      "description": "",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -997,
+      "created": 1791406390120,
+      "modified": 1791406390120
+    },
+    {
+      "_id": "req_ctl_11",
+      "_type": "request",
+      "parentId": "fld_ctl_3",
+      "name": "Listar todas",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/requisicoes",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token_man }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1100,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {}
+    },
+    {
+      "_id": "req_ctl_12",
+      "_type": "request",
+      "parentId": "fld_ctl_3",
+      "name": "Listar paginado (pagina=1, limite=5)",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/requisicoes?pagina=1&limite=5",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token_man }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1200,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {}
+    },
+    {
+      "_id": "req_ctl_13",
+      "_type": "request",
+      "parentId": "fld_ctl_3",
+      "name": "Filtro status = Pendente",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/requisicoes?status=Pendente",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token_man }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1300,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {}
+    },
+    {
+      "_id": "req_ctl_14",
+      "_type": "request",
+      "parentId": "fld_ctl_3",
+      "name": "Filtro status = Em andamento",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/requisicoes?status=Em andamento",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token_man }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1400,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {}
+    },
+    {
+      "_id": "req_ctl_15",
+      "_type": "request",
+      "parentId": "fld_ctl_3",
+      "name": "Filtro status = Concluído",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/requisicoes?status=Concluído",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token_man }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1500,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {}
+    },
+    {
+      "_id": "req_ctl_16",
+      "_type": "request",
+      "parentId": "fld_ctl_3",
+      "name": "Filtro prioridade + sala",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/requisicoes?prioridade=Alta&id_sala={{ _.id_sala }}",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token_man }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1600,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {}
+    },
+    {
+      "_id": "req_ctl_17",
+      "_type": "request",
+      "parentId": "fld_ctl_3",
+      "name": "Detalhe da requisição",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/requisicoes/{{ _.id_requisicao }}",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token_man }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1700,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {}
+    },
+    {
+      "_id": "req_ctl_18",
+      "_type": "request",
+      "parentId": "fld_ctl_3",
+      "name": "Assumir requisição",
+      "description": "",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/requisicoes/{{ _.id_requisicao }}/assumir",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token_man }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1800,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {}
+    },
+    {
+      "_id": "req_ctl_19",
+      "_type": "request",
+      "parentId": "fld_ctl_3",
+      "name": "Concluir requisição (patrimônio volta para Ok)",
+      "description": "",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/requisicoes/{{ _.id_requisicao }}/concluir",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token_man }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1900,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"descricao\": \"Serviço realizado e testado\"\n}"
+      }
+    },
+    {
+      "_id": "req_ctl_20",
+      "_type": "request",
+      "parentId": "fld_ctl_3",
+      "name": "Criar requisição (manutenção também pode)",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/requisicoes",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token_man }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -2000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"id_patrimonio\": {{ _.id_patrimonio }},\n  \"descricao\": \"Descreva aqui o problema do patrimônio\",\n  \"prioridade\": \"Alta\"\n}"
+      }
+    },
+    {
+      "_id": "fld_ctl_4",
+      "_type": "request_group",
+      "parentId": "wrk_controllo_requisicoes",
+      "name": "3. Administração",
+      "description": "",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -996,
+      "created": 1791406390120,
+      "modified": 1791406390120
+    },
+    {
+      "_id": "req_ctl_21",
+      "_type": "request",
+      "parentId": "fld_ctl_4",
+      "name": "Listar todas",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/requisicoes",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token_adm }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -2100,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {}
+    },
+    {
+      "_id": "req_ctl_22",
+      "_type": "request",
+      "parentId": "fld_ctl_4",
+      "name": "Detalhe da requisição",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/requisicoes/{{ _.id_requisicao }}",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token_adm }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -2200,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {}
+    },
+    {
+      "_id": "req_ctl_23",
+      "_type": "request",
+      "parentId": "fld_ctl_4",
+      "name": "Assumir requisição",
+      "description": "",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/requisicoes/{{ _.id_requisicao }}/assumir",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token_adm }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -2300,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {}
+    },
+    {
+      "_id": "req_ctl_24",
+      "_type": "request",
+      "parentId": "fld_ctl_4",
+      "name": "Concluir requisição",
+      "description": "",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/requisicoes/{{ _.id_requisicao }}/concluir",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token_adm }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -2400,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"descricao\": \"Concluída pela administração\"\n}"
+      }
+    },
+    {
+      "_id": "req_ctl_25",
+      "_type": "request",
+      "parentId": "fld_ctl_4",
+      "name": "Criar requisição",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/requisicoes",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token_adm }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -2500,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"id_patrimonio\": {{ _.id_patrimonio }},\n  \"descricao\": \"Descreva aqui o problema do patrimônio\",\n  \"prioridade\": \"Alta\"\n}"
+      }
+    },
+    {
+      "_id": "fld_ctl_5",
+      "_type": "request_group",
+      "parentId": "wrk_controllo_requisicoes",
+      "name": "4. Casos de erro (esperado entre parênteses)",
+      "description": "",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -995,
+      "created": 1791406390120,
+      "modified": 1791406390120
+    },
+    {
+      "_id": "req_ctl_26",
+      "_type": "request",
+      "parentId": "fld_ctl_5",
+      "name": "Sem token (401)",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/requisicoes/minhas",
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -2600,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {}
+    },
+    {
+      "_id": "req_ctl_27",
+      "_type": "request",
+      "parentId": "fld_ctl_5",
+      "name": "Token inválido (401)",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/requisicoes/minhas",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer token_invalido"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -2700,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {}
+    },
+    {
+      "_id": "req_ctl_28",
+      "_type": "request",
+      "parentId": "fld_ctl_5",
+      "name": "Geral lista todas (403)",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/requisicoes",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token_geral }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -2800,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {}
+    },
+    {
+      "_id": "req_ctl_29",
+      "_type": "request",
+      "parentId": "fld_ctl_5",
+      "name": "Geral tenta assumir (403)",
+      "description": "",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/requisicoes/{{ _.id_requisicao }}/assumir",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token_geral }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -2900,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {}
+    },
+    {
+      "_id": "req_ctl_30",
+      "_type": "request",
+      "parentId": "fld_ctl_5",
+      "name": "Geral 2 vê requisição de outro (404)",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/requisicoes/{{ _.id_requisicao }}",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token_geral2 }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -3000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {}
+    },
+    {
+      "_id": "req_ctl_31",
+      "_type": "request",
+      "parentId": "fld_ctl_5",
+      "name": "Criar duplicada - rode 'Criar requisição' 2x (409)",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/requisicoes",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token_geral }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -3100,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"id_patrimonio\": {{ _.id_patrimonio }},\n  \"descricao\": \"Descreva aqui o problema do patrimônio\",\n  \"prioridade\": \"Alta\"\n}"
+      }
+    },
+    {
+      "_id": "req_ctl_32",
+      "_type": "request",
+      "parentId": "fld_ctl_5",
+      "name": "Descrição curta (400)",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/requisicoes",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token_geral }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -3200,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"id_patrimonio\": {{ _.id_patrimonio }},\n  \"descricao\": \"curta\"\n}"
+      }
+    },
+    {
+      "_id": "req_ctl_33",
+      "_type": "request",
+      "parentId": "fld_ctl_5",
+      "name": "Prioridade inválida (400)",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/requisicoes",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token_geral }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -3300,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"id_patrimonio\": {{ _.id_patrimonio }},\n  \"descricao\": \"Descrição válida do problema\",\n  \"prioridade\": \"urgente\"\n}"
+      }
+    },
+    {
+      "_id": "req_ctl_34",
+      "_type": "request",
+      "parentId": "fld_ctl_5",
+      "name": "Patrimônio inexistente (404)",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/requisicoes",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token_geral }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -3400,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"id_patrimonio\": 999999,\n  \"descricao\": \"Descrição válida do problema\"\n}"
+      }
+    },
+    {
+      "_id": "req_ctl_35",
+      "_type": "request",
+      "parentId": "fld_ctl_5",
+      "name": "Concluir sem observação (400)",
+      "description": "",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/requisicoes/{{ _.id_requisicao }}/concluir",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token_man }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -3500,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {
+        "mimeType": "application/json",
+        "text": "{}"
+      }
+    },
+    {
+      "_id": "req_ctl_36",
+      "_type": "request",
+      "parentId": "fld_ctl_5",
+      "name": "Assumir inexistente (404)",
+      "description": "",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/requisicoes/999999/assumir",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token_man }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -3600,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {}
+    },
+    {
+      "_id": "req_ctl_37",
+      "_type": "request",
+      "parentId": "fld_ctl_5",
+      "name": "Filtro de status inválido (400)",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/requisicoes?status=xyz",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token_man }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -3700,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {}
+    },
+    {
+      "_id": "req_ctl_38",
+      "_type": "request",
+      "parentId": "fld_ctl_5",
+      "name": "ID inválido (400)",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/requisicoes/abc",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token_man }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -3800,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {}
+    },
+    {
+      "_id": "fld_ctl_6",
+      "_type": "request_group",
+      "parentId": "wrk_controllo_requisicoes",
+      "name": "5. Consistência do patrimônio",
+      "description": "",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -994,
+      "created": 1791406390120,
+      "modified": 1791406390120
+    },
+    {
+      "_id": "req_ctl_39",
+      "_type": "request",
+      "parentId": "fld_ctl_6",
+      "name": "Patrimônios da sala (conferir status)",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/patrimonios/sala/{{ _.id_sala }}",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token_adm }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -3900,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {}
+    },
+    {
+      "_id": "req_ctl_40",
+      "_type": "request",
+      "parentId": "fld_ctl_6",
+      "name": "Admin força status Ok (continua Pendente se houver requisição aberta)",
+      "description": "",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/patrimonios/{{ _.id_patrimonio }}",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token_adm }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -4000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"status\": \"Ok\"\n}"
+      }
+    },
+    {
+      "_id": "req_ctl_41",
+      "_type": "request",
+      "parentId": "fld_ctl_6",
+      "name": "Geral tenta editar patrimônio (403)",
+      "description": "",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/patrimonios/{{ _.id_patrimonio }}",
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token_geral }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -4100,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "created": 1791406390120,
+      "modified": 1791406390120,
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"status\": \"Ok\"\n}"
+      }
+    }
+  ]
+}

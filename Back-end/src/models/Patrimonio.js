@@ -120,8 +120,8 @@ export class Patrimonio {
         if (valorStr.length === 0) {
             throw new Error("Número do patrimônio não pode ser vazio");
         }
-        if (valorStr.length > 20) {
-            throw new Error("Número do patrimônio deve ter no máximo 20 caracteres");
+        if (valorStr.length > 12) {
+            throw new Error("Número do patrimônio deve ter no máximo 12 caracteres");
         }
     }
 

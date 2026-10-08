@@ -1,6 +1,19 @@
 import { connection } from "../configs/Database.js"
 import { normalizarTipoUsuario } from "../utils/normalizarTipoUsuario.js";
 
+// Erro de regra de negócio: o controller converte em resposta HTTP
+export class UsuarioError extends Error {
+    constructor(status, message, extra = {}) {
+        super(message);
+        this.name = 'UsuarioError';
+        this.status = status;
+        this.extra = extra;
+    }
+}
+
+// Perfis que o administrador pode atribuir ao aprovar um cadastro
+const PERFIS_APROVACAO = ['geral', 'manutencao', 'administracao'];
+
 const usuarioRepository = {
 
     criar: async (usuario) => {
@@ -41,6 +54,7 @@ const usuarioRepository = {
                     d.tipo_usuario_antigo
                 FROM usuarios u
                 LEFT JOIN desativado d ON d.id_usuario = u.id_usuario
+                WHERE u.tipo_usuario <> 'Pendente'
             `;
             const [rows] = await conn.execute(sql);
             return rows;
@@ -219,6 +233,106 @@ const usuarioRepository = {
             const [rows] = await conn.execute(sql);
             return rows;
         } catch (error) {
+            throw error;
+        } finally {
+            conn.release();
+        }
+    },
+
+    // CADASTRO PENDENTE: lista dos cadastros aguardando aprovação (mais antigos primeiro)
+    selecionarPendentes: async () => {
+        const conn = await connection.getConnection();
+        try {
+            const sql = `
+                SELECT
+                    u.id_usuario,
+                    u.nome,
+                    u.cpf,
+                    u.email,
+                    u.caminho_imagem,
+                    p.criado_em AS data_cadastro
+                FROM pendente p
+                JOIN usuarios u ON u.id_usuario = p.id_usuario
+                ORDER BY p.criado_em ASC, p.id_pendente ASC
+            `;
+            const [rows] = await conn.execute(sql);
+            return rows;
+        } finally {
+            conn.release();
+        }
+    },
+
+    contarPendentes: async () => {
+        const conn = await connection.getConnection();
+        try {
+            const [rows] = await conn.execute('SELECT COUNT(*) AS total FROM pendente');
+            return Number(rows[0].total);
+        } finally {
+            conn.release();
+        }
+    },
+
+    // APROVAR: tira de "pendente" e coloca no perfil escolhido (tudo ou nada)
+    aprovar: async (id, perfil) => {
+        const perfilNormalizado = normalizarTipoUsuario(String(perfil ?? ''));
+        if (!PERFIS_APROVACAO.includes(perfilNormalizado)) {
+            throw new UsuarioError(400, 'Perfil inválido. Valores permitidos: geral, manutencao e administracao.', { campo: 'tipo_usuario' });
+        }
+
+        const conn = await connection.getConnection();
+        try {
+            await conn.beginTransaction();
+
+            const [usuarios] = await conn.execute(
+                'SELECT id_usuario, nome, tipo_usuario FROM usuarios WHERE id_usuario = ? FOR UPDATE',
+                [id]
+            );
+            if (usuarios.length === 0) {
+                throw new UsuarioError(404, 'Usuário não encontrado.');
+            }
+            if (normalizarTipoUsuario(usuarios[0].tipo_usuario) !== 'pendente') {
+                throw new UsuarioError(409, 'Este cadastro não está mais pendente.');
+            }
+
+            await conn.execute('DELETE FROM pendente WHERE id_usuario = ?', [id]);
+            await conn.execute('UPDATE usuarios SET tipo_usuario = ? WHERE id_usuario = ?', [perfilNormalizado, id]);
+            // perfilNormalizado vem da lista fixa acima (seguro para usar como nome de tabela)
+            await conn.execute(`INSERT INTO ${perfilNormalizado} (id_usuario) VALUES (?)`, [id]);
+
+            await conn.commit();
+            return { id_usuario: usuarios[0].id_usuario, nome: usuarios[0].nome, tipo_usuario: perfilNormalizado };
+        } catch (error) {
+            await conn.rollback();
+            throw error;
+        } finally {
+            conn.release();
+        }
+    },
+
+    // RECUSAR: exclui o cadastro pendente (devolve a foto para o controller apagar do disco)
+    recusar: async (id) => {
+        const conn = await connection.getConnection();
+        try {
+            await conn.beginTransaction();
+
+            const [usuarios] = await conn.execute(
+                'SELECT id_usuario, tipo_usuario, caminho_imagem FROM usuarios WHERE id_usuario = ? FOR UPDATE',
+                [id]
+            );
+            if (usuarios.length === 0) {
+                throw new UsuarioError(404, 'Usuário não encontrado.');
+            }
+            if (normalizarTipoUsuario(usuarios[0].tipo_usuario) !== 'pendente') {
+                throw new UsuarioError(409, 'Este cadastro não está mais pendente.');
+            }
+
+            await conn.execute('DELETE FROM pendente WHERE id_usuario = ?', [id]);
+            await conn.execute('DELETE FROM usuarios WHERE id_usuario = ?', [id]);
+
+            await conn.commit();
+            return { caminho_imagem: usuarios[0].caminho_imagem };
+        } catch (error) {
+            await conn.rollback();
             throw error;
         } finally {
             conn.release();
