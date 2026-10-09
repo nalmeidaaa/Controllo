@@ -8,10 +8,12 @@
   --bg-card: #18181b;
   --bg-input: #202024;
   --border-input: #323238;
-  
+
   --color-primary: #ffffff;
-  --color-red: #ff3a48;        /* Vermelho vibrante */
-  --color-red-dark: #5c0f14;   /* Vermelho escuro harmonizado */
+  --color-red: #ff3a48;
+  /* Vermelho vibrante */
+  --color-red-dark: #5c0f14;
+  /* Vermelho escuro harmonizado */
   --color-danger: #e30613;
 
   --text-title: #ffffff;
@@ -443,5 +445,93 @@
 @media (max-width: 600px) {
   .setup-wrapper .setup-form-row {
     grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================
+   CARD DE REQUISITOS DA SENHA
+   ========================================= */
+
+.setup-wrapper .password-requirements {
+  margin-top: 4px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg,
+      rgba(255, 58, 72, 0.07),
+      rgba(32, 32, 36, 0.95));
+  border: 1px solid rgba(255, 58, 72, 0.2);
+  border-radius: 10px;
+  animation: passwordCardAppear 0.2s ease-out;
+}
+
+.setup-wrapper .password-requirements-title {
+  margin: 0 0 10px;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.setup-wrapper .password-requirements-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.setup-wrapper .password-requirement-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #ff7b83;
+  font-size: 12px;
+  line-height: 1.5;
+  transition: color 0.2s ease;
+}
+
+.setup-wrapper .password-requirement-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 58, 72, 0.45);
+  color: #ff7b83;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.setup-wrapper .password-requirement-item.valid {
+  color: #4ade80;
+}
+
+.setup-wrapper .password-requirement-item.valid .password-requirement-icon {
+  background-color: rgba(74, 222, 128, 0.1);
+  border-color: rgba(74, 222, 128, 0.5);
+  color: #4ade80;
+}
+
+@keyframes passwordCardAppear {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Ajustes para telas pequenas */
+@media (max-width: 600px) {
+  .setup-wrapper .password-requirements {
+    padding: 12px;
+  }
+
+  .setup-wrapper .password-requirement-item {
+    font-size: 12px;
   }
 }
