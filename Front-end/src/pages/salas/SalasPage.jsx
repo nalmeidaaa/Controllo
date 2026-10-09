@@ -1,4 +1,5 @@
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
+import BarraFiltros from '../../components/usuario/BarraFiltros.jsx';
 import { obterToken } from '../../storage/usuario/dados.storage.js';
 import { ITENS_POR_PAGINA } from '../../config/app.config.js';
 import { useSalas } from '../../hooks/useSalas.jsx';
@@ -17,6 +18,18 @@ export default function SalasPage({ navegarPara }) {
     const [duplicando, setDuplicando] = useState(false);
 
     const gridRef = useRef(null);
+
+    const [termoBusca, setTermoBusca] = useState('');
+
+    const salasFiltradas = useMemo(() => {
+        const termo = termoBusca.toLowerCase().trim();
+        if (!termo) return todas || [];
+
+        return (todas || []).filter((sala) => {
+            const nomeOuDescricao = (sala.descricao || sala.nome || '').toLowerCase();
+            return nomeOuDescricao.includes(termo);
+        });
+    }, [todas, termoBusca]);
 
     function handleExcluir(id) {
         setTodas((atual) => atual.filter((s) => (s.id_sala || s.id) !== id));
@@ -38,7 +51,7 @@ export default function SalasPage({ navegarPara }) {
     }
 
     const inicio = (paginaAtual - 1) * ITENS_POR_PAGINA;
-    const pagina = todas.slice(inicio, inicio + ITENS_POR_PAGINA);
+    const pagina = salasFiltradas.slice(inicio, inicio + ITENS_POR_PAGINA);
 
     function toggleSelecionada(id) {
         setSelecionadas((atual) => {
@@ -158,6 +171,60 @@ export default function SalasPage({ navegarPara }) {
                 </div>
                 <button className="btn-primary-custom" onClick={() => navegarPara.criarSala()}>+ Nova Sala</button>
             </header>
+
+            {/* BARRA DE PESQUISA COM EFEITO DE HOVER/FOCUS DA PÁGINA DE USUÁRIOS */}
+            <div className="busca-container" style={{ position: 'relative', marginBottom: '16px' }}>
+                <ion-icon
+                    name="search-outline"
+                    style={{
+                        position: 'absolute',
+                        left: '16px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        color: '#8e909a',
+                        fontSize: '18px',
+                        pointerEvents: 'none'
+                    }}
+                ></ion-icon>
+                <input
+                    type="text"
+                    placeholder="Buscar por nome..."
+                    value={termoBusca}
+                    onChange={(e) => {
+                        setTermoBusca(e.target.value);
+                        setPaginaAtual(1);
+                    }}
+                    style={{
+                        width: '100%',
+                        height: '42px',
+                        padding: '10px 16px 10px 44px',
+                        borderRadius: '20px',
+                        border: '1px solid #dcdfe6',
+                        backgroundColor: '#ffffff',
+                        fontSize: '14px',
+                        outline: 'none',
+                        transition: 'all 0.2s ease-in-out'
+                    }}
+                    onMouseEnter={(e) => {
+                        e.target.style.borderColor = '#e12729';
+                        e.target.style.boxShadow = '0 0 0 3px rgba(225, 39, 41, 0.15)';
+                    }}
+                    onMouseLeave={(e) => {
+                        if (document.activeElement !== e.target) {
+                            e.target.style.borderColor = '#dcdfe6';
+                            e.target.style.boxShadow = 'none';
+                        }
+                    }}
+                    onFocus={(e) => {
+                        e.target.style.borderColor = '#e12729';
+                        e.target.style.boxShadow = '0 0 0 3px rgba(225, 39, 41, 0.15)';
+                    }}
+                    onBlur={(e) => {
+                        e.target.style.borderColor = '#dcdfe6';
+                        e.target.style.boxShadow = 'none';
+                    }}
+                />
+            </div>
 
             {!carregando && !erroCarregar && todas.length > 0 && (
                 <div className="salas-selecao-header">
