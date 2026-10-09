@@ -5,7 +5,6 @@ import LoginScreen from "./src/screens/Login";
 import AdministracaoScreen from "./src/screens/Administracao";
 import ManutencaoScreen from "./src/screens/Manutencao";
 import GeralScreen from "./src/screens/Geral";
-import QrCodeScreen from "./src/screens/Camera";
 import SalasScreen from "./src/screens/Salas";
 import SalaDetalheScreen from "./src/screens/SalaDetalhe";
 import ItensPendentesScreen from "./src/screens/ItensPendentes";
@@ -42,11 +41,6 @@ export default function App() {
           name="GeralScreen"
           component={GeralScreen}
           options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="QrCodeScreen"
-          component={QrCodeScreen}
-          options={{ title: "Leitura de QR Code" }}
         />
         <Stack.Screen
           name="SalasScreen"

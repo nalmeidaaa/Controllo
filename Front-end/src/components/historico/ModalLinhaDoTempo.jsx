@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { obterLinhaDoTempo } from '../../services/historicoService.js';
 import { obterToken } from '../../storage/usuario/dados.storage.js';
-import BadgeAcao from '../../../../../../Downloads/files/BadgeAcao.jsx';
+import BadgeAcao from './BadgeAcao.jsx';
 import { PRIORIDADES, formatarDataHora, nomeUsuario } from '../../../../../../Downloads/files/rotulos.js';
 
 export default function ModalLinhaDoTempo({ idRequisicao, onFechar }) {
