@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { obterToken } from '../../storage/usuario/dados.storage.js';
 import { ITENS_POR_PAGINA } from '../../config/app.config.js';
 import { useSalas } from '../../hooks/useSalas.jsx';
+import BarraFiltros from '../../components/usuario/BarraFiltros.jsx';
 
 import {
     criarSala,
@@ -56,6 +57,8 @@ export default function SalasPage({ navegarPara }) {
         return sessionStorage.getItem('salas_aba_atual') || 'ativas';
     });
 
+    const [termoBusca, setTermoBusca] = useState('');
+
     const [carregandoDesativadas, setCarregandoDesativadas] = useState(false);
 
     const [erroDesativadas, setErroDesativadas] = useState(false);
@@ -73,6 +76,24 @@ export default function SalasPage({ navegarPara }) {
     const [duplicando, setDuplicando] = useState(false);
 
     const gridRef = useRef(null);
+
+
+    /*
+     * =====================================================
+     * FILTRAGEM POR NOME
+     * =====================================================
+     */
+    const listaBruta = abaAtual === 'ativas' ? todas : salasDesativadas;
+
+    const listaAtual = useMemo(() => {
+        const termo = termoBusca.toLowerCase().trim();
+        if (!termo) return listaBruta || [];
+
+        return (listaBruta || []).filter((sala) => {
+            const nomeOuDescricao = (sala.descricao || sala.nome || '').toLowerCase();
+            return nomeOuDescricao.includes(termo);
+        });
+    }, [listaBruta, termoBusca]);
 
 
     /*
@@ -120,11 +141,6 @@ export default function SalasPage({ navegarPara }) {
 
             const resposta =
                 await listarSalasDesativadas(token);
-
-            /*
-             * O backend pode retornar diretamente um array
-             * ou um objeto contendo result.
-             */
 
             const dados =
                 resposta?.result ??
@@ -175,53 +191,37 @@ export default function SalasPage({ navegarPara }) {
      * =====================================================
      */
 
-   
-function trocarAba(aba) {
+    function trocarAba(aba) {
 
-    setAbaAtual(aba);
+        setAbaAtual(aba);
+        setTermoBusca(''); // Reseta a busca ao trocar de aba
 
-    /*
-     * Salva imediatamente a aba escolhida.
-     */
-    sessionStorage.setItem(
-        'salas_aba_atual',
-        aba
-    );
+        sessionStorage.setItem(
+            'salas_aba_atual',
+            aba
+        );
 
-    /*
-     * Volta para a primeira página ao trocar de aba.
-     */
-    setPaginaAtual(1);
+        setPaginaAtual(1);
 
-    sessionStorage.setItem(
-        'salas_pagina_atual',
-        '1'
-    );
+        sessionStorage.setItem(
+            'salas_pagina_atual',
+            '1'
+        );
 
-    /*
-     * Limpa as salas selecionadas.
-     */
-    setSelecionadas(new Set());
+        setSelecionadas(new Set());
 
-    /*
-     * Volta ao início da página.
-     */
-    window.scrollTo({
-        top: 0,
-        left: 0,
-        behavior: 'instant'
-    });
+        window.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: 'instant'
+        });
 
-}
+    }
 
     /*
      * =====================================================
      * EXCLUIR DA LISTA DE ATIVAS
      * =====================================================
-     *
-     * A exclusão aqui é somente visual.
-     *
-     * O CardSala já chama a API para desativar.
      */
 
     function handleExcluir(id) {
@@ -290,21 +290,10 @@ function trocarAba(aba) {
 
             }
 
-
-            /*
-             * Reativa a sala no backend
-             */
-
             await ativarSala(
                 id,
                 token
             );
-
-
-            /*
-             * Remove imediatamente a sala
-             * da lista de salas desativadas
-             */
 
             setSalasDesativadas(
                 (atual) =>
@@ -316,18 +305,7 @@ function trocarAba(aba) {
                     )
             );
 
-
-            /*
-             * Atualiza a lista de salas ativas
-             */
-
             await recarregar();
-
-
-            /*
-             * Volta automaticamente para
-             * a aba de salas ativas
-             */
 
             setAbaAtual('ativas');
 
@@ -336,11 +314,6 @@ function trocarAba(aba) {
                 'ativas'
             );
 
-
-            /*
-             * Volta para a primeira página
-             */
-
             setPaginaAtual(1);
 
             sessionStorage.setItem(
@@ -348,19 +321,9 @@ function trocarAba(aba) {
                 '1'
             );
 
-
-            /*
-             * Limpa qualquer seleção anterior
-             */
-
             setSelecionadas(
                 new Set()
             );
-
-
-            /*
-             * Mensagem de sucesso
-             */
 
             alert(
                 'Sala reativada com sucesso!'
@@ -419,18 +382,6 @@ function trocarAba(aba) {
         );
 
     }
-
-
-    /*
-     * =====================================================
-     * LISTA ATUAL
-     * =====================================================
-     */
-
-    const listaAtual =
-        abaAtual === 'ativas'
-            ? todas
-            : salasDesativadas;
 
 
     /*
@@ -591,10 +542,6 @@ function trocarAba(aba) {
         );
 
 
-        /*
-         * Copiar imagem da sala
-         */
-
         const srcImagemSala =
             urlImagemSala(sala);
 
@@ -640,10 +587,6 @@ function trocarAba(aba) {
             salaCriada?.id_sala ??
             salaCriada?.id;
 
-
-        /*
-         * Duplicar patrimônios
-         */
 
         const patrimoniosOriginais =
             sala.patrimonios || [];
@@ -733,7 +676,7 @@ function trocarAba(aba) {
 
 
                 } catch (
-                    erroPatrimonio
+                erroPatrimonio
                 ) {
 
                     console.error(
@@ -960,6 +903,38 @@ function trocarAba(aba) {
             </div>
 
 
+            {/* BARRA DE PESQUISA COM POSICIONAMENTO GARANTIDO */}
+            <div style={{ position: 'relative', width: '100%', marginBottom: '16px' }}>
+                <ion-icon
+                    name="search-outline"
+                    style={{
+                        position: 'absolute',
+                        left: '14px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        fontSize: '18px',
+                        color: '#8e909a',
+                        pointerEvents: 'none',
+                        zIndex: 2
+                    }}
+                ></ion-icon>
+                <input
+                    type="text"
+                    className="filtros-input"
+                    placeholder="Pesquisar sala pelo nome..."
+                    value={termoBusca}
+                    onChange={(e) => {
+                        setTermoBusca(e.target.value);
+                        setPaginaAtual(1);
+                    }}
+                    style={{
+                        width: '100%',
+                        paddingLeft: '42px', // Espaço para o texto não ficar em cima da lupa
+                        boxSizing: 'border-box'
+                    }}
+                />
+            </div>
+
             {/* =====================================================
                 SELEÇÃO
             ===================================================== */}
@@ -967,7 +942,7 @@ function trocarAba(aba) {
             {abaAtual === 'ativas' &&
                 !carregando &&
                 !erroCarregar &&
-                todas.length > 0 && (
+                listaAtual.length > 0 && (
 
                     <div className="salas-selecao-header">
 
@@ -1046,7 +1021,7 @@ function trocarAba(aba) {
 
                         </div>
 
-                    ) : todas.length === 0 ? (
+                    ) : listaAtual.length === 0 ? (
 
                         <div className="tabela-card">
 
@@ -1055,7 +1030,7 @@ function trocarAba(aba) {
                                 <div className="tabela-empty-icon">
 
                                     <ion-icon
-                                        name="log-in-outline"
+                                        name="search-outline"
                                         style={{
                                             fontSize: '32px'
                                         }}
@@ -1172,7 +1147,7 @@ function trocarAba(aba) {
 
                         </div>
 
-                    ) : salasDesativadas.length === 0 ? (
+                    ) : listaAtual.length === 0 ? (
 
                         <div className="tabela-card">
 
@@ -1190,7 +1165,7 @@ function trocarAba(aba) {
                                 </div>
 
                                 <p>
-                                    Nenhuma sala desativada.
+                                    Nenhuma sala desativada encontrada.
                                 </p>
 
                             </div>
@@ -1245,7 +1220,7 @@ function trocarAba(aba) {
 
 
             {/* =====================================================
-                CONTADOR
+                CONTADOR E PAGINAÇÃO
             ===================================================== */}
 
             <div>
@@ -1257,7 +1232,7 @@ function trocarAba(aba) {
                         ? (
                             abaAtual === 'ativas'
                                 ? 'Nenhuma sala encontrada.'
-                                : 'Nenhuma sala desativada.'
+                                : 'Nenhuma sala desativada encontrada.'
                         )
 
                         : (
