@@ -76,15 +76,9 @@ const usuarioController = {
                 return res.status(400).json({ message: "Informe o e-mail.", campo: "email" });
             }
 
-            if (
-                typeof senha !== "string" ||
-                senha.length < 6 || !/[A-Z]/.test(senha) || !/[a-z]/.test(senha) || !/[^A-Za-z0-9]/.test(senha)
-            ) {
+            if (typeof senha !== "string" || senha.length < 6) {
                 descartarUpload(req);
-                return res.status(400).json({
-                    message: "A senha deve possuir no mínimo 6 caracteres, uma letra maiúscula, uma letra minúscula e um caractere especial.",
-                    campo: "senha"
-                });
+                return res.status(400).json({ message: "A senha deve possuir no mínimo 6 caracteres.", campo: "senha" });
             }
 
 
