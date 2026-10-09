@@ -1,5 +1,5 @@
 import { urlImagemSala } from '../../services/imagemService.js';
-import { excluirSala } from '../../services/salaService.js';
+import { desativarSala } from '../../services/salaService.js';
 import { obterUsuarioAtual } from '../../storage/usuario/dados.storage.js';
 
 export default function CardSala({
@@ -55,18 +55,18 @@ export default function CardSala({
 
     /*
      * =====================================================
-     * EXCLUIR
+     * DESATIVAR
      * =====================================================
      */
-    async function handleExcluir(e) {
+    async function handleDesativar(e) {
         e.preventDefault();
         e.stopPropagation();
 
-        if (
-            !confirm(
-                `Deseja realmente excluir a sala ${id}?`
-            )
-        ) {
+        const confirmou = confirm(
+            `Deseja realmente desativar a sala ${id}?`
+        );
+
+        if (!confirmou) {
             return;
         }
 
@@ -84,21 +84,32 @@ export default function CardSala({
                 return;
             }
 
-            await excluirSala(
+            console.log('Desativando sala:', id);
+
+            await desativarSala(
                 id,
                 token
             );
 
+            console.log(
+                'Sala desativada com sucesso:',
+                id
+            );
+
+            /*
+             * Remove a sala da lista da tela
+             * depois que o backend confirmar.
+             */
             onExcluir?.(id);
 
         } catch (erro) {
             console.error(
-                'Erro ao excluir a sala:',
+                'Erro ao desativar a sala:',
                 erro
             );
 
             alert(
-                'Não foi possível excluir a sala. Verifique suas permissões.'
+                'Não foi possível desativar a sala. Verifique suas permissões.'
             );
         }
     }
@@ -223,14 +234,14 @@ export default function CardSala({
                         Editar
                     </button>
 
-                    {/* EXCLUIR */}
+                    {/* DESATIVAR */}
                     <button
                         type="button"
                         className="btn-card-action btn-card-excluir"
 
-                        onClick={handleExcluir}
+                        onClick={handleDesativar}
                     >
-                        Excluir
+                        Desativar
                     </button>
 
                 </div>

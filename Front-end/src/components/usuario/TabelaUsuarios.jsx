@@ -31,6 +31,21 @@ function getBadge(tipo) {
     };
 }
 
+function formatarCPF(cpf) {
+    if (!cpf || cpf === '—') return '—';
+
+    const numeros = cpf.replace(/\D/g, '');
+
+    if (numeros.length !== 11) {
+        return cpf;
+    }
+
+    return numeros.replace(
+        /(\d{3})(\d{3})(\d{3})(\d{2})/,
+        '$1.$2.$3-$4'
+    );
+}
+
 function buscarInicial(nome) {
     if (!nome || nome === '—') {
         return '?';
@@ -91,8 +106,8 @@ export default function TabelaUsuarios({
 
                         const nome = usuario.nome || '—';
 
-                        const cpf = usuario.cpf || '—';
-
+                      const cpf = formatarCPF(usuario.cpf);
+                      
                         const email = usuario.email || '—';
 
                         const id = usuario.id_usuario;
