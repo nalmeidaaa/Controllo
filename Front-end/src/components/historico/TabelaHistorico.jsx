@@ -1,5 +1,5 @@
-import BadgeAcao from '../../../../../../Downloads/files/BadgeAcao.jsx';
-import { formatarDataHora, nomeUsuario } from '../../../../../../Downloads/files/rotulos.js';
+import BadgeAcao from './BadgeAcao.jsx';
+import { formatarDataHora, nomeUsuario } from './rotulos.js';
 
 export default function TabelaHistorico({ eventos, onSelecionar }) {
     return (
