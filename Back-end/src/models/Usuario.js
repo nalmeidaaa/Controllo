@@ -178,7 +178,7 @@ export class Usuario {
         // A validação só dispara se houver valor (evita quebrar o editar caso não altere a senha)
         if (value && value.length < 6) {
             throw new Error(
-                "A senha deve possuir no mínimo 6 caracteres"
+                "A senha deve possuir no mínimo 6 caracteres, uma letra maiúscula, uma letra minúscula e um caractere especial."
             );
         }
     }

@@ -75,10 +75,18 @@ const usuarioController = {
                 descartarUpload(req);
                 return res.status(400).json({ message: "Informe o e-mail.", campo: "email" });
             }
-            if (typeof senha !== "string" || senha.length < 6) {
+
+            if (
+                typeof senha !== "string" ||
+                senha.length < 6 || !/[A-Z]/.test(senha) || !/[a-z]/.test(senha) || !/[^A-Za-z0-9]/.test(senha)
+            ) {
                 descartarUpload(req);
-                return res.status(400).json({ message: "A senha deve possuir no mínimo 6 caracteres.", campo: "senha" });
+                return res.status(400).json({
+                    message: "A senha deve possuir no mínimo 6 caracteres, uma letra maiúscula, uma letra minúscula e um caractere especial.",
+                    campo: "senha"
+                });
             }
+
 
             const hash_senha = await bcrypt.hash(senha, 10);
             const caminhoImagem = req.file ? `/imagens/${req.file.filename}` : null;

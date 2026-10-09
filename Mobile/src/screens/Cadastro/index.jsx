@@ -32,7 +32,7 @@ function validar({ nome, cpf, email, senha, confirmar }) {
     else if (!EMAIL_REGEX.test(email.trim())) erros.email = "Informe um e-mail válido.";
 
     if (!senha) erros.senha = "Informe a senha.";
-    else if (senha.length < 6) erros.senha = "A senha deve ter no mínimo 6 caracteres.";
+    else if (senha.length < 6) erros.senha = "A senha deve possuir no mínimo 6 caracteres, uma letra maiúscula, uma letra minúscula e um caractere especial.";
 
     if (!confirmar) erros.confirmar = "Confirme a senha.";
     else if (senha !== confirmar) erros.confirmar = "As senhas não conferem.";

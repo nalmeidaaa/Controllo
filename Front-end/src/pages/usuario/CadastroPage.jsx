@@ -87,7 +87,7 @@ export default function CadastroPage({ onVoltar }) {
             mensagens.push('Informe a senha.');
         } else if (senha.length < 6) {
             campos.push('senha');
-            mensagens.push('A senha deve ter no mínimo 6 caracteres.');
+            mensagens.push('A senha deve possuir no mínimo 6 caracteres, uma letra maiúscula, uma letra minúscula e um caractere especial.');
         }
 
         if (senha && senha !== confirmarSenha) {
