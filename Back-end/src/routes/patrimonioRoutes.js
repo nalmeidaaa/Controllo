@@ -43,4 +43,18 @@ patrimonioRoutes.get('/bloco/:bloco', authMiddleware, autorizar(['administracao'
 // Deletar patrimônio
 patrimonioRoutes.delete('/:id', authMiddleware, autorizar(['administracao']), patrimonioController.deletar);
 
+patrimonioRoutes.put(
+    '/:id/transferir',
+    authMiddleware,
+    autorizar(['administracao']),
+    patrimonioController.transferir
+);
+
+patrimonioRoutes.get(
+    '/:id/historico-transferencias',
+    authMiddleware,
+    autorizar(['administracao']),
+    patrimonioController.historicoTransferencias
+);
+
 export default patrimonioRoutes;

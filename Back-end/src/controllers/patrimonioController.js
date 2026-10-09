@@ -185,6 +185,171 @@ const patrimonioController = {
             console.error(error);
             res.status(500).json({ mensagem: 'Ocorreu um erro no servidor', errorMessage: error.message });
         }
+    },
+     transferir: async (req, res) => {
+        try {
+
+            const { id } = req.params;
+
+            const {
+                id_sala_destino
+            } = req.body;
+
+            // ----------------------------------------------------
+            // Validação da sala de destino
+            // ----------------------------------------------------
+            if (!id_sala_destino) {
+                return res.status(400).json({
+                    erro:
+                        'Informe a sala de destino.'
+                });
+            }
+
+            // ----------------------------------------------------
+            // Verifica se o patrimônio existe
+            // ----------------------------------------------------
+            const patrimonio =
+                await patrimonioRepository
+                    .selecionarPorId(id);
+
+            if (!patrimonio) {
+                return res.status(404).json({
+                    erro:
+                        'Patrimônio não encontrado.'
+                });
+            }
+
+            // ----------------------------------------------------
+            // Faz a transferência e registra o histórico
+            // ----------------------------------------------------
+            const resultado =
+                await patrimonioRepository.transferir(
+                    id,
+                    id_sala_destino
+                );
+
+            console.log(
+                'Patrimônio transferido:',
+                resultado
+            );
+
+            return res.status(200).json({
+                mensagem:
+                    'Patrimônio transferido com sucesso.',
+                result: resultado
+            });
+
+        } catch (error) {
+
+            console.error(
+                'Erro ao transferir patrimônio:',
+                error
+            );
+
+            // ----------------------------------------------------
+            // Erros conhecidos
+            // ----------------------------------------------------
+            if (
+                error.message ===
+                'Patrimônio não encontrado.'
+            ) {
+                return res.status(404).json({
+                    erro: error.message
+                });
+            }
+
+            if (
+                error.message ===
+                'Sala de origem não encontrada.'
+            ) {
+                return res.status(404).json({
+                    erro: error.message
+                });
+            }
+
+            if (
+                error.message ===
+                'Sala de destino não encontrada.'
+            ) {
+                return res.status(404).json({
+                    erro: error.message
+                });
+            }
+
+            if (
+                error.message ===
+                'O patrimônio já está nesta sala.'
+            ) {
+                return res.status(400).json({
+                    erro: error.message
+                });
+            }
+
+            // ----------------------------------------------------
+            // Erro interno
+            // ----------------------------------------------------
+            return res.status(500).json({
+                mensagem:
+                    'Ocorreu um erro no servidor',
+                errorMessage:
+                    error.message
+            });
+        }
+    },
+
+
+    // ============================================================
+    // HISTÓRICO DE TRANSFERÊNCIAS
+    // ============================================================
+    historicoTransferencias: async (
+        req,
+        res
+    ) => {
+        try {
+
+            const { id } = req.params;
+
+            // ----------------------------------------------------
+            // Verifica se o patrimônio existe
+            // ----------------------------------------------------
+            const patrimonio =
+                await patrimonioRepository
+                    .selecionarPorId(id);
+
+            if (!patrimonio) {
+                return res.status(404).json({
+                    erro:
+                        'Patrimônio não encontrado.'
+                });
+            }
+
+            // ----------------------------------------------------
+            // Busca o histórico
+            // ----------------------------------------------------
+            const result =
+                await patrimonioRepository
+                    .selecionarHistoricoTransferencias(
+                        id
+                    );
+
+            return res.status(200).json({
+                result
+            });
+
+        } catch (error) {
+
+            console.error(
+                'Erro ao buscar histórico:',
+                error
+            );
+
+            return res.status(500).json({
+                mensagem:
+                    'Ocorreu um erro no servidor',
+                errorMessage:
+                    error.message
+            });
+        }
     }
 
 };

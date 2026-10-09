@@ -21,6 +21,16 @@ function normalizarTipo(tipo) {
         .trim();
 }
 
+function formatarCPF(valor) {
+    valor = valor.replace(/\D/g, '');
+
+    valor = valor.replace(/(\d{3})(\d)/, '$1.$2');
+    valor = valor.replace(/(\d{3})(\d)/, '$1.$2');
+    valor = valor.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+
+    return valor;
+}
+
 export default function ModalUsuario({ aberto, usuario, onSalvar, onFechar }) {
     const [form, setForm] = useState(ESTADO_INICIAL);
     const [erro, setErro] = useState([]);
@@ -273,11 +283,10 @@ export default function ModalUsuario({ aberto, usuario, onSalvar, onFechar }) {
                             <input
                                 type="text"
                                 id="modalNome"
-                                className={`form-control ${
-                                    camposErro.includes('nome')
+                                className={`form-control ${camposErro.includes('nome')
                                         ? 'campo-erro'
                                         : ''
-                                }`}
+                                    }`}
                                 required
                                 value={form.nome}
                                 onChange={(e) =>
@@ -301,15 +310,15 @@ export default function ModalUsuario({ aberto, usuario, onSalvar, onFechar }) {
                                 <input
                                     type="text"
                                     id="modalCpf"
-                                    className={`form-control ${
-                                        camposErro.includes('cpf')
+                                    className={`form-control ${camposErro.includes('cpf')
                                             ? 'campo-erro'
                                             : ''
-                                    }`}
+                                        }`}
                                     placeholder="000.000.000-00"
                                     value={form.cpf}
+                                    maxLength={14}
                                     onChange={(e) =>
-                                        atualizar('cpf', e.target.value)
+                                        atualizar('cpf', formatarCPF(e.target.value))
                                     }
                                 />
 
@@ -364,11 +373,10 @@ export default function ModalUsuario({ aberto, usuario, onSalvar, onFechar }) {
                             <input
                                 type="email"
                                 id="modalEmail"
-                                className={`form-control ${
-                                    camposErro.includes('email')
+                                className={`form-control ${camposErro.includes('email')
                                         ? 'campo-erro'
                                         : ''
-                                }`}
+                                    }`}
                                 value={form.email}
                                 onChange={(e) =>
                                     atualizar('email', e.target.value)
@@ -389,11 +397,10 @@ export default function ModalUsuario({ aberto, usuario, onSalvar, onFechar }) {
                             <input
                                 type="password"
                                 id="modalSenha"
-                                className={`form-control ${
-                                    camposErro.includes('senha')
+                                className={`form-control ${camposErro.includes('senha')
                                         ? 'campo-erro'
                                         : ''
-                                }`}
+                                    }`}
                                 required={!editando}
                                 value={form.senha}
                                 onChange={(e) =>
