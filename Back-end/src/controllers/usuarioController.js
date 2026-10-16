@@ -1,3 +1,4 @@
+
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { Usuario } from "../models/Usuario.js";
@@ -6,10 +7,18 @@ import fs from "fs";
 import path from "path";
 import { normalizarTipoUsuario } from "../utils/normalizarTipoUsuario.js";
 
-// Apaga do disco um arquivo enviado por upload (caminho salvo no banco: /imagens/<arquivo>)
+// Apaga do disco um arquivo enviado por upload
+// Caminho salvo no banco: /imagens/<arquivo>
 const apagarImagemDoDisco = (caminhoImagem) => {
     if (!caminhoImagem) return;
-    const caminhoLocal = path.join(process.cwd(), "uploads", caminhoImagem);
+
+    const nomeArquivo = caminhoImagem.replace("/imagens/", "");
+    const caminhoLocal = path.join(
+        process.cwd(),
+        "uploads",
+        nomeArquivo
+    );
+
     fs.unlink(caminhoLocal, (err) => {
         if (err && err.code !== "ENOENT") {
             console.error("Erro ao deletar imagem:", err);
@@ -17,47 +26,71 @@ const apagarImagemDoDisco = (caminhoImagem) => {
     });
 };
 
-// Remove o arquivo que o multer acabou de salvar (quando a requisição falha)
+// Remove o arquivo que o multer acabou de salvar
+// quando a requisição falha
 const descartarUpload = (req) => {
     if (req.file) {
         fs.unlink(req.file.path, (err) => {
-            if (err) console.error("Erro ao deletar arquivo:", err);
+            if (err && err.code !== "ENOENT") {
+                console.error("Erro ao deletar arquivo:", err);
+            }
         });
     }
 };
 
-// Erros de regra de negócio e de duplicidade (CPF / e-mail) das rotas de cadastro e aprovação
+// Trata erros de validação e duplicidade
 const responderErroUsuario = (res, error) => {
     if (error instanceof UsuarioError) {
-        return res.status(error.status).json({ message: error.message, ...error.extra });
+        return res.status(error.status).json({
+            message: error.message,
+            ...error.extra
+        });
     }
 
     if (error.code === "ER_DUP_ENTRY") {
         const mensagemErro = error.message.toLowerCase();
+
         if (mensagemErro.includes("cpf")) {
-            return res.status(409).json({ message: "O CPF informado já está cadastrado.", campo: "cpf" });
+            return res.status(409).json({
+                message: "O CPF informado já está cadastrado.",
+                campo: "cpf"
+            });
         }
+
         if (mensagemErro.includes("email")) {
-            return res.status(409).json({ message: "O E-mail informado já está cadastrado.", campo: "email" });
+            return res.status(409).json({
+                message: "O E-mail informado já está cadastrado.",
+                campo: "email"
+            });
         }
-        return res.status(409).json({ message: "Já existe um usuário com esses dados." });
+
+        return res.status(409).json({
+            message: "Já existe um usuário com esses dados."
+        });
     }
 
     console.error("ERRO NO CADASTRO/APROVAÇÃO:", error);
-    return res.status(500).json({ message: "Ocorreu um erro no servidor.", error: error.message });
+
+    return res.status(500).json({
+        message: "Ocorreu um erro no servidor.",
+        error: error.message
+    });
 };
 
 const usuarioController = {
 
-    // CADASTRO PÚBLICO: sempre cria o usuário como "pendente", ignorando qualquer tipo enviado
+    // CADASTRO PÚBLICO
+    // Todo novo cadastro aguarda aprovação
     cadastrar: async (req, res) => {
         try {
             const { nome, cpf, email, senha } = req.body ?? {};
 
-            // Sem administrador o sistema ainda não foi configurado: o primeiro acesso é o setup
-            const admsExistentes = await usuarioRepository.selecionarAdministracao();
+            const admsExistentes =
+                await usuarioRepository.selecionarAdministracao();
+
             if (admsExistentes.length === 0) {
                 descartarUpload(req);
+
                 return res.status(403).json({
                     message: "O sistema ainda não foi configurado. Realize o cadastro inicial do administrador."
                 });
@@ -65,38 +98,70 @@ const usuarioController = {
 
             if (typeof nome !== "string" || nome.trim().length < 3) {
                 descartarUpload(req);
-                return res.status(400).json({ message: "Informe o nome completo.", campo: "nome" });
+
+                return res.status(400).json({
+                    message: "Informe o nome completo.",
+                    campo: "nome"
+                });
             }
+
             if (!cpf) {
                 descartarUpload(req);
-                return res.status(400).json({ message: "Informe o CPF.", campo: "cpf" });
+
+                return res.status(400).json({
+                    message: "Informe o CPF.",
+                    campo: "cpf"
+                });
             }
+
             if (!email) {
                 descartarUpload(req);
-                return res.status(400).json({ message: "Informe o e-mail.", campo: "email" });
+
+                return res.status(400).json({
+                    message: "Informe o e-mail.",
+                    campo: "email"
+                });
             }
+
             if (typeof senha !== "string" || senha.length < 6) {
                 descartarUpload(req);
-                return res.status(400).json({ message: "A senha deve possuir no mínimo 6 caracteres.", campo: "senha" });
+
+                return res.status(400).json({
+                    message: "A senha deve possuir no mínimo 6 caracteres.",
+                    campo: "senha"
+                });
             }
 
             const hash_senha = await bcrypt.hash(senha, 10);
-            const caminhoImagem = req.file ? `/imagens/${req.file.filename}` : null;
+
+            const caminhoImagem = req.file
+                ? `/imagens/${req.file.filename}`
+                : null;
 
             let usuario;
+
             try {
                 usuario = Usuario.criar({
                     nome: nome.trim(),
                     cpf,
-                    tipo_usuario: "pendente", // fixo: nunca vem do corpo da requisição
+                    tipo_usuario: "pendente",
                     email,
                     hash_senha,
                     caminho_imagem: caminhoImagem
                 });
             } catch (erroValidacao) {
                 descartarUpload(req);
-                const campo = /cpf/i.test(erroValidacao.message) ? "cpf" : /email/i.test(erroValidacao.message) ? "email" : undefined;
-                return res.status(400).json({ message: erroValidacao.message, ...(campo && { campo }) });
+
+                const campo = /cpf/i.test(erroValidacao.message)
+                    ? "cpf"
+                    : /email/i.test(erroValidacao.message)
+                        ? "email"
+                        : undefined;
+
+                return res.status(400).json({
+                    message: erroValidacao.message,
+                    ...(campo && { campo })
+                });
             }
 
             await usuarioRepository.criar(usuario);
@@ -104,87 +169,121 @@ const usuarioController = {
             return res.status(201).json({
                 message: "Cadastro enviado! Aguarde a aprovação do administrador."
             });
+
         } catch (error) {
             descartarUpload(req);
             return responderErroUsuario(res, error);
         }
     },
 
+    // Lista usuários pendentes
     selecionarPendentes: async (req, res) => {
         try {
-            const result = await usuarioRepository.selecionarPendentes();
+            const result =
+                await usuarioRepository.selecionarPendentes();
+
             return res.status(200).json({ result });
+
         } catch (error) {
             return responderErroUsuario(res, error);
         }
     },
 
+    // Conta usuários pendentes
     contarPendentes: async (req, res) => {
         try {
-            const result = await usuarioRepository.contarPendentes();
+            const result =
+                await usuarioRepository.contarPendentes();
+
             return res.status(200).json({ result });
+
         } catch (error) {
             return responderErroUsuario(res, error);
         }
     },
 
+    // Aprova um cadastro
     aprovar: async (req, res) => {
         try {
             const id = Number(req.params.id);
+
             if (!Number.isInteger(id) || id <= 0) {
-                return res.status(400).json({ message: "Usuário informado é inválido." });
+                return res.status(400).json({
+                    message: "Usuário informado é inválido."
+                });
             }
 
             const { tipo_usuario } = req.body ?? {};
+
             if (!tipo_usuario) {
-                return res.status(400).json({ message: "Informe o perfil do usuário.", campo: "tipo_usuario" });
+                return res.status(400).json({
+                    message: "Informe o perfil do usuário.",
+                    campo: "tipo_usuario"
+                });
             }
 
-            const result = await usuarioRepository.aprovar(id, tipo_usuario);
-            return res.status(200).json({ message: "Cadastro aprovado com sucesso.", result });
+            const result = await usuarioRepository.aprovar(
+                id,
+                tipo_usuario
+            );
+
+            return res.status(200).json({
+                message: "Cadastro aprovado com sucesso.",
+                result
+            });
+
         } catch (error) {
             return responderErroUsuario(res, error);
         }
     },
 
+    // Recusa e exclui um cadastro pendente
     recusar: async (req, res) => {
         try {
             const id = Number(req.params.id);
+
             if (!Number.isInteger(id) || id <= 0) {
-                return res.status(400).json({ message: "Usuário informado é inválido." });
+                return res.status(400).json({
+                    message: "Usuário informado é inválido."
+                });
             }
 
-            const { caminho_imagem } = await usuarioRepository.recusar(id);
+            const { caminho_imagem } =
+                await usuarioRepository.recusar(id);
+
             apagarImagemDoDisco(caminho_imagem);
 
-            return res.status(200).json({ message: "Cadastro recusado e excluído." });
+            return res.status(200).json({
+                message: "Cadastro recusado e excluído."
+            });
+
         } catch (error) {
             return responderErroUsuario(res, error);
         }
     },
 
+    // Cria um usuário
     criar: async (req, res) => {
         try {
-            let { nome, cpf, tipo_usuario, email, senha } = req.body;
+            let {
+                nome,
+                cpf,
+                tipo_usuario,
+                email,
+                senha
+            } = req.body;
 
-            // Regra de segurança:
-            // Se não existir nenhum administrador, força o tipo para "administracao"
             const admsExistentes =
                 await usuarioRepository.selecionarAdministracao();
 
             if (admsExistentes.length === 0) {
                 tipo_usuario = "administracao";
+
             } else if (
                 tipo_usuario &&
                 normalizarTipoUsuario(tipo_usuario) === "desativado"
             ) {
-                if (req.file) {
-                    fs.unlink(req.file.path, (err) => {
-                        if (err) {
-                            console.error("Erro ao deletar arquivo:", err);
-                        }
-                    });
-                }
+                descartarUpload(req);
 
                 return res.status(400).json({
                     message: "Não é possível criar um usuário já desativado.",
@@ -192,14 +291,20 @@ const usuarioController = {
                 });
             }
 
+            if (!senha) {
+                descartarUpload(req);
+
+                return res.status(400).json({
+                    message: "Informe a senha.",
+                    campo: "senha"
+                });
+            }
+
             const hash_senha = await bcrypt.hash(senha, 10);
 
-            // Monta o caminho da imagem se foi feito upload
-            let caminhoImagem = null;
-
-            if (req.file) {
-                caminhoImagem = `/imagens/${req.file.filename}`;
-            }
+            const caminhoImagem = req.file
+                ? `/imagens/${req.file.filename}`
+                : null;
 
             const usuario = Usuario.criar({
                 nome,
@@ -213,38 +318,28 @@ const usuarioController = {
             const result = await usuarioRepository.criar(usuario);
 
             return res.status(201).json({
-                message:
-                    admsExistentes.length === 0
-                        ? "Primeiro administrador criado com sucesso"
-                        : "Usuário criado com sucesso",
+                message: admsExistentes.length === 0
+                    ? "Primeiro administrador criado com sucesso"
+                    : "Usuário criado com sucesso",
                 result
             });
 
         } catch (error) {
-
-            // Se ocorreu erro e uma imagem foi enviada,
-            // remove a imagem que acabou de ser criada
-            if (req.file) {
-                fs.unlink(req.file.path, (err) => {
-                    if (err) {
-                        console.error("Erro ao deletar arquivo:", err);
-                    }
-                });
-            }
+            descartarUpload(req);
 
             console.error("ERRO AO CRIAR USUÁRIO:", error);
 
-            // Erro de CPF ou E-mail duplicado
             if (error.code === "ER_DUP_ENTRY") {
+                const mensagemErro = error.message.toLowerCase();
 
-                if (error.message.toLowerCase().includes("cpf")) {
+                if (mensagemErro.includes("cpf")) {
                     return res.status(409).json({
                         message: "O CPF informado já está cadastrado.",
                         campo: "cpf"
                     });
                 }
 
-                if (error.message.toLowerCase().includes("email")) {
+                if (mensagemErro.includes("email")) {
                     return res.status(409).json({
                         message: "O E-mail informado já está cadastrado.",
                         campo: "email"
@@ -262,31 +357,30 @@ const usuarioController = {
             });
         }
     },
+
+    // Verifica se o sistema já foi configurado
     verificarSetup: async (req, res) => {
         try {
             const result = await usuarioRepository.verificarSetup();
 
-            return res.status(200).json({
-                result
-            });
+            return res.status(200).json({ result });
+
         } catch (error) {
             return res.status(500).json({
                 message: "Ocorreu um erro no servidor.",
                 error: error.message
-            })
+            });
         }
     },
 
+    // Lista todos os usuários
     selecionar: async (req, res) => {
         try {
             const result = await usuarioRepository.selecionar();
 
-            return res.status(200).json({
-                result
-            });
+            return res.status(200).json({ result });
 
         } catch (error) {
-
             return res.status(500).json({
                 message: "Ocorreu um erro no servidor.",
                 error: error.message
@@ -294,7 +388,7 @@ const usuarioController = {
         }
     },
 
-
+    // Edita um usuário
     editar: async (req, res) => {
         try {
             const id = req.params.id;
@@ -307,22 +401,11 @@ const usuarioController = {
                 senha
             } = req.body;
 
-            // Verifica se o usuário existe
             const usuarioExistente =
                 await usuarioRepository.selecionarPorId(id);
 
             if (!usuarioExistente) {
-
-                if (req.file) {
-                    fs.unlink(req.file.path, (err) => {
-                        if (err) {
-                            console.error(
-                                "Erro ao deletar arquivo:",
-                                err
-                            );
-                        }
-                    });
-                }
+                descartarUpload(req);
 
                 return res.status(404).json({
                     message: "Usuário não encontrado.",
@@ -332,45 +415,14 @@ const usuarioController = {
 
             let hash_senha = null;
 
-            // Gera hash somente se uma nova senha foi informada
             if (senha) {
                 hash_senha = await bcrypt.hash(senha, 10);
             }
 
-            // Monta o caminho da imagem
-            let caminhoImagem = null;
+            let caminhoImagem = usuarioExistente.caminho_imagem;
 
             if (req.file) {
-
                 caminhoImagem = `/imagens/${req.file.filename}`;
-
-                // Se existe uma imagem antiga, remove do servidor
-                if (usuarioExistente.caminho_imagem) {
-
-                    const caminhoAntigoLocal = path.join(
-                        process.cwd(),
-                        "uploads",
-                        usuarioExistente.caminho_imagem.replace(
-                            "/imagens/",
-                            ""
-                        )
-                    );
-
-                    fs.unlink(caminhoAntigoLocal, (err) => {
-                        if (err) {
-                            console.error(
-                                "Erro ao deletar imagem antiga:",
-                                err
-                            );
-                        }
-                    });
-                }
-
-            } else {
-
-                // Mantém a imagem antiga
-                caminhoImagem =
-                    usuarioExistente.caminho_imagem;
             }
 
             const usuario = Usuario.editar(
@@ -385,52 +437,43 @@ const usuarioController = {
                 id
             );
 
-            const result =
-                await usuarioRepository.editar(id, usuario);
+            const result = await usuarioRepository.editar(id, usuario);
 
-            return res.status(200).json({
-                result
-            });
+            // Apaga a imagem antiga somente após atualizar o banco
+            if (
+                req.file &&
+                usuarioExistente.caminho_imagem &&
+                usuarioExistente.caminho_imagem !== caminhoImagem
+            ) {
+                apagarImagemDoDisco(usuarioExistente.caminho_imagem);
+            }
+
+            return res.status(200).json({ result });
 
         } catch (error) {
-
-            // Se ocorreu erro e uma imagem nova foi enviada,
-            // remove a imagem
-            if (req.file) {
-                fs.unlink(req.file.path, (err) => {
-                    if (err) {
-                        console.error(
-                            "Erro ao deletar arquivo:",
-                            err
-                        );
-                    }
-                });
-            }
+            descartarUpload(req);
 
             console.error("ERRO AO EDITAR USUÁRIO:", error);
 
-            // Erro de CPF ou E-mail duplicado
             if (error.code === "ER_DUP_ENTRY") {
+                const mensagemErro = error.message.toLowerCase();
 
-                if (error.message.toLowerCase().includes("cpf")) {
+                if (mensagemErro.includes("cpf")) {
                     return res.status(409).json({
-                        message:
-                            "O CPF informado já está cadastrado.",
+                        message: "O CPF informado já está cadastrado.",
                         campo: "cpf"
                     });
                 }
 
-                if (error.message.toLowerCase().includes("email")) {
+                if (mensagemErro.includes("email")) {
                     return res.status(409).json({
-                        message:
-                            "O E-mail informado já está cadastrado.",
+                        message: "O E-mail informado já está cadastrado.",
                         campo: "email"
                     });
                 }
 
                 return res.status(409).json({
-                    message:
-                        "Já existe um usuário com esses dados."
+                    message: "Já existe um usuário com esses dados."
                 });
             }
 
@@ -441,17 +484,14 @@ const usuarioController = {
         }
     },
 
-
+    // Exclui um usuário
     deletar: async (req, res) => {
         try {
             const id = req.params.id;
 
-            const result =
-                await usuarioRepository.deletar(id);
+            const result = await usuarioRepository.deletar(id);
 
-            return res.status(200).json({
-                result
-            });
+            return res.status(200).json({ result });
 
         } catch (error) {
             console.error("ERRO AO DELETAR USUÁRIO:", error);
@@ -463,21 +503,16 @@ const usuarioController = {
         }
     },
 
-
+    // Lista administradores
     selecionarAdministracao: async (req, res) => {
         try {
             const result =
                 await usuarioRepository.selecionarAdministracao();
 
-            return res.status(200).json({
-                result
-            });
+            return res.status(200).json({ result });
 
         } catch (error) {
-            console.error(
-                "ERRO AO SELECIONAR ADMINISTRAÇÃO:",
-                error
-            );
+            console.error("ERRO AO SELECIONAR ADMINISTRAÇÃO:", error);
 
             return res.status(500).json({
                 message: "Ocorreu um erro no servidor.",
@@ -486,21 +521,16 @@ const usuarioController = {
         }
     },
 
-
+    // Lista usuários de manutenção
     selecionarManutencao: async (req, res) => {
         try {
             const result =
                 await usuarioRepository.selecionarManutencao();
 
-            return res.status(200).json({
-                result
-            });
+            return res.status(200).json({ result });
 
         } catch (error) {
-            console.error(
-                "ERRO AO SELECIONAR MANUTENÇÃO:",
-                error
-            );
+            console.error("ERRO AO SELECIONAR MANUTENÇÃO:", error);
 
             return res.status(500).json({
                 message: "Ocorreu um erro no servidor.",
@@ -509,21 +539,16 @@ const usuarioController = {
         }
     },
 
-
+    // Lista usuários gerais
     selecionarGeral: async (req, res) => {
         try {
             const result =
                 await usuarioRepository.selecionarGeral();
 
-            return res.status(200).json({
-                result
-            });
+            return res.status(200).json({ result });
 
         } catch (error) {
-            console.error(
-                "ERRO AO SELECIONAR USUÁRIOS GERAIS:",
-                error
-            );
+            console.error("ERRO AO SELECIONAR USUÁRIOS GERAIS:", error);
 
             return res.status(500).json({
                 message: "Ocorreu um erro no servidor.",
@@ -532,7 +557,7 @@ const usuarioController = {
         }
     },
 
-
+    // Realiza o login e retorna os dados básicos do usuário
     login: async (req, res) => {
         try {
             const { login, senha } = req.body;
@@ -545,25 +570,14 @@ const usuarioController = {
 
             let usuario;
 
-            const emailRegex =
-                /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
             if (emailRegex.test(login)) {
-
-                usuario =
-                    await usuarioRepository.buscarPorEmail(
-                        login
-                    );
-
+                usuario = await usuarioRepository.buscarPorEmail(login);
             } else {
+                const cpfLimpo = login.replace(/\D/g, "");
 
-                const cpfLimpo =
-                    login.replace(/\D/g, "");
-
-                usuario =
-                    await usuarioRepository.buscarPorCpf(
-                        cpfLimpo
-                    );
+                usuario = await usuarioRepository.buscarPorCpf(cpfLimpo);
             }
 
             if (!usuario) {
@@ -572,11 +586,10 @@ const usuarioController = {
                 });
             }
 
-            const senhaValida =
-                await bcrypt.compare(
-                    senha,
-                    usuario.hash_senha
-                );
+            const senhaValida = await bcrypt.compare(
+                senha,
+                usuario.hash_senha
+            );
 
             if (!senhaValida) {
                 return res.status(401).json({
@@ -584,8 +597,9 @@ const usuarioController = {
                 });
             }
 
-            // Só informa o estado da conta a quem sabe a senha
-            const tipoDoUsuario = normalizarTipoUsuario(usuario.tipo_usuario);
+            const tipoDoUsuario = normalizarTipoUsuario(
+                usuario.tipo_usuario
+            );
 
             if (tipoDoUsuario === "pendente") {
                 return res.status(403).json({
@@ -610,12 +624,17 @@ const usuarioController = {
                 }
             );
 
-            return res.json({
-                token
+            // Não retorna a senha nem o hash da senha
+            return res.status(200).json({
+                token,
+                id_usuario: usuario.id_usuario,
+                nome: usuario.nome,
+                tipo_usuario: usuario.tipo_usuario,
+                email: usuario.email,
+                caminho_imagem: usuario.caminho_imagem || null
             });
 
         } catch (error) {
-
             console.error("ERRO NO LOGIN:", error);
 
             return res.status(500).json({

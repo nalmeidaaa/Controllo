@@ -1,6 +1,14 @@
+
 import { useState, useEffect, useCallback } from 'react';
-import { estaLogado, deslogarUsuario, obterToken, obterUsuarioAtual } from './storage/usuario/dados.storage.js';
+import {
+    estaLogado,
+    deslogarUsuario,
+    obterToken,
+    obterUsuarioAtual
+} from './storage/usuario/dados.storage.js';
+
 import { contarPendentes } from './services/usuarioService.js';
+
 import Navbar from './components/layout/Navbar.jsx';
 import LoginPage from './pages/usuario/LoginPage.jsx';
 import DashboardPage from './pages/dashboard/DashboardPage.jsx';
@@ -13,13 +21,17 @@ import AprovarCadastrosPage from './pages/usuario/AprovarCadastrosPage.jsx';
 import HistoricoPage from './pages/historico/HistoricoPage.jsx';
 
 const semAcento = (texto = '') =>
-    String(texto).normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase();
+    String(texto)
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .trim()
+        .toLowerCase();
 
 export default function App() {
     const [logado, setLogado] = useState(false);
     const [pagina, setPagina] = useState('dashboard');
     const [paramsPagina, setParamsPagina] = useState({});
-    
+
     // ALTERADO: estado para saber se a sidebar está fechada
     const [sidebarClosed, setSidebarClosed] = useState(false);
 
@@ -27,22 +39,28 @@ export default function App() {
     const [pendentes, setPendentes] = useState(0);
 
     const atualizarPendentes = useCallback(async () => {
-        // somente a administração consulta; os demais perfis receberiam 403
-        if (semAcento(obterUsuarioAtual()?.tipo_usuario) !== 'administracao') {
+        // Somente a administração consulta; os demais perfis receberiam 403
+        if (
+            semAcento(obterUsuarioAtual()?.tipo_usuario) !==
+            'administracao'
+        ) {
             setPendentes(0);
             return;
         }
+
         try {
             const resposta = await contarPendentes(obterToken());
             setPendentes(Number(resposta?.result) || 0);
         } catch {
-            // falha no contador não deve derrubar a navegação
+            // Falha no contador não deve derrubar a navegação
         }
     }, []);
 
     // Atualiza o contador ao entrar e sempre que a página muda
     useEffect(() => {
-        if (logado) atualizarPendentes();
+        if (logado) {
+            atualizarPendentes();
+        }
     }, [logado, pagina, atualizarPendentes]);
 
     // Sincroniza e valida se há uma sessão ativa ao carregar o app
@@ -60,11 +78,17 @@ export default function App() {
 
         // Função para prender a navegação quando estiver no Dashboard
         const aplicarTravaDashboard = () => {
-            window.history.pushState({ pagina: 'dashboard', paramsPagina: {} }, '');
+            window.history.pushState(
+                { pagina: 'dashboard', paramsPagina: {} },
+                ''
+            );
         };
 
         // Garante que o estado inicial seja a trava do Dashboard
-        if (!window.history.state || window.history.state.pagina === 'dashboard') {
+        if (
+            !window.history.state ||
+            window.history.state.pagina === 'dashboard'
+        ) {
             aplicarTravaDashboard();
         }
 
@@ -73,12 +97,14 @@ export default function App() {
                 setPagina(event.state.pagina);
                 setParamsPagina(event.state.paramsPagina || {});
 
-                // Se ao voltar a pessoa chegou no Dashboard, injeta a trava para bloquear novas voltas
+                // Se ao voltar a pessoa chegou no Dashboard,
+                // injeta a trava para bloquear novas voltas
                 if (event.state.pagina === 'dashboard') {
                     aplicarTravaDashboard();
                 }
             } else {
-                // Se o usuário tentar voltar além do histórico interno, força a permanência no Dashboard
+                // Se o usuário tentar voltar além do histórico interno,
+                // força a permanência no Dashboard
                 setPagina('dashboard');
                 setParamsPagina({});
                 aplicarTravaDashboard();
@@ -96,7 +122,11 @@ export default function App() {
     const mudarPagina = (novaPagina, novosParams = {}) => {
         setPagina(novaPagina);
         setParamsPagina(novosParams);
-        window.history.pushState({ pagina: novaPagina, paramsPagina: novosParams }, '');
+
+        window.history.pushState(
+            { pagina: novaPagina, paramsPagina: novosParams },
+            ''
+        );
     };
 
     const handleLogout = () => {
@@ -132,21 +162,47 @@ export default function App() {
         switch (pagina) {
             case 'usuarios':
                 return <UsuariosPage />;
+
             case 'aprovacoes':
-                return <AprovarCadastrosPage onPendentesAtualizados={atualizarPendentes} />;
+                return (
+                    <AprovarCadastrosPage
+                        onPendentesAtualizados={atualizarPendentes}
+                    />
+                );
+
             case 'historico':
                 return <HistoricoPage />;
+
             case 'salas':
                 return <SalasPage navegarPara={navegarPara} />;
+
             case 'criarSala':
                 return <CriarSalaPage navegarPara={navegarPara} />;
+
             case 'editarSala':
-                return <EditarSalaPage navegarPara={navegarPara} idSala={paramsPagina.id} />;
+                return (
+                    <EditarSalaPage
+                        navegarPara={navegarPara}
+                        idSala={paramsPagina.id}
+                    />
+                );
+
             case 'visualizarSala':
-                return <VisualizarSalaPage navegarPara={navegarPara} idSala={paramsPagina.id} />;
+                return (
+                    <VisualizarSalaPage
+                        navegarPara={navegarPara}
+                        idSala={paramsPagina.id}
+                    />
+                );
+
             case 'dashboard':
             default:
-                return <DashboardPage navegarPara={navegarPara} pendentes={pendentes} />;
+                return (
+                    <DashboardPage
+                        navegarPara={navegarPara}
+                        pendentes={pendentes}
+                    />
+                );
         }
     }
 
@@ -154,18 +210,32 @@ export default function App() {
         <>
             <header>
                 <Navbar
-                    paginaAtiva={['criarSala', 'editarSala', 'visualizarSala'].includes(pagina) ? 'salas' : pagina}
+                    paginaAtiva={
+                        [
+                            'criarSala',
+                            'editarSala',
+                            'visualizarSala'
+                        ].includes(pagina)
+                            ? 'salas'
+                            : pagina
+                    }
                     navegarPara={navegarPara}
                     pendentes={pendentes}
                     onLogout={handleLogout}
-                    
-                    // ALTERADO: recebe do Navbar a informação de que a sidebar fechou/abriu
+
+                    // ALTERADO: recebe do Navbar a informação
+                    // de que a sidebar fechou/abriu
                     onSidebarChange={setSidebarClosed}
                 />
             </header>
 
-            {/* ALTERADO: adiciona a classe sidebar-closed quando a sidebar estiver fechada */}
-            <main className={`conteudo-principal ${sidebarClosed ? 'sidebar-closed' : ''}`}>
+            {/* ALTERADO: adiciona a classe sidebar-closed
+                quando a sidebar estiver fechada */}
+            <main
+                className={`conteudo-principal ${
+                    sidebarClosed ? 'sidebar-closed' : ''
+                }`}
+            >
                 <div id="app">{renderPagina()}</div>
             </main>
         </>
