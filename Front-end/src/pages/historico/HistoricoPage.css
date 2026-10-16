@@ -1,115 +1,240 @@
+/* Filtros */
 .hist-filtros {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 12px;
-    align-items: end;
-    margin-bottom: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  align-items: end;
+  margin-bottom: 20px;
 }
 
 .hist-filtro-limpar {
-    display: flex;
-    align-items: flex-end;
+  display: flex;
+  align-items: flex-end;
 }
 
+/* Container do Conteúdo em Formato de Card Grande */
+.hist-conteudo-card {
+  background: #ffffff;
+  border: 1px solid var(--borda, #f0e2e2);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  margin-bottom: 24px;
+}
+
+/* Lista em coluna dos registros verticais/horizontais */
+.hist-cards-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Item em Linha (exatamente como na imagem) */
+.hist-card-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-pagina, #fcf8f8);
+  border: 1px solid var(--borda, #f0e2e2);
+  border-left: 4px solid #f63b3b;
+  border-radius: 12px;
+  padding: 14px 20px;
+  gap: 16px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.hist-card-item:hover {
+  transform: translateY(-1px);
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.hist-campo-status {
+  min-width: 120px;
+}
+
+.hist-campo-descricao {
+  flex: 1;
+  max-width: 320px;
+}
+
+.hist-card-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  background-color: #fedbdb;
+  color: #d81d1d;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.hist-card-data {
+  display: block;
+  font-size: 11px;
+  color: var(--texto-secundario, #64748b);
+  font-weight: 500;
+}
+
+.hist-card-campo label {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  color: #b89494;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 2px;
+}
+
+.hist-card-campo p {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+  word-break: break-word;
+}
+
+.hist-card-campo small {
+  color: #64748b;
+  font-weight: 400;
+}
+
+/* Tabela Antiga (para fallback ou relatório) */
 .hist-tabela-scroll {
-    overflow-x: auto;
+  overflow-x: auto;
 }
 
 .hist-tabela-scroll table {
-    min-width: 960px;
+  min-width: 960px;
 }
 
 .hist-linha {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .hist-linha:focus {
-    outline: 2px solid var(--vermelho-principal);
-    outline-offset: -2px;
+  outline: 2px solid var(--vermelho-principal, #ef4444);
+  outline-offset: -2px;
 }
 
 .hist-descricao {
-    max-width: 280px;
-    white-space: normal;
+  max-width: 280px;
+  white-space: normal;
 }
 
+/* Estados e Auxiliares */
 .hist-estado {
-    text-align: center;
-    padding: 40px 20px;
-    color: var(--texto-suave);
-    font-size: 14px;
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--texto-suave, #8b6464);
+  font-size: 14px;
 }
 
 .hist-estado button {
-    margin-top: 14px;
+  margin-top: 14px;
 }
 
+/* Paginação */
 .hist-paginacao {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    margin-top: 20px;
-    flex-wrap: wrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 20px;
+  flex-wrap: wrap;
 }
 
 .hist-paginacao-info {
-    font-size: 13px;
-    color: var(--texto-secundario);
+  font-size: 13px;
+  color: var(--texto-secundario, #64748b);
 }
 
+/* Modal e Linha do Tempo */
 .hist-resumo {
-    background: var(--bg-pagina);
-    border: 1px solid var(--borda);
-    border-radius: 10px;
-    padding: 14px 16px;
-    margin-bottom: 18px;
-    font-size: 14px;
+  background: var(--bg-pagina, #f8fafc);
+  border: 1px solid var(--borda, #e2e8f0);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 18px;
+  font-size: 14px;
 }
 
 .hist-resumo-linha {
-    display: flex;
-    gap: 18px;
-    flex-wrap: wrap;
-    margin-top: 6px;
-    font-size: 13px;
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+  font-size: 13px;
 }
 
 .hist-resumo-descricao {
-    margin: 10px 0 0;
-    color: var(--texto-secundario);
+  margin: 10px 0 0;
+  color: var(--texto-secundario, #64748b);
 }
 
 .hist-timeline {
-    list-style: none;
-    margin: 0;
-    padding: 0 0 0 18px;
-    border-left: 2px solid var(--borda);
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 18px;
+  border-left: 2px solid var(--borda, #e2e8f0);
 }
 
 .hist-timeline-item {
-    position: relative;
-    padding: 0 0 18px 14px;
+  position: relative;
+  padding: 0 0 18px 14px;
 }
 
 .hist-timeline-ponto {
-    position: absolute;
-    left: -25px;
-    top: 4px;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: var(--vermelho-principal);
+  position: absolute;
+  left: -25px;
+  top: 4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--vermelho-principal, #ef4444);
 }
 
 .hist-timeline-topo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .hist-timeline-descricao {
-    margin: 6px 0 0;
-    font-size: 14px;
+  margin: 6px 0 0;
+  font-size: 14px;
+}
+
+/* Botão Gerar PDF */
+.btn-gerar-pdf {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: var(--vermelho-principal, #ef4444);
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-gerar-pdf:hover {
+  background-color: #dc2626;
+  transform: translateY(-1px);
+}
+
+.btn-gerar-pdf:active {
+  transform: translateY(0);
+}
+
+.btn-gerar-pdf:focus-visible {
+  outline: 2px solid var(--vermelho-principal, #ef4444);
+  outline-offset: 2px;
 }

@@ -17,6 +17,7 @@ export default function LoginPage({ onLoginSucesso }) {
         setCarregando(true);
         try {
             const dados = await logar(login.trim(), senha);
+
             if (dados && dados.token) {
                 salvarUsuario(dados);
                 onLoginSucesso();
