@@ -20,7 +20,11 @@
     "react-icons": "^5.7.0"
   },
   "devDependencies": {
+<<<<<<< HEAD
     "@vitejs/plugin-react": "^5.2.0",
+=======
+    "@vitejs/plugin-react": "^6.1.2",
+>>>>>>> ade289b7a40de6f4da660a7e2c518f58daa7fc80
     "vite": "^8.2.2"
   }
 }

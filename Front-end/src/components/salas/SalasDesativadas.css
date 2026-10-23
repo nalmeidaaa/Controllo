@@ -1,0 +1,95 @@
+/* Salas desativadas — prefixo sdes- · tom neutro (cinzas) */
+
+.sdes-container { display: flex; flex-direction: column; gap: 14px; }
+
+.sdes-busca { position: relative; width: 100%; }
+.sdes-busca-icone {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    font-size: 18px; color: var(--texto-suave); pointer-events: none; z-index: 2;
+}
+.sdes-busca-input { width: 100%; padding-left: 42px; box-sizing: border-box; }
+
+.sdes-mensagem {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    padding: 10px 14px;
+    background: var(--bg-superficie);
+    border: 1px solid var(--borda-forte);
+    border-radius: var(--raio);
+    color: var(--texto-primario);
+    font-size: 14px;
+}
+.sdes-mensagem-acoes { display: inline-flex; gap: 14px; align-items: center; }
+.sdes-link {
+    background: none; border: none; padding: 2px 0; cursor: pointer;
+    font: inherit; font-weight: 600; color: var(--texto-primario);
+    text-decoration: underline; text-underline-offset: 3px;
+}
+.sdes-link:hover { color: var(--texto-secundario); }
+.sdes-link:focus-visible { outline: 2px solid var(--texto-secundario); outline-offset: 2px; border-radius: 2px; }
+
+.sdes-lista {
+    list-style: none; margin: 0; padding: 0;
+    background: var(--bg-superficie);
+    border: 1px solid var(--borda);
+    border-radius: var(--raio-lg);
+    overflow: hidden;
+}
+
+.sdes-linha {
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--borda);
+    cursor: pointer;
+    transition: var(--transicao);
+}
+.sdes-linha:last-child { border-bottom: none; }
+.sdes-linha:hover { background: var(--bg-pagina); }
+.sdes-linha:focus-visible { outline: 2px solid var(--texto-secundario); outline-offset: -2px; }
+
+.sdes-miniatura {
+    flex: 0 0 56px; width: 56px; height: 56px;
+    border-radius: var(--raio-sm); overflow: hidden;
+    background: var(--bg-pagina); border: 1px solid var(--borda);
+}
+.sdes-miniatura-img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1); opacity: 0.85; display: block; }
+
+/* Também usado no CardSala (salas ativas sem imagem) */
+.sdes-sem-imagem {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg-pagina); color: var(--texto-suave); font-size: 26px;
+}
+
+.sdes-info { flex: 1 1 auto; min-width: 0; }
+.sdes-nome {
+    margin: 0; font-size: 15px; font-weight: 600; color: var(--texto-primario);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.sdes-meta {
+    margin: 2px 0 0; display: flex; flex-wrap: wrap; gap: 4px 12px;
+    font-size: 13px; color: var(--texto-secundario);
+}
+
+.sdes-acoes { display: flex; gap: 8px; flex: 0 0 auto; }
+.sdes-btn {
+    padding: 8px 16px; border-radius: var(--raio); font: inherit; font-size: 14px; font-weight: 500;
+    cursor: pointer; transition: var(--transicao); border: 1px solid var(--borda-forte);
+}
+.sdes-btn--sec { background: var(--bg-superficie); color: var(--texto-secundario); }
+.sdes-btn--sec:hover { background: var(--bg-pagina); }
+.sdes-btn--prim { background: var(--bg-escuro-3); color: var(--texto-no-escuro); border-color: var(--bg-escuro-3); }
+.sdes-btn--prim:hover { background: var(--bg-escuro); }
+.sdes-btn:focus-visible { outline: 2px solid var(--texto-secundario); outline-offset: 2px; }
+
+@media (max-width: 600px) {
+    .sdes-linha { flex-wrap: wrap; }
+    .sdes-info { flex: 1 1 calc(100% - 80px); }
+    .sdes-acoes { flex: 1 1 100%; }
+    .sdes-acoes .sdes-btn { flex: 1 1 0; }
+}
+
+/* Placeholder dentro do card de sala ativa (sem foto): escuro para o badge "Bloco" continuar legível */
+.sala-card-imagem-wrapper .sdes-sem-imagem {
+    position: absolute; inset: 0;
+    background: var(--bg-escuro-3); color: var(--texto-suave); font-size: 40px;
+}

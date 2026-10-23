@@ -4,11 +4,7 @@ import { ITENS_POR_PAGINA } from '../../config/app.config.js';
 import { useSalas } from '../../hooks/useSalas.jsx';
 import BarraFiltros from '../../components/usuario/BarraFiltros.jsx';
 
-import {
-    criarSala,
-    listarSalasDesativadas,
-    ativarSala
-} from '../../services/salaService.js';
+import { criarSala } from '../../services/salaService.js';
 
 import { criarPatrimonio } from '../../services/patrimonioService.js';
 
@@ -18,7 +14,8 @@ import {
 } from '../../services/imagemService.js';
 
 import CardSala from '../../components/salas/CardSala.jsx';
-import CardSalaDesativada from '../../components/salas/CardSalaDesativada.jsx';
+import SalasDesativadasLista from '../../components/salas/SalasDesativadasLista.jsx';
+import { useSalasDesativadas } from '../../hooks/useSalasDesativadas.jsx';
 import Paginacao from '../../components/shared/Paginacao.jsx';
 
 
@@ -39,14 +36,24 @@ export default function SalasPage({ navegarPara }) {
         recarregar
     } = useSalas();
 
+    /*
+     * Salas desativadas: carregadas no mount (contador correto da aba).
+     */
+    const desativadas = useSalasDesativadas({
+        aoMudarAtivas: recarregar
+    });
+
+    const {
+        salas: salasDesativadas,
+        carregar: carregarSalasDesativadas
+    } = desativadas;
+
 
     /*
      * =====================================================
      * ESTADOS
      * =====================================================
      */
-
-    const [salasDesativadas, setSalasDesativadas] = useState([]);
 
     /*
      * A aba é recuperada do sessionStorage.
@@ -58,10 +65,6 @@ export default function SalasPage({ navegarPara }) {
     });
 
     const [termoBusca, setTermoBusca] = useState('');
-
-    const [carregandoDesativadas, setCarregandoDesativadas] = useState(false);
-
-    const [erroDesativadas, setErroDesativadas] = useState(false);
 
     const [paginaAtual, setPaginaAtual] = useState(() => {
         const paginaSalva = sessionStorage.getItem('salas_pagina_atual');
@@ -124,55 +127,7 @@ export default function SalasPage({ navegarPara }) {
 
     /*
      * =====================================================
-     * LISTAR SALAS DESATIVADAS
-     * =====================================================
-     */
-
-    async function carregarSalasDesativadas() {
-
-        if (!token) {
-            return;
-        }
-
-        try {
-
-            setCarregandoDesativadas(true);
-            setErroDesativadas(false);
-
-            const resposta =
-                await listarSalasDesativadas(token);
-
-            const dados =
-                resposta?.result ??
-                resposta ??
-                [];
-
-            setSalasDesativadas(
-                Array.isArray(dados)
-                    ? dados
-                    : []
-            );
-
-        } catch (erro) {
-
-            console.error(
-                'Erro ao carregar salas desativadas:',
-                erro
-            );
-
-            setErroDesativadas(true);
-
-        } finally {
-
-            setCarregandoDesativadas(false);
-
-        }
-    }
-
-
-    /*
-     * =====================================================
-     * CARREGAR DESATIVADAS AO ABRIR A ABA
+     * RECARREGAR DESATIVADAS AO ABRIR A ABA
      * =====================================================
      */
 
@@ -182,6 +137,7 @@ export default function SalasPage({ navegarPara }) {
             carregarSalasDesativadas();
         }
 
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [abaAtual]);
 
 
@@ -243,106 +199,9 @@ export default function SalasPage({ navegarPara }) {
 
         });
 
-    }
 
-
-    /*
-     * =====================================================
-     * REATIVAR SALA
-     * =====================================================
-     */
-
-    async function handleReativar(sala) {
-
-        const id =
-            sala.id_sala ||
-            sala.id;
-
-        if (!id) {
-
-            alert(
-                'Não foi possível identificar a sala.'
-            );
-
-            return;
-
-        }
-
-
-        const confirmar = confirm(
-            'Deseja reativar esta sala?'
-        );
-
-        if (!confirmar) {
-            return;
-        }
-
-
-        try {
-
-            if (!token) {
-
-                alert(
-                    'Sessão inválida. Faça login novamente.'
-                );
-
-                return;
-
-            }
-
-            await ativarSala(
-                id,
-                token
-            );
-
-            setSalasDesativadas(
-                (atual) =>
-                    atual.filter(
-                        (s) =>
-                            String(
-                                s.id_sala || s.id
-                            ) !== String(id)
-                    )
-            );
-
-            await recarregar();
-
-            setAbaAtual('ativas');
-
-            sessionStorage.setItem(
-                'salas_aba_atual',
-                'ativas'
-            );
-
-            setPaginaAtual(1);
-
-            sessionStorage.setItem(
-                'salas_pagina_atual',
-                '1'
-            );
-
-            setSelecionadas(
-                new Set()
-            );
-
-            alert(
-                'Sala reativada com sucesso!'
-            );
-
-
-        } catch (erro) {
-
-            console.error(
-                'Erro ao reativar sala:',
-                erro
-            );
-
-            alert(
-                erro?.response?.data?.message ||
-                'Não foi possível reativar a sala.'
-            );
-
-        }
+        // A sala desativada entra na aba Desativadas: atualiza o contador.
+        carregarSalasDesativadas();
 
     }
 
@@ -903,6 +762,8 @@ export default function SalasPage({ navegarPara }) {
             </div>
 
 
+            {abaAtual === 'ativas' && (
+            <>
             {/* BARRA DE PESQUISA COM POSICIONAMENTO GARANTIDO */}
             <div style={{ position: 'relative', width: '100%', marginBottom: '16px' }}>
                 <ion-icon
@@ -934,6 +795,8 @@ export default function SalasPage({ navegarPara }) {
                     }}
                 />
             </div>
+            </>
+            )}
 
             {/* =====================================================
                 SELEÇÃO
@@ -1114,105 +977,26 @@ export default function SalasPage({ navegarPara }) {
 
                 {abaAtual === 'desativadas' && (
 
-                    carregandoDesativadas ? (
-
-                        <div className="sala-empty">
-
-                            <p>
-                                Carregando salas desativadas...
-                            </p>
-
-                        </div>
-
-                    ) : erroDesativadas ? (
-
-                        <div className="sala-empty">
-
-                            <div>
-
-                                <ion-icon
-                                    name="warning-outline"
-                                    style={{
-                                        fontSize: '32px'
-                                    }}
-                                ></ion-icon>
-
-                            </div>
-
-                            <p>
-                                Não foi possível
-                                carregar as salas
-                                desativadas.
-                            </p>
-
-                        </div>
-
-                    ) : listaAtual.length === 0 ? (
-
-                        <div className="tabela-card">
-
-                            <div className="tabela-empty">
-
-                                <div className="tabela-empty-icon">
-
-                                    <ion-icon
-                                        name="checkmark-circle-outline"
-                                        style={{
-                                            fontSize: '32px'
-                                        }}
-                                    ></ion-icon>
-
-                                </div>
-
-                                <p>
-                                    Nenhuma sala desativada encontrada.
-                                </p>
-
-                            </div>
-
-                        </div>
-
-                    ) : (
-
-                        <div className="salas-grid-container">
-
-                            {pagina.map((sala) => {
-
-                                const id =
-                                    String(
-                                        sala.id_sala ||
-                                        sala.id
-                                    );
-
-
-                                return (
-
-                                    <CardSalaDesativada
-
-                                        key={id}
-
-                                        sala={sala}
-
-                                        onVisualizar={(s) =>
-                                            navegarPara.visualizarSala(
-                                                s.id_sala ||
-                                                s.id
-                                            )
-                                        }
-
-                                        onReativar={
-                                            handleReativar
-                                        }
-
-                                    />
-
-                                );
-
-                            })}
-
-                        </div>
-
-                    )
+                    <SalasDesativadasLista
+                        dados={desativadas}
+                        paginaAtual={paginaAtual}
+                        onPageChange={(nova) => {
+                            setPaginaAtual(nova);
+                            sessionStorage.setItem(
+                                'salas_pagina_atual',
+                                String(nova)
+                            );
+                        }}
+                        onVisualizar={(s) =>
+                            navegarPara.visualizarSala(
+                                s.id_sala ||
+                                s.id
+                            )
+                        }
+                        onVerAtivas={() =>
+                            trocarAba('ativas')
+                        }
+                    />
 
                 )}
 
@@ -1223,6 +1007,7 @@ export default function SalasPage({ navegarPara }) {
                 CONTADOR E PAGINAÇÃO
             ===================================================== */}
 
+            {abaAtual === 'ativas' && (
             <div>
 
                 <div className="paginacao-contador">
@@ -1277,6 +1062,7 @@ export default function SalasPage({ navegarPara }) {
                 />
 
             </div>
+            )}
 
 
             {/* =====================================================
