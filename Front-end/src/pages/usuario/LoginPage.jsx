@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { IoEyeOutline, IoEyeOffOutline } from 'react-icons/io5';
 import { logar, verificarSetup } from '../../services/usuarioService.js';
 import { salvarUsuario } from '../../storage/usuario/dados.storage.js';
 import SetupPage from './SetupPage.jsx'; // Import do novo componente de Setup
@@ -10,6 +11,9 @@ export default function LoginPage({ onLoginSucesso }) {
     const [carregando, setCarregando] = useState(false);
     const [semAdmin, setSemAdmin] = useState(false);
     const [verificandoSetup, setVerificandoSetup] = useState(true);
+    
+    // Estado para controlar a visibilidade da senha
+    const [mostrarSenha, setMostrarSenha] = useState(false);
 
     async function handleSubmit(e) {
         e.preventDefault();
@@ -93,18 +97,42 @@ export default function LoginPage({ onLoginSucesso }) {
                                     onChange={(e) => setLogin(e.target.value)}
                                 />
                             </div>
+                            
                             <div className="form-group">
                                 <label className="form-label">Senha</label>
-                                <input
-                                    type="password"
-                                    className="form-control"
-                                    placeholder="••••••••"
-                                    required
-                                    autoComplete="current-password"
-                                    value={senha}
-                                    onChange={(e) => setSenha(e.target.value)}
-                                />
+                                {/* Container flex para alinhar o input e o botão do olho */}
+                                <div className="input-group-password" style={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
+                                    <input
+                                        type={mostrarSenha ? 'text' : 'password'}
+                                        className="form-control"
+                                        placeholder="••••••••"
+                                        required
+                                        autoComplete="current-password"
+                                        value={senha}
+                                        onChange={(e) => setSenha(e.target.value)}
+                                        style={{ paddingRight: '40px' }}
+                                    />
+                                    <button 
+                                        type="button" 
+                                        onClick={() => setMostrarSenha(!mostrarSenha)}
+                                        style={{ 
+                                            background: 'none', 
+                                            border: 'none', 
+                                            cursor: 'pointer', 
+                                            position: 'absolute', 
+                                            right: '12px', 
+                                            color: '#6c757d', 
+                                            display: 'flex', 
+                                            alignItems: 'center',
+                                            padding: 0
+                                        }}
+                                        title={mostrarSenha ? "Ocultar senha" : "Ver senha"}
+                                    >
+                                        {mostrarSenha ? <IoEyeOutline size={18} /> : <IoEyeOffOutline size={18} />}
+                                    </button>
+                                </div>
                             </div>
+
                             {erro && <div className="alert-error">{erro}</div>}
                             <button type="submit" className="btn-submit" disabled={carregando}>
                                 {carregando ? 'Entrando…' : 'Entrar no Painel'}

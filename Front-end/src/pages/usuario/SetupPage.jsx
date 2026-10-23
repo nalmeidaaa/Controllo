@@ -1,14 +1,18 @@
 import { useState } from 'react';
 import { 
-  IoPersonOutline, 
-  IoCardOutline, 
-  IoMailOutline, 
-  IoLockClosedOutline, 
-  IoShieldCheckmarkOutline, 
-  IoCameraOutline, 
-  IoArrowForwardOutline, 
-  IoAlertCircleOutline, 
-  IoPulseOutline 
+    IoPersonOutline, 
+    IoCardOutline, 
+    IoMailOutline, 
+    IoLockClosedOutline, 
+    IoShieldCheckmarkOutline, 
+    IoCameraOutline, 
+    IoArrowForwardOutline, 
+    IoAlertCircleOutline, 
+    IoPulseOutline,
+    IoCheckmarkCircleOutline,
+    IoEllipseOutline,
+    IoEyeOutline,
+    IoEyeOffOutline
 } from 'react-icons/io5';
 import { criarUsuario } from '../../services/usuarioService.js';
 import './SetupPage.css';
@@ -23,6 +27,52 @@ const ESTADO_INICIAL = {
     imagem: null
 };
 
+// Função para validar o CPF (matematicamente)
+function validarCPF(cpf) {
+    cpf = cpf.replace(/[^\d]+/g, '');
+    if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
+    
+    let soma = 0;
+    let resto;
+
+    for (let i = 1; i <= 9; i++) {
+        soma += parseInt(cpf.substring(i - 1, i)) * (11 - i);
+    }
+    resto = (soma * 10) % 11;
+    if (resto === 10 || resto === 11) resto = 0;
+    if (resto !== parseInt(cpf.substring(9, 10))) return false;
+
+    soma = 0;
+    for (let i = 1; i <= 10; i++) {
+        soma += parseInt(cpf.substring(i - 1, i)) * (12 - i);
+    }
+    resto = (soma * 10) % 11;
+    if (resto === 10 || resto === 11) resto = 0;
+    if (resto !== parseInt(cpf.substring(10, 11))) return false;
+
+    return true;
+}
+
+// Função para mascarar o CPF (000.000.000-00)
+function mascaraCPF(valor) {
+    return valor
+        .replace(/\D/g, '')
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d{1,2})/, '$1-$2') .replace(/(-\d{2})\d+$/, '$1');
+}
+
+// Objeto de checagem individual para os requisitos da senha
+function checarRequisitosSenha(senha) {
+    return {
+        tamanho: senha.length >= 8,
+        maiuscula: /[A-Z]/.test(senha),
+        minuscula: /[a-z]/.test(senha),
+        numero: /\d/.test(senha),
+        especial: /[@$!%*?&]/.test(senha)
+    };
+}
+
 export default function SetupPage({ onSetupConcluido }) {
     const [form, setForm] = useState(ESTADO_INICIAL);
     const [previewFoto, setPreviewFoto] = useState('');
@@ -30,10 +80,19 @@ export default function SetupPage({ onSetupConcluido }) {
     const [erro, setErro] = useState([]);
     const [camposErro, setCamposErro] = useState([]);
 
+    // Estados para controlar a visibilidade das senhas
+    const [mostrarSenha, setMostrarSenha] = useState(false);
+    const [mostrarConfirmarSenha, setMostrarConfirmarSenha] = useState(false);
+
+    const requisitosSenha = checarRequisitosSenha(form.senha);
+    const senhaValida = Object.values(requisitosSenha).every(Boolean);
+
     function atualizar(campo, valor) {
+        const valorTratado = campo === 'cpf' ? mascaraCPF(valor) : valor;
+
         setForm((f) => ({
             ...f,
-            [campo]: valor
+            [campo]: valorTratado
         }));
 
         setCamposErro((campos) =>
@@ -72,6 +131,9 @@ export default function SetupPage({ onSetupConcluido }) {
         if (!cpf) {
             erros.push('cpf');
             mensagensErro.push('Informe o CPF.');
+        } else if (!validarCPF(cpf)) {
+            erros.push('cpf');
+            mensagensErro.push('O CPF informado é inválido.');
         }
 
         if (!email) {
@@ -82,6 +144,9 @@ export default function SetupPage({ onSetupConcluido }) {
         if (!senha) {
             erros.push('senha');
             mensagensErro.push('Informe a senha de acesso.');
+        } else if (!senhaValida) {
+            erros.push('senha');
+            mensagensErro.push('A senha não atende a todos os requisitos de segurança.');
         }
 
         if (senha && senha !== confirmarSenha) {
@@ -95,7 +160,6 @@ export default function SetupPage({ onSetupConcluido }) {
             return;
         }
 
-        // Cria o FormData exatamente igual ao ModalUsuario
         const formData = new FormData();
         formData.append('nome', nome);
         formData.append('cpf', cpf);
@@ -103,7 +167,6 @@ export default function SetupPage({ onSetupConcluido }) {
         formData.append('tipo_usuario', form.tipo_usuario);
         formData.append('senha', senha);
 
-        // Envia 'imagem' em vez de 'foto'
         if (form.imagem instanceof File) {
             formData.append('imagem', form.imagem);
         }
@@ -247,6 +310,7 @@ export default function SetupPage({ onSetupConcluido }) {
                                         placeholder="000.000.000-00"
                                         value={form.cpf}
                                         onChange={(e) => atualizar('cpf', e.target.value)}
+                                        maxLength={14}
                                         required
                                     />
                                 </div>
@@ -271,6 +335,7 @@ export default function SetupPage({ onSetupConcluido }) {
                         </div>
 
                         <div className="setup-form-row">
+                            {/* Campo Senha */}
                             <div className="setup-input-group">
                                 <label className="setup-input-label">
                                     Senha <span className="required-star">*</span>
@@ -278,16 +343,44 @@ export default function SetupPage({ onSetupConcluido }) {
                                 <div className={`setup-input-wrapper ${camposErro.includes('senha') ? 'is-invalid' : ''}`}>
                                     <IoLockClosedOutline className="field-icon" />
                                     <input
-                                        type="password"
+                                        type={mostrarSenha ? 'text' : 'password'}
                                         className="setup-input-control"
                                         placeholder="••••••••••••"
                                         value={form.senha}
                                         onChange={(e) => atualizar('senha', e.target.value)}
                                         required
                                     />
+                                    <button 
+                                        type="button" 
+                                        className="password-toggle-btn"
+                                        onClick={() => setMostrarSenha(!mostrarSenha)}
+                                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0 8px', color: '#6c757d', display: 'flex', alignItems: 'center' }}
+                                        title={mostrarSenha ? "Ocultar senha" : "Ver senha"}
+                                    >
+                                        {mostrarSenha ? <IoEyeOutline size={18} /> : <IoEyeOffOutline size={18} />}
+                                    </button>
+                                </div>
+                                
+                                <div className="password-requirements mt-2" style={{ fontSize: '0.8rem', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                    <span style={{ color: requisitosSenha.tamanho ? '#198754' : '#6c757d', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                        {requisitosSenha.tamanho ? <IoCheckmarkCircleOutline /> : <IoEllipseOutline />} Mínimo de 8 caracteres
+                                    </span>
+                                    <span style={{ color: requisitosSenha.maiuscula ? '#198754' : '#6c757d', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                        {requisitosSenha.maiuscula ? <IoCheckmarkCircleOutline /> : <IoEllipseOutline />} Pelo menos uma letra maiúscula
+                                    </span>
+                                    <span style={{ color: requisitosSenha.minuscula ? '#198754' : '#6c757d', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                        {requisitosSenha.minuscula ? <IoCheckmarkCircleOutline /> : <IoEllipseOutline />} Pelo menos uma letra minúscula
+                                    </span>
+                                    <span style={{ color: requisitosSenha.numero ? '#198754' : '#6c757d', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                        {requisitosSenha.numero ? <IoCheckmarkCircleOutline /> : <IoEllipseOutline />} Pelo menos um número
+                                    </span>
+                                    <span style={{ color: requisitosSenha.especial ? '#198754' : '#6c757d', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                        {requisitosSenha.especial ? <IoCheckmarkCircleOutline /> : <IoEllipseOutline />} Pelo menos um caractere especial (@$!%*?&)
+                                    </span>
                                 </div>
                             </div>
 
+                            {/* Campo Confirmar Senha */}
                             <div className="setup-input-group">
                                 <label className="setup-input-label">
                                     Confirmar Senha <span className="required-star">*</span>
@@ -295,13 +388,22 @@ export default function SetupPage({ onSetupConcluido }) {
                                 <div className={`setup-input-wrapper ${camposErro.includes('confirmarSenha') ? 'is-invalid' : ''}`}>
                                     <IoShieldCheckmarkOutline className="field-icon" />
                                     <input
-                                        type="password"
+                                        type={mostrarConfirmarSenha ? 'text' : 'password'}
                                         className="setup-input-control"
                                         placeholder="••••••••••••"
                                         value={form.confirmarSenha}
                                         onChange={(e) => atualizar('confirmarSenha', e.target.value)}
                                         required
                                     />
+                                    <button 
+                                        type="button" 
+                                        className="password-toggle-btn"
+                                        onClick={() => setMostrarConfirmarSenha(!mostrarConfirmarSenha)}
+                                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0 8px', color: '#6c757d', display: 'flex', alignItems: 'center' }}
+                                        title={mostrarConfirmarSenha ? "Ocultar senha" : "Ver senha"}
+                                    >
+                                        {mostrarConfirmarSenha ? <IoEyeOutline size={18} /> : <IoEyeOffOutline size={18} />}
+                                    </button>
                                 </div>
                             </div>
                         </div>

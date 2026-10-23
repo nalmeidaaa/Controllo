@@ -1,0 +1,394 @@
+/* ============================================================
+   GAVETA / SLIDE-OVER DE PERFIL
+   ============================================================ */
+
+.perfil-drawer-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(18, 18, 20, 0.55);
+    backdrop-filter: blur(4px);
+    z-index: 2000;
+    display: flex;
+    justify-content: flex-end;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.25s ease, visibility 0s linear 0.3s;
+}
+
+.perfil-drawer-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: all;
+    transition: opacity 0.25s ease, visibility 0s;
+}
+
+.perfil-drawer-box {
+    width: 100%;
+    max-width: 400px;
+    height: 100vh;
+    height: 100dvh;
+    background: var(--bg-superficie);
+    border-left: 1px solid var(--borda);
+    box-shadow: var(--sombra-lg);
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.perfil-drawer-overlay.visible .perfil-drawer-box {
+    transform: translateX(0);
+}
+
+/* ── Cabeçalho ── */
+.perfil-drawer-header {
+    height: 64px;
+    padding: 0 16px 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid var(--borda);
+    flex-shrink: 0;
+}
+
+.perfil-drawer-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--texto-primario);
+}
+
+.perfil-drawer-icon-btn {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: var(--raio-sm);
+    color: var(--texto-secundario);
+    cursor: pointer;
+    transition: var(--transicao);
+}
+
+.perfil-drawer-icon-btn:hover {
+    background: var(--bg-pagina);
+    color: var(--texto-primario);
+}
+
+.perfil-drawer-header .perfil-drawer-icon-btn:first-child:not(.perfil-drawer-close) {
+    margin-left: -12px;
+}
+
+.perfil-drawer-close {
+    margin-left: auto;
+}
+
+/* ── Corpo ── */
+.perfil-drawer-body {
+    padding: 24px;
+    overflow-y: auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* ── Resumo do usuário ── */
+.perfil-resumo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 8px 0 4px;
+}
+
+.perfil-resumo .perfil-resumo-avatar {
+    box-shadow: 0 0 0 3px var(--bg-superficie), 0 0 0 5px var(--vermelho-principal);
+    margin-bottom: 14px;
+}
+
+.perfil-resumo-nome {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    color: var(--texto-primario);
+    word-break: break-word;
+}
+
+.perfil-resumo-email {
+    margin: 2px 0 0;
+    font-size: 13px;
+    color: var(--texto-secundario);
+    word-break: break-all;
+}
+
+.perfil-resumo-tipo {
+    margin-top: 10px;
+    padding: 3px 12px;
+    border-radius: 999px;
+    background: var(--vermelho-suave);
+    color: var(--vermelho-principal);
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+/* ── Lista de ações ── */
+.perfil-acoes {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.perfil-acao {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 14px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--raio);
+    color: var(--texto-primario);
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: var(--transicao);
+}
+
+.perfil-acao:hover {
+    background: var(--bg-pagina);
+    border-color: var(--borda);
+}
+
+.perfil-acao:focus-visible {
+    outline: 2px solid var(--vermelho-principal);
+    outline-offset: 1px;
+}
+
+.perfil-acao-icone {
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: var(--bg-pagina);
+    border: 1px solid var(--borda);
+    color: var(--texto-secundario);
+    transition: var(--transicao);
+}
+
+.perfil-acao:hover .perfil-acao-icone {
+    color: var(--vermelho-principal);
+    border-color: var(--vermelho-principal);
+}
+
+.perfil-acao-texto {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.3;
+}
+
+.perfil-acao-texto strong {
+    font-size: 14.5px;
+    font-weight: 600;
+}
+
+.perfil-acao-texto small {
+    font-size: 12.5px;
+    color: var(--texto-suave);
+}
+
+.perfil-acao-seta {
+    color: var(--texto-suave);
+    flex-shrink: 0;
+}
+
+.perfil-acoes-divisor {
+    height: 1px;
+    margin: 8px 6px;
+    background: var(--borda);
+}
+
+/* Sair (perigo) */
+.perfil-acao--perigo .perfil-acao-texto strong {
+    color: #dc2626;
+}
+
+.perfil-acao--perigo .perfil-acao-icone {
+    color: #dc2626;
+    background: rgba(220, 38, 38, 0.08);
+    border-color: rgba(220, 38, 38, 0.22);
+}
+
+.perfil-acao--perigo:hover {
+    background: rgba(220, 38, 38, 0.08);
+    border-color: rgba(220, 38, 38, 0.25);
+}
+
+.perfil-acao--perigo:hover .perfil-acao-icone {
+    color: #dc2626;
+    border-color: rgba(220, 38, 38, 0.4);
+}
+
+/* Interruptor do modo escuro */
+.perfil-switch {
+    position: relative;
+    width: 42px;
+    height: 24px;
+    flex-shrink: 0;
+    border-radius: 999px;
+    background: var(--borda-forte);
+    transition: background 0.2s ease;
+}
+
+.perfil-switch.ligado {
+    background: var(--vermelho-principal);
+}
+
+.perfil-switch-bolinha {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.perfil-switch.ligado .perfil-switch-bolinha {
+    transform: translateX(18px);
+}
+
+/* ── Edição: avatar ── */
+.perfil-drawer-avatar-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.perfil-drawer-avatar-label {
+    position: relative;
+    display: inline-flex;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: var(--transicao);
+}
+
+.perfil-drawer-avatar-label:hover {
+    transform: scale(1.03);
+}
+
+.perfil-drawer-camera-badge {
+    position: absolute;
+    right: 0;
+    bottom: 2px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--vermelho-principal);
+    color: #fff;
+    border: 2px solid var(--bg-superficie);
+    box-shadow: var(--sombra-sm);
+}
+
+.perfil-drawer-dica {
+    color: var(--texto-suave);
+}
+
+/* ── Edição: formulário ── */
+.perfil-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.perfil-campo {
+    position: relative;
+}
+
+.perfil-campo > svg {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--texto-suave);
+    pointer-events: none;
+}
+
+.perfil-campo .form-control {
+    padding-left: 38px;
+}
+
+.perfil-campo--desabilitado {
+    opacity: 0.7;
+}
+
+.perfil-campo--desabilitado .form-control {
+    background: var(--bg-pagina);
+    cursor: not-allowed;
+}
+
+/* ── Alertas ── */
+.perfil-alerta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: var(--raio-sm);
+    font-size: 13px;
+}
+
+.perfil-alerta--ok {
+    background: rgba(25, 135, 84, 0.14);
+    color: #198754;
+    border: 1px solid rgba(25, 135, 84, 0.3);
+}
+
+.perfil-alerta--erro {
+    background: rgba(220, 38, 38, 0.1);
+    color: #dc2626;
+    border: 1px solid rgba(220, 38, 38, 0.28);
+}
+
+/* ── Rodapé (edição) ── */
+.perfil-drawer-footer {
+    padding: 14px 24px;
+    border-top: 1px solid var(--borda);
+    background: var(--bg-pagina);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.perfil-drawer-footer .perfil-btn-salvar {
+    width: auto;
+    margin: 0;
+    padding-left: 22px;
+    padding-right: 22px;
+}
+
+@media (max-width: 480px) {
+    .perfil-drawer-box {
+        max-width: 100%;
+    }
+}

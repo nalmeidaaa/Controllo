@@ -1,0 +1,75 @@
+/* ============================================================
+   BOTÃO DE PERFIL NA NAVBAR
+   ============================================================ */
+.nav-perfil {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 10px 4px 4px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    color: inherit;
+    font-family: inherit;
+    cursor: pointer;
+    transition: var(--transicao);
+}
+
+.nav-perfil:hover,
+.nav-perfil[aria-expanded='true'] {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.nav-perfil:focus-visible {
+    outline: 2px solid var(--vermelho-principal);
+    outline-offset: 2px;
+}
+
+.nav-perfil-texto {
+    display: none;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    line-height: 1.2;
+    min-width: 0;
+}
+
+.nav-perfil-nome {
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.nav-perfil-cargo {
+    font-size: 11px;
+    color: var(--texto-suave);
+}
+
+.nav-perfil-seta {
+    display: none;
+    color: rgba(255, 255, 255, 0.5);
+    transition: transform 0.2s ease;
+}
+
+.nav-perfil[aria-expanded='true'] .nav-perfil-seta {
+    transform: rotate(180deg);
+}
+
+@media (min-width: 768px) {
+    .nav-perfil-texto,
+    .nav-perfil-seta {
+        display: flex;
+    }
+}
+
+/* telas pequenas: só o avatar, sem borda lateral extra */
+@media (max-width: 767px) {
+    .nav-perfil {
+        padding: 2px;
+    }
+}

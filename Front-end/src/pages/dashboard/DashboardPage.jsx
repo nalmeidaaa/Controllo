@@ -1,10 +1,16 @@
+import { useUsuarioLogado } from '../../hooks/useUsuarioLogado.jsx';
+import { primeiroNome } from '../../utils/usuario.js';
+
 export default function DashboardPage({ navegarPara, pendentes = 0 }) {
+    // Lê o usuário salvo no login; atualiza sozinho se o perfil for editado
+    const nomeUsuario = primeiroNome(useUsuarioLogado());
+
     return (
         <div className="dashboard-wrapper">
             <div className="dashboard-inner">
                 <header className="dashboard-welcome">
                     <h1>
-                        Olá, seja bem-vindo(a) !
+                        {nomeUsuario ? `Olá, ${nomeUsuario}!` : 'Olá, seja bem-vindo(a)!'}
                     </h1>
 
                     <p className="welcome-sub">
@@ -85,4 +91,3 @@ export default function DashboardPage({ navegarPara, pendentes = 0 }) {
         </div>
     );
 }
-

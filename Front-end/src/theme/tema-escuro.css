@@ -1,0 +1,137 @@
+/* ============================================================
+   TEMA ESCURO
+   Ativado por <html data-theme="dark"> (ver src/theme/tema.js).
+
+   1) Variáveis principais do design system.
+   2) Variáveis --c-<tipo>-<hex>: o style.css usa var(--c-…, #cor-original)
+      nas cores fixas. No tema claro elas não existem e vale a cor original;
+      aqui são redefinidas para o equivalente escuro.
+      tipos: bg = fundo | bd = borda | fg = texto
+   ============================================================ */
+
+:root[data-theme='dark'] {
+    color-scheme: dark;
+
+    --bg-pagina: #0e0e11;
+    --bg-superficie: #17171c;
+
+    --texto-primario: #ececf1;
+    --texto-secundario: #b4b4bf;
+    --texto-suave: #8b8b97;
+
+    --borda: #2c2c35;
+    --borda-forte: #43434e;
+    --input-bg: #1d1d23;
+
+    --vermelho-suave: rgba(227, 6, 19, 0.16);
+
+    --sombra-sm: 0 1px 3px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.4);
+    --sombra: 0 4px 16px rgba(0, 0, 0, 0.5), 0 1px 4px rgba(0, 0, 0, 0.4);
+    --sombra-lg: 0 12px 40px rgba(0, 0, 0, 0.6), 0 4px 12px rgba(0, 0, 0, 0.45);
+
+    /* cores fixas do style.css */
+    --c-bg-e0f2fe: rgba(14, 165, 233, 0.16);
+    --c-bg-ecfdf3: rgba(34, 197, 94, 0.14);
+    --c-bg-eeeeee: #2a2a32;
+    --c-bg-f2f2f2: #212128;
+    --c-bg-f3f3f3: #212128;
+    --c-bg-f4f4f4: #212128;
+    --c-bg-f4f4f6: #212128;
+    --c-bg-f5f5f5: #212128;
+    --c-bg-f7f7f7: #1c1c22;
+    --c-bg-f8dddd: rgba(227, 6, 19, 0.24);
+    --c-bg-f8f8f8: #1c1c22;
+    --c-bg-f8f8f9: #1c1c22;
+    --c-bg-f9f9f9: #1c1c22;
+    --c-bg-fafafa: #1c1c22;
+    --c-bg-fee2e2: rgba(227, 6, 19, 0.17);
+    --c-bg-fef2f2: rgba(227, 6, 19, 0.1);
+    --c-bg-ffe4e4: rgba(227, 6, 19, 0.17);
+    --c-bg-ffe8e8: rgba(227, 6, 19, 0.17);
+    --c-bg-ffecec: rgba(227, 6, 19, 0.17);
+    --c-bg-fff1f1: rgba(227, 6, 19, 0.1);
+    --c-bg-fff3f3: rgba(227, 6, 19, 0.1);
+    --c-bg-fff5f5: rgba(227, 6, 19, 0.1);
+    --c-bg-fff7f7: rgba(227, 6, 19, 0.1);
+    --c-bg-fffbeb: rgba(245, 158, 11, 0.13);
+    --c-bg-ffffff: #17171c;
+    --c-bd-999999: #55555f;
+    --c-bd-aaaaaa: #55555f;
+    --c-bd-bae6fd: rgba(14, 165, 233, 0.4);
+    --c-bd-bbbbbb: #40404a;
+    --c-bd-bbf7d0: rgba(34, 197, 94, 0.4);
+    --c-bd-bcbcbc: #40404a;
+    --c-bd-bdbdbd: #40404a;
+    --c-bd-c7c7c7: #40404a;
+    --c-bd-cfcfcf: #40404a;
+    --c-bd-d1d1d6: #2f2f38;
+    --c-bd-d2d2d2: #2f2f38;
+    --c-bd-d5d5d5: #2f2f38;
+    --c-bd-d6d6d6: #2f2f38;
+    --c-bd-d8d8d8: #2f2f38;
+    --c-bd-d9d9d9: #2f2f38;
+    --c-bd-e5e5e5: #2f2f38;
+    --c-bd-e5e7eb: #2f2f38;
+    --c-bd-e7e7e7: #2f2f38;
+    --c-bd-e8caca: rgba(248, 113, 113, 0.38);
+    --c-bd-eeeeee: #2f2f38;
+    --c-bd-efcccc: rgba(248, 113, 113, 0.38);
+    --c-bd-efd2d2: rgba(248, 113, 113, 0.38);
+    --c-bd-f0aaaa: rgba(248, 113, 113, 0.38);
+    --c-bd-f1d5d5: rgba(248, 113, 113, 0.38);
+    --c-bd-f2a0a0: rgba(248, 113, 113, 0.38);
+    --c-bd-f5aaaa: rgba(248, 113, 113, 0.38);
+    --c-bd-f5c6c6: rgba(248, 113, 113, 0.38);
+    --c-bd-fca5a5: rgba(248, 113, 113, 0.38);
+    --c-bd-fde68a: rgba(245, 158, 11, 0.4);
+    --c-bd-fecaca: rgba(248, 113, 113, 0.38);
+    --c-bd-ffc2c2: rgba(248, 113, 113, 0.38);
+    --c-bd-ffcaca: rgba(248, 113, 113, 0.38);
+    --c-bd-ffffff: #17171c;
+    --c-fg-0369a1: #7dd3fc;
+    --c-fg-166534: #86efac;
+    --c-fg-202124: #ececf1;
+    --c-fg-222222: #ececf1;
+    --c-fg-333333: #ececf1;
+    --c-fg-333338: #ececf1;
+    --c-fg-444444: #ececf1;
+    --c-fg-555555: #c3c3cd;
+    --c-fg-666666: #c3c3cd;
+    --c-fg-777777: #9d9da8;
+    --c-fg-7b7d86: #9d9da8;
+    --c-fg-888888: #9d9da8;
+    --c-fg-92400e: #fcd34d;
+    --c-fg-92949d: #9d9da8;
+    --c-fg-a02020: #fca5a5;
+    --c-fg-b71c1c: #fca5a5;
+    --c-fg-b91c1c: #fca5a5;
+    --c-fg-c62828: #fca5a5;
+    --c-fg-d71920: #fca5a5;
+    --c-fg-dc2626: #fca5a5;
+}
+
+/* Ajustes finos */
+:root[data-theme='dark'] ::placeholder {
+    color: var(--texto-suave);
+    opacity: 1;
+}
+
+:root[data-theme='dark'] ::selection {
+    background: rgba(227, 6, 19, 0.45);
+    color: #fff;
+}
+
+:root[data-theme='dark'] img {
+    /* fotos continuam naturais; só suaviza imagens muito claras */
+    color-scheme: normal;
+}
+
+/* Barras de rolagem */
+:root[data-theme='dark'] * {
+    scrollbar-color: #3a3a45 transparent;
+}
+
+/* Etiqueta do tipo de usuário no drawer: vermelho mais claro p/ contraste */
+:root[data-theme='dark'] .perfil-resumo-tipo {
+    color: #ff6b75;
+}

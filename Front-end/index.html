@@ -6,6 +6,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Controllo — Painel de Gerenciamento</title>
 
+  <script>
+    // Aplica o tema salvo antes da primeira pintura (evita flash de tela clara)
+    (function () {
+      try {
+        var t = localStorage.getItem('controllo_tema');
+        if (t !== 'dark' && t !== 'light') t = 'light';
+        document.documentElement.setAttribute('data-theme', t);
+        document.documentElement.setAttribute('data-bs-theme', t);
+      } catch (e) { }
+    })();
+  </script>
+
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 
   <!-- Bootstrap (somente utilidades usadas nos componentes) -->
