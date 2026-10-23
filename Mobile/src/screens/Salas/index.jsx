@@ -1,8 +1,10 @@
+
 import React, { useCallback, useState } from 'react';
 import {
   View,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   FlatList,
   ActivityIndicator,
@@ -10,23 +12,26 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import { ArrowLeft, DoorOpen, MoveRight } from 'lucide-react-native';
+import { ArrowLeft, DoorOpen, MoveRight, Search, X } from 'lucide-react-native';
 import { obterToken } from '../../storage/usuario/dados.storage.js';
 import { buscarSalas } from '../../services/salaService.js';
-import { BASE_URL } from "../../services/api.js"; 
+import { BASE_URL } from "../../services/api.js";
 
 const iconColor = '#c9131c';
 
 export default function SalasScreen() {
   const navigation = useNavigation();
+
   const [salas, setSalas] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(false);
+  const [pesquisa, setPesquisa] = useState('');
 
   async function carregarSalas() {
     try {
       setCarregando(true);
       setErro(false);
+
       const token = await obterToken();
       if (!token) return;
 
@@ -53,6 +58,16 @@ export default function SalasScreen() {
     });
   }
 
+  // Pesquisa pelo nome da sala ou pelo bloco
+  const salasFiltradas = salas.filter((sala) => {
+    const termo = pesquisa.trim().toLowerCase();
+
+    return (
+      (sala.descricao || '').toLowerCase().includes(termo) ||
+      String(sala.bloco || '').toLowerCase().includes(termo)
+    );
+  });
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
@@ -64,10 +79,35 @@ export default function SalasScreen() {
           >
             <ArrowLeft color={iconColor} size={22} />
           </TouchableOpacity>
+
           <View style={styles.heading}>
             <Text style={styles.eyebrow}>Controllo</Text>
             <Text style={styles.title}>Salas</Text>
           </View>
+        </View>
+
+        {/* Barra de pesquisa */}
+        <View style={styles.barraPesquisa}>
+          <Search color="#8a7373" size={20} />
+
+          <TextInput
+            style={styles.inputPesquisa}
+            placeholder="Pesquisar sala..."
+            placeholderTextColor="#8a7373"
+            value={pesquisa}
+            onChangeText={setPesquisa}
+            autoCapitalize="none"
+            returnKeyType="search"
+          />
+
+          {pesquisa.length > 0 && (
+            <TouchableOpacity
+              onPress={() => setPesquisa('')}
+              activeOpacity={0.7}
+            >
+              <X color="#8a7373" size={20} />
+            </TouchableOpacity>
+          )}
         </View>
 
         {carregando ? (
@@ -86,39 +126,57 @@ export default function SalasScreen() {
               Nenhuma sala cadastrada.
             </Text>
           </View>
+        ) : salasFiltradas.length === 0 ? (
+          <View style={styles.centro}>
+            <Text style={styles.mensagemVazia}>
+              Nenhuma sala encontrada.
+            </Text>
+          </View>
         ) : (
           <FlatList
-            data={salas}
+            data={salasFiltradas}
             keyExtractor={(item) => String(item.id_sala)}
             contentContainerStyle={styles.lista}
+            keyboardShouldPersistTaps="handled"
             renderItem={({ item }) => (
               <TouchableOpacity
                 style={styles.card}
                 activeOpacity={0.8}
                 onPress={() => abrirSala(item)}
               >
-                {/* Linha superior com os textos e a seta */}
+                {/* Nome da sala e seta */}
                 <View style={styles.cardHeaderRow}>
                   <View style={styles.cardText}>
-                    <Text style={styles.cardTitle}>{item.descricao}</Text>
+                    <Text style={styles.cardTitle}>
+                      {item.descricao}
+                    </Text>
+
                     {!!item.bloco && (
-                      <Text style={styles.cardSubtitle}>Bloco {item.bloco}</Text>
+                      <Text style={styles.cardSubtitle}>
+                        Bloco {item.bloco}
+                      </Text>
                     )}
                   </View>
+
                   <MoveRight color="#b01d2e" size={22} />
                 </View>
 
-                {/* Imagem retangular grande posicionada abaixo do texto */}
+                {/* Imagem da sala */}
                 {item.caminho_imagem ? (
-                  <Image 
-                    source={{ uri: `${BASE_URL}${item.caminho_imagem}` }} 
-                    style={styles.salaImagemGrande} 
+                  <Image
+                    source={{
+                      uri: `${BASE_URL}${item.caminho_imagem}`,
+                    }}
+                    style={styles.salaImagemGrande}
                     resizeMode="cover"
                   />
                 ) : (
                   <View style={styles.placeholderRetangular}>
                     <DoorOpen color={iconColor} size={32} />
-                    <Text style={styles.placeholderTexto}>Sem imagem disponível</Text>
+
+                    <Text style={styles.placeholderTexto}>
+                      Sem imagem disponível
+                    </Text>
                   </View>
                 )}
               </TouchableOpacity>
@@ -131,20 +189,23 @@ export default function SalasScreen() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { 
-    flex: 1, 
-    backgroundColor: '#f4f7f7', 
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#f4f7f7',
   },
-  container: { 
-    flex: 1, 
-    paddingHorizontal: 28, 
-    paddingTop: 40, 
+
+  container: {
+    flex: 1,
+    paddingHorizontal: 28,
+    paddingTop: 40,
   },
-  headerRow: { 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    marginBottom: 28, 
+
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
   },
+
   voltarButton: {
     width: 44,
     height: 44,
@@ -154,9 +215,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginRight: 14,
   },
-  heading: { 
-    flex: 1, 
+
+  heading: {
+    flex: 1,
   },
+
   eyebrow: {
     color: '#b01d2e',
     fontSize: 11,
@@ -164,6 +227,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 0.7,
   },
+
   title: {
     color: '#2d0e0e',
     fontSize: 24,
@@ -171,12 +235,35 @@ const styles = StyleSheet.create({
     letterSpacing: -0.5,
     marginTop: 4,
   },
-  lista: { 
-    gap: 16, 
-    paddingBottom: 40, 
+
+  // Barra de pesquisa no mesmo estilo da outra tela
+  barraPesquisa: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    height: 50,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#fce9e9',
   },
+
+  inputPesquisa: {
+    flex: 1,
+    marginLeft: 10,
+    color: '#2d0e0e',
+    fontSize: 14,
+    paddingVertical: 0,
+  },
+
+  lista: {
+    gap: 16,
+    paddingBottom: 40,
+  },
+
   card: {
-    flexDirection: 'column', // Mudado para coluna para empilhar conteúdo verticalmente
+    flexDirection: 'column',
     backgroundColor: '#ffffff',
     borderRadius: 14,
     padding: 20,
@@ -188,30 +275,36 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 2,
   },
+
   cardHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16, // Espaço entre o texto superior e a imagem abaixo
+    marginBottom: 16,
   },
-  cardText: { 
-    flex: 1, 
+
+  cardText: {
+    flex: 1,
   },
-  cardTitle: { 
-    color: '#270d0d', 
-    fontSize: 18, // Aumentado um pouco para destacar melhor no card vertical
-    fontWeight: '600', 
+
+  cardTitle: {
+    color: '#270d0d',
+    fontSize: 18,
+    fontWeight: '600',
   },
-  cardSubtitle: { 
-    color: '#8a7373', 
-    fontSize: 14, 
-    marginTop: 2, 
+
+  cardSubtitle: {
+    color: '#8a7373',
+    fontSize: 14,
+    marginTop: 2,
   },
+
   salaImagemGrande: {
     width: '100%',
-    height: 160, // Proporção retangular
+    height: 160,
     borderRadius: 10,
     backgroundColor: '#ffd8d8',
   },
+
   placeholderRetangular: {
     width: '100%',
     height: 160,
@@ -220,24 +313,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderRadius: 10,
     borderColor: '#fce9e9',
     borderStyle: 'dashed',
     gap: 8,
   },
+
   placeholderTexto: {
     color: '#8a7373',
     fontSize: 13,
   },
+
   centro: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     paddingBottom: 80,
   },
-  mensagemVazia: { 
-    color: '#8a7373', 
-    fontSize: 14, 
-    textAlign: 'center', 
+
+  mensagemVazia: {
+    color: '#8a7373',
+    fontSize: 14,
+    textAlign: 'center',
   },
 });

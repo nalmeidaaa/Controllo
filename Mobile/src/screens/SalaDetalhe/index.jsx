@@ -2,6 +2,7 @@ import React, { useCallback, useState } from "react";
 import {
     View,
     Text,
+    TextInput,
     TouchableOpacity,
     FlatList,
     ActivityIndicator,
@@ -12,7 +13,7 @@ import {
 
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation, useRoute, useFocusEffect } from "@react-navigation/native";
-import { ArrowLeft, Box } from "lucide-react-native";
+import { ArrowLeft, Box, Search, X } from "lucide-react-native";
 
 import { obterToken } from "../../storage/usuario/dados.storage.js";
 import { buscarPatrimoniosPorSala } from "../../services/patrimonioService.js";
@@ -37,6 +38,7 @@ export default function SalaDetalheScreen() {
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState(false);
     const [abrindoId, setAbrindoId] = useState(null);
+    const [pesquisa, setPesquisa] = useState("");
 
     async function carregarPatrimonios() {
         try {
@@ -50,10 +52,12 @@ export default function SalaDetalheScreen() {
             setPatrimonios(resposta?.result ?? []);
         } catch (error) {
             console.error("Erro ao buscar patrimônios", error);
+
             if (ehErroDeSessao(error)) {
                 encerrarSessaoExpirada(navigation);
                 return;
             }
+
             setErro(true);
         } finally {
             setCarregando(false);
@@ -82,11 +86,14 @@ export default function SalaDetalheScreen() {
 
         try {
             setAbrindoId(patrimonio.id_patrimonio);
+
             const token = await obterToken();
+
             const resposta = await buscarRequisicaoAbertaPorPatrimonio(
                 token,
                 patrimonio.id_patrimonio
             );
+
             const aberta = resposta?.result;
 
             if (!aberta) throw new Error("Resposta inválida");
@@ -112,14 +119,31 @@ export default function SalaDetalheScreen() {
 
             Alert.alert(
                 "Erro",
-                mensagemDeErro(error, "Não foi possível abrir a requisição deste patrimônio.")
+                mensagemDeErro(
+                    error,
+                    "Não foi possível abrir a requisição deste patrimônio."
+                )
             );
 
-            if (error?.response?.status === 404) carregarPatrimonios();
+            if (error?.response?.status === 404) {
+                carregarPatrimonios();
+            }
         } finally {
             setAbrindoId(null);
         }
     }
+
+    // Filtra pelo nome ou número do patrimônio.
+    const patrimoniosFiltrados = patrimonios.filter((item) => {
+        const termo = pesquisa.trim().toLowerCase();
+
+        return (
+            (item.nome || "").toLowerCase().includes(termo) ||
+            String(item.numero_patrimonio || "")
+                .toLowerCase()
+                .includes(termo)
+        );
+    });
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -135,10 +159,35 @@ export default function SalaDetalheScreen() {
 
                     <View style={styles.heading}>
                         <Text style={styles.eyebrow}>Sala</Text>
+
                         <Text style={styles.title} numberOfLines={1}>
                             {nomeSala || "Patrimônios"}
                         </Text>
                     </View>
+                </View>
+
+                {/* Barra de pesquisa */}
+                <View style={styles.barraPesquisa}>
+                    <Search color="#8a7373" size={20} />
+
+                    <TextInput
+                        style={styles.inputPesquisa}
+                        placeholder="Pesquisar patrimônio..."
+                        placeholderTextColor="#8a7373"
+                        value={pesquisa}
+                        onChangeText={setPesquisa}
+                        autoCapitalize="none"
+                        returnKeyType="search"
+                    />
+
+                    {pesquisa.length > 0 && (
+                        <TouchableOpacity
+                            onPress={() => setPesquisa("")}
+                            activeOpacity={0.7}
+                        >
+                            <X color="#8a7373" size={20} />
+                        </TouchableOpacity>
+                    )}
                 </View>
 
                 {carregando ? (
@@ -157,14 +206,22 @@ export default function SalaDetalheScreen() {
                             Nenhum patrimônio cadastrado nesta sala.
                         </Text>
                     </View>
+                ) : patrimoniosFiltrados.length === 0 ? (
+                    <View style={styles.centro}>
+                        <Text style={styles.mensagemVazia}>
+                            Nenhum patrimônio encontrado.
+                        </Text>
+                    </View>
                 ) : (
                     <FlatList
-                        data={patrimonios}
+                        data={patrimoniosFiltrados}
                         keyExtractor={(item) => String(item.id_patrimonio)}
                         contentContainerStyle={styles.lista}
+                        keyboardShouldPersistTaps="handled"
                         renderItem={({ item }) => {
                             const estiloStatus = obterEstiloStatus(item.status);
-                            const urlImagem = item.caminho_imagem || item.imagem || item.foto;
+                            const urlImagem =
+                                item.caminho_imagem || item.imagem || item.foto;
 
                             return (
                                 <TouchableOpacity
@@ -175,7 +232,9 @@ export default function SalaDetalheScreen() {
                                 >
                                     {urlImagem ? (
                                         <Image
-                                            source={{ uri: `${BASE_URL}${urlImagem}` }}
+                                            source={{
+                                                uri: `${BASE_URL}${urlImagem}`,
+                                            }}
                                             style={styles.patrimonioImagem}
                                         />
                                     ) : (
@@ -185,7 +244,10 @@ export default function SalaDetalheScreen() {
                                     )}
 
                                     <View style={styles.cardText}>
-                                        <Text style={styles.cardTitle} numberOfLines={1}>
+                                        <Text
+                                            style={styles.cardTitle}
+                                            numberOfLines={1}
+                                        >
                                             {item.nome}
                                         </Text>
 
@@ -202,13 +264,18 @@ export default function SalaDetalheScreen() {
                                         <View
                                             style={[
                                                 styles.badge,
-                                                { backgroundColor: estiloStatus.bg },
+                                                {
+                                                    backgroundColor:
+                                                        estiloStatus.bg,
+                                                },
                                             ]}
                                         >
                                             <Text
                                                 style={[
                                                     styles.badgeTexto,
-                                                    { color: estiloStatus.texto },
+                                                    {
+                                                        color: estiloStatus.texto,
+                                                    },
                                                 ]}
                                             >
                                                 {item.status}
@@ -238,7 +305,7 @@ const styles = StyleSheet.create({
     headerRow: {
         flexDirection: "row",
         alignItems: "center",
-        marginBottom: 28,
+        marginBottom: 20,
     },
     voltarButton: {
         width: 44,
@@ -265,6 +332,24 @@ const styles = StyleSheet.create({
         fontWeight: "600",
         letterSpacing: -0.5,
         marginTop: 4,
+    },
+    barraPesquisa: {
+        flexDirection: "row",
+        alignItems: "center",
+        backgroundColor: "#ffffff",
+        borderRadius: 12,
+        paddingHorizontal: 16,
+        height: 50,
+        marginBottom: 20,
+        borderWidth: 1,
+        borderColor: "#fce9e9",
+    },
+    inputPesquisa: {
+        flex: 1,
+        marginLeft: 10,
+        color: "#2d0e0e",
+        fontSize: 14,
+        paddingVertical: 0,
     },
     lista: {
         gap: 16,
@@ -300,7 +385,7 @@ const styles = StyleSheet.create({
         height: 48,
         borderRadius: 10,
         marginRight: 16,
-        backgroundColor: "#ffd8d8", 
+        backgroundColor: "#ffd8d8",
     },
     cardText: {
         flex: 1,
