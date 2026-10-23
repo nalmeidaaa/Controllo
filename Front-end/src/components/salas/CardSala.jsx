@@ -1,6 +1,7 @@
 import { urlImagemSala } from '../../services/imagemService.js';
 import { desativarSala } from '../../services/salaService.js';
 import { obterUsuarioAtual } from '../../storage/usuario/dados.storage.js';
+import './SalasDesativadas.css';
 
 export default function CardSala({
     sala,
@@ -176,12 +177,16 @@ export default function CardSala({
                     <span className="sala-card-checkbox-custom"></span>
                 </label>
 
-                {srcImagem && (
+                {srcImagem ? (
                     <img
                         className="sala-card-img"
                         alt={descricao}
                         src={srcImagem}
                     />
+                ) : (
+                    <span className="sdes-sem-imagem" aria-hidden="true">
+                        <ion-icon name="image-outline"></ion-icon>
+                    </span>
                 )}
 
                 <span className="sala-card-badge-bloco">

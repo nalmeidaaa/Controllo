@@ -1,0 +1,95 @@
+/* Kit compartilhado — prefixo kit- (usa só variáveis existentes em :root) */
+
+/* ── Abas ───────────────────────────────────────────── */
+.kit-abas {
+    display: flex;
+    gap: 4px;
+    border-bottom: 1px solid var(--borda);
+    margin-bottom: 16px;
+    overflow-x: auto;
+}
+.kit-aba {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--texto-secundario);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: var(--transicao);
+}
+.kit-aba:hover { color: var(--texto-primario); }
+.kit-aba:focus-visible { outline: 2px solid var(--texto-secundario); outline-offset: -2px; border-radius: var(--raio-sm); }
+.kit-aba[aria-selected="true"] {
+    color: var(--texto-primario);
+    border-bottom-color: var(--vermelho-principal);
+}
+.kit-aba-contador {
+    min-width: 22px;
+    padding: 1px 7px;
+    border-radius: 999px;
+    background: var(--bg-pagina);
+    color: var(--texto-secundario);
+    font-size: 12px;
+    text-align: center;
+}
+.kit-aba--destaque .kit-aba-contador {
+    background: var(--vermelho-suave);
+    color: var(--vermelho-escuro);
+}
+
+/* ── Modal de confirmação ───────────────────────────── */
+.kit-modal-box { max-width: 440px; }
+.kit-modal-msg { margin: 0; color: var(--texto-secundario); font-size: 14px; line-height: 1.5; }
+.kit-modal-erro {
+    margin: 12px 0 0;
+    padding: 10px 12px;
+    border-radius: var(--raio-sm);
+    background: var(--bg-pagina);
+    border: 1px solid var(--borda-forte);
+    color: var(--texto-primario);
+    font-size: 13px;
+}
+.kit-modal-footer button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ── Estado vazio / erro ────────────────────────────── */
+.kit-estado {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 8px;
+    padding: 40px 20px;
+    background: var(--bg-superficie);
+    border: 1px dashed var(--borda-forte);
+    border-radius: var(--raio-lg);
+    color: var(--texto-secundario);
+}
+.kit-estado-icone { font-size: 34px; color: var(--texto-suave); }
+.kit-estado--erro .kit-estado-icone { color: var(--vermelho-escuro); }
+.kit-estado-titulo { margin: 0; font-size: 16px; font-weight: 600; color: var(--texto-primario); }
+.kit-estado-desc { margin: 0; font-size: 14px; max-width: 420px; }
+.kit-estado-acao { margin-top: 8px; }
+
+/* ── Esqueleto ──────────────────────────────────────── */
+.kit-esqueleto {
+    display: block;
+    background: linear-gradient(90deg, var(--bg-pagina) 25%, var(--borda) 50%, var(--bg-pagina) 75%);
+    background-size: 200% 100%;
+    animation: kit-brilho 1.3s ease-in-out infinite;
+}
+.kit-esqueleto-linhas { display: flex; flex-direction: column; gap: 10px; }
+@keyframes kit-brilho {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .kit-esqueleto { animation: none; }
+}
