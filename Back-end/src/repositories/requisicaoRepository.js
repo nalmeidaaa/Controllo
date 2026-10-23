@@ -314,7 +314,7 @@ const requisicaoRepository = {
             const [rows] = await conn.execute(
                 `${SELECT_BASE}
                  WHERE r.id_patrimonio = ? AND r.status_requisicao IN (${ABERTOS_SQL})
-                 ORDER BY r.abertura DESC, r.id_requisicao DESC LIMIT 1`,
+                 ORDER BY r.abertura DESC, r.id_requisicao`,
                 [idPatrimonio]
             );
             return rows.length ? mapear(rows[0]) : null;
@@ -345,8 +345,7 @@ const requisicaoRepository = {
                  LEFT JOIN usuarios ur ON ur.id_usuario = r.id_usuario_responsavel
                  WHERE r.id_usuario_solicitante = ?
                    AND h.horario >= DATE_SUB(NOW(), INTERVAL 7 DAY)
-                 ORDER BY h.horario DESC, h.id_historico DESC
-                 LIMIT 3`,
+                 ORDER BY h.horario DESC, h.id_historico`,
                 [idUsuario]
             );
 

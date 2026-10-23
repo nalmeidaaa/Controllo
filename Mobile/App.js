@@ -13,6 +13,7 @@ import NovaRequisicaoScreen from "./src/screens/NovaRequisicao";
 import RequisicaoDetalheScreen from "./src/screens/RequisicaoDetalhe";
 import ManutencaoRequisicoesScreen from "./src/screens/ManutencaoRequisicoes";
 import ManutencaoRequisicaoDetalheScreen from "./src/screens/ManutencaoRequisicaoDetalhe";
+import TodasAtualizacoesScreen from "./src/screens/TodasAtualizacoes";
 // import PosicaoGPS from "./src/screens/PosicaoGPS";
 // import RedesScreen from "./src/screens/RedesWifi";
 
@@ -80,6 +81,11 @@ export default function App() {
         <Stack.Screen
           name="ManutencaoRequisicaoDetalheScreen"
           component={ManutencaoRequisicaoDetalheScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="TodasAtualizacoesScreen"
+          component={TodasAtualizacoesScreen}
           options={{ headerShown: false }}
         />
         {/* <Stack.Screen

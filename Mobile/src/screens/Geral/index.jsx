@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from "react";
+import { ScrollView, StyleSheet } from "react-native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { Wrench, ClipboardClock } from "lucide-react-native";
 import HomeLayout from "../../components/HomeLayout.jsx";
@@ -66,13 +67,26 @@ export default function GeralScreen() {
     );
 
     return (
-        <HomeLayout>
-            <MuralAtualizacoes
-                atualizacoes={atualizacoes}
-                carregando={carregando}
-                erro={erro}
-            />
-            <MenuList options={options} />
-        </HomeLayout>
+        <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+        >
+            <HomeLayout>
+
+                <MuralAtualizacoes
+                    atualizacoes={atualizacoes}
+                    carregando={carregando}
+                    erro={erro}
+                />
+                <MenuList options={options} />
+            </HomeLayout>
+        </ScrollView>
+
     );
 }
+
+const styles = StyleSheet.create({
+    scrollContent: {
+        paddingBottom: 24, // Espaço extra ao final da rolagem
+    },
+});

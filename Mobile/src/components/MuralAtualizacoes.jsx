@@ -1,7 +1,7 @@
 import React from "react";
-import { View, StyleSheet, Text, TouchableOpacity, ActivityIndicator } from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity, ActivityIndicator, FlatList } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { CheckCircle2, Clock, Bell, Send, AlertCircle } from "lucide-react-native";
+import { CheckCircle2, Clock, Bell, Send, AlertCircle, ChevronRight } from "lucide-react-native";
 
 function formatarData(isoString) {
     if (!isoString) return "";
@@ -39,7 +39,7 @@ export default function MuralAtualizacoes({ atualizacoes = [], carregando = fals
 
     if (carregando) {
         return (
-            <View style={styles.wrapper}>
+            <View style={styles.muralContainer}>
                 <CardMensagem titulo="Carregando atualizações...">
                     <ActivityIndicator color="#c9131c" />
                 </CardMensagem>
@@ -49,7 +49,7 @@ export default function MuralAtualizacoes({ atualizacoes = [], carregando = fals
 
     if (erro) {
         return (
-            <View style={styles.wrapper}>
+            <View style={styles.muralContainer}>
                 <CardMensagem
                     titulo="Não foi possível carregar o mural"
                     subtitulo="Tente novamente mais tarde."
@@ -62,7 +62,7 @@ export default function MuralAtualizacoes({ atualizacoes = [], carregando = fals
 
     if (!atualizacoes.length) {
         return (
-            <View style={styles.wrapper}>
+            <View style={styles.muralContainer}>
                 <CardMensagem
                     titulo="Sem atualizações"
                     subtitulo="Nenhuma atualização recente nas suas requisições."
@@ -73,59 +73,102 @@ export default function MuralAtualizacoes({ atualizacoes = [], carregando = fals
         );
     }
 
+    const renderItem = ({ item }) => {
+        const tipo = TIPOS[item.acao] || TIPOS.Abertura;
+        const Icone = tipo.Icone;
+        const requisicao = item.requisicao || {};
+        const descricao =
+            item.acao === "Finalizacao"
+                ? item.descricao || requisicao.descricao
+                : requisicao.descricao;
+
+        return (
+            <TouchableOpacity
+                activeOpacity={0.8}
+                style={styles.card}
+                onPress={() =>
+                    navigation.navigate("RequisicaoDetalheScreen", {
+                        idRequisicao: requisicao.id_requisicao,
+                    })
+                }
+            >
+                <View style={[styles.iconWrapper, { backgroundColor: tipo.fundo }]}>
+                    <Icone color={tipo.cor} size={22} />
+                </View>
+
+                <View style={styles.textWrapper}>
+                    <Text style={styles.titulo}>{tipo.titulo}</Text>
+
+                    <Text style={styles.subtitulo}>
+                        {requisicao.patrimonio?.nome}
+                        {requisicao.sala?.descricao ? ` • ${requisicao.sala.descricao}` : ""}
+                    </Text>
+
+                    {!!descricao && (
+                        <Text style={styles.descricao} numberOfLines={2}>
+                            {descricao}
+                        </Text>
+                    )}
+
+                    <Text style={styles.data}>{formatarData(item.horario)}</Text>
+                </View>
+            </TouchableOpacity>
+        );
+    };
+
+    // Pega sempre até no máximo 3 itens para exibir no mural
+    const atualizacoesExibidas = atualizacoes.slice(0, 3);
+
     return (
-        <View style={styles.wrapper}>
-            {atualizacoes.slice(0, 3).map((item) => {
-                const tipo = TIPOS[item.acao] || TIPOS.Abertura;
-                const Icone = tipo.Icone;
-                const requisicao = item.requisicao || {};
-                const descricao =
-                    item.acao === "Finalizacao"
-                        ? item.descricao || requisicao.descricao
-                        : requisicao.descricao;
+        <View style={styles.muralContainer}>
+            <Text style={styles.muralTitulo}>Mural de Atualizações</Text>
 
-                return (
-                    <TouchableOpacity
-                        key={item.id_historico}
-                        activeOpacity={0.8}
-                        style={styles.card}
-                        onPress={() =>
-                            navigation.navigate("RequisicaoDetalheScreen", {
-                                idRequisicao: requisicao.id_requisicao,
-                            })
-                        }
-                    >
-                        <View style={[styles.iconWrapper, { backgroundColor: tipo.fundo }]}>
-                            <Icone color={tipo.cor} size={22} />
-                        </View>
+            <FlatList
+                data={atualizacoesExibidas}
+                keyExtractor={(item) => String(item.id_historico)}
+                renderItem={renderItem}
+                contentContainerStyle={styles.listContent}
+                showsVerticalScrollIndicator={false}
+                scrollEnabled={false}
+            />
 
-                        <View style={styles.textWrapper}>
-                            <Text style={styles.titulo}>{tipo.titulo}</Text>
-
-                            <Text style={styles.subtitulo}>
-                                {requisicao.patrimonio?.nome}
-                                {requisicao.sala?.descricao ? ` • ${requisicao.sala.descricao}` : ""}
-                            </Text>
-
-                            {!!descricao && (
-                                <Text style={styles.descricao} numberOfLines={2}>
-                                    {descricao}
-                                </Text>
-                            )}
-
-                            <Text style={styles.data}>{formatarData(item.horario)}</Text>
-                        </View>
-                    </TouchableOpacity>
-                );
-            })}
+            <TouchableOpacity
+                style={styles.botaoExibirMais}
+                activeOpacity={0.7}
+                onPress={() => {
+                    navigation.navigate("TodasAtualizacoesScreen");
+                }}
+            >
+                <Text style={styles.textoBotaoExibirMais}>Exibir mais</Text>
+                <ChevronRight color="#c9131c" size={18} />
+            </TouchableOpacity>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-    wrapper: {
-        marginBottom: 24,
-        gap: 10,
+    muralContainer: {
+        backgroundColor: "#fafafa",
+        borderRadius: 20,
+        padding: 16,
+        marginVertical: 12,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.15,
+        shadowRadius: 8,
+        elevation: 5,
+    },
+
+    muralTitulo: {
+        color: "#270d0d",
+        fontSize: 16,
+        fontWeight: "bold",
+        marginBottom: 14,
+        paddingLeft: 4,
+    },
+
+    listContent: {
+        gap: 12,
     },
 
     card: {
@@ -133,16 +176,10 @@ const styles = StyleSheet.create({
         alignItems: "flex-start",
         backgroundColor: "#ffffff",
         borderRadius: 14,
-        paddingHorizontal: 18,
-        paddingVertical: 18,
+        paddingHorizontal: 16,
+        paddingVertical: 16,
         borderWidth: 1,
-        borderColor: "#fce9e9",
-
-        shadowColor: "#101010",
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.06,
-        shadowRadius: 3,
-        elevation: 1,
+        borderColor: "rgb(239, 239, 239)",
     },
 
     iconWrapper: {
@@ -184,5 +221,22 @@ const styles = StyleSheet.create({
         color: "#a99",
         fontSize: 11,
         marginTop: 6,
+    },
+
+    botaoExibirMais: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        paddingVertical: 12,
+        marginTop: 12,
+        borderTopWidth: 1,
+        borderTopColor: "#eaeaea",
+    },
+
+    textoBotaoExibirMais: {
+        color: "#c9131c",
+        fontSize: 14,
+        fontWeight: "600",
+        marginRight: 4,
     },
 });
