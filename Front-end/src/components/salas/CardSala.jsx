@@ -1,6 +1,7 @@
 import { urlImagemSala } from '../../services/imagemService.js';
 import { desativarSala } from '../../services/salaService.js';
 import { obterUsuarioAtual } from '../../storage/usuario/dados.storage.js';
+import { FaHistory } from 'react-icons/fa';
 import './SalasDesativadas.css';
 
 export default function CardSala({
@@ -10,7 +11,8 @@ export default function CardSala({
     onVisualizar,
     onEditar,
     onExcluir,
-    onDuplicar
+    onDuplicar,
+    onHistorico
 }) {
     const id = sala.id_sala || sala.id || '—';
 
@@ -214,6 +216,22 @@ export default function CardSala({
                    ================================================= */}
 
                 <div className="sala-card-acoes">
+
+                    {/* HISTÓRICO */}
+                    <button
+                        type="button"
+                        className="btn-card-action btn-card-historico"
+                        title="Ver histórico da sala"
+                        aria-label="Ver histórico da sala"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+
+                            onHistorico?.(sala);
+                        }}
+                    >
+                        <FaHistory />
+                    </button>
 
                     {/* DUPLICAR */}
                     <button

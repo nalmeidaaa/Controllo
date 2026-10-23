@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "sensores-aula-1",
-    "slug": "sensores-aula-1",
+    "name": "controllo",
+    "slug": "controllo",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

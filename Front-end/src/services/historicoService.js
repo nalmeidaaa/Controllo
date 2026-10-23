@@ -28,3 +28,9 @@ export async function listarPatrimoniosParaFiltro(token, idSala) {
     const resposta = await api.get(url, cabecalho(token));
     return resposta.data; // { result: [...] }
 }
+
+// Histórico de uma sala específica (mais recentes primeiro, até `limite` registros)
+export async function listarHistoricoSala(token, idSala, limite = 100) {
+    if (!idSala) throw new Error("Erro: sala inválida");
+    return listarHistorico(token, { id_sala: idSala, pagina: 1, limite }); // { result, total, pagina, limite }
+}

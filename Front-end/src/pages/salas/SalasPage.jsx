@@ -14,6 +14,7 @@ import {
 } from '../../services/imagemService.js';
 
 import CardSala from '../../components/salas/CardSala.jsx';
+import ModalHistoricoSala from '../../components/salas/ModalHistoricoSala.jsx';
 import SalasDesativadasLista from '../../components/salas/SalasDesativadasLista.jsx';
 import { useSalasDesativadas } from '../../hooks/useSalasDesativadas.jsx';
 import Paginacao from '../../components/shared/Paginacao.jsx';
@@ -22,6 +23,9 @@ import Paginacao from '../../components/shared/Paginacao.jsx';
 export default function SalasPage({ navegarPara }) {
 
     const token = obterToken();
+
+    // Sala cujo histórico está aberto (null = modal fechado)
+    const [salaHistorico, setSalaHistorico] = useState(null);
 
     /*
      * =====================================================
@@ -958,6 +962,10 @@ export default function SalasPage({ navegarPara }) {
                                             handleExcluir
                                         }
 
+                                        onHistorico={
+                                            setSalaHistorico
+                                        }
+
                                     />
 
                                 );
@@ -1131,6 +1139,11 @@ export default function SalasPage({ navegarPara }) {
                     </div>
 
                 )}
+
+            <ModalHistoricoSala
+                sala={salaHistorico}
+                onFechar={() => setSalaHistorico(null)}
+            />
 
         </div>
 

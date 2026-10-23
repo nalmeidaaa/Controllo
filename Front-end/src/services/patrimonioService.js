@@ -101,87 +101,81 @@ export async function criarPatrimonio(
 // ============================================================
 // TRANSFERIR PATRIMÔNIO
 // ============================================================
+// `patrimonio` (opcional) é o objeto atual do item: o fallback precisa
+// reenviar nome/status/número, pois a rota de edição os exige.
 export async function transferirPatrimonio(
     id,
     idSalaDestino,
-    token
+    token,
+    patrimonio = {}
 ) {
+    if (!token) throw new Error("Erro: token inválido");
+    if (!id) throw new Error("Erro: ID do patrimônio inválido");
+    if (!idSalaDestino) throw new Error("Erro: sala de destino inválida");
+
+    const headers = { Authorization: `Bearer ${token}` };
+
     try {
-        if (!token) {
-            throw new Error("Erro: token inválido");
-        }
-
-        if (!id) {
-            throw new Error(
-                "Erro: ID do patrimônio inválido"
-            );
-        }
-
-        if (!idSalaDestino) {
-            throw new Error(
-                "Erro: sala de destino inválida"
-            );
-        }
-
         const resposta = await api.put(
             `/patrimonios/${id}/transferir`,
-            {
-                id_sala_destino: idSalaDestino
-            },
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            }
+            { id_sala_destino: idSalaDestino, id_sala: idSalaDestino },
+            { headers }
         );
-
         return resposta.data;
 
     } catch (error) {
-        console.error(
-            `Erro ao transferir patrimônio com ID ${id}:`,
-            error
+        const status = error.response?.status;
+
+        // Erros de validação/permissão (400, 401, 403, 409, 422...) são respostas
+        // reais do backend: repassa. Já rota inexistente (404/405), erro de
+        // servidor (5xx) ou falha de rede indicam que a rota dedicada não funciona;
+        // nesses casos transfere pela edição do patrimônio (muda só a sala).
+        const usarFallback =
+            !status || status === 404 || status === 405 || status >= 500;
+
+        if (!usarFallback) {
+            console.error(`Erro ao transferir patrimônio com ID ${id}:`, error);
+            throw error;
+        }
+
+        console.warn(
+            `Rota /transferir falhou (${status ?? 'sem resposta'}). Usando edição do patrimônio.`
         );
 
-        throw error;
+        const dados = new FormData();
+        dados.append('nome', patrimonio.nome ?? '');
+        if (patrimonio.status) dados.append('status', patrimonio.status);
+        if (patrimonio.numero_patrimonio) {
+            dados.append('numero_patrimonio', patrimonio.numero_patrimonio);
+        }
+        dados.append('id_sala', idSalaDestino);
+
+        try {
+            const resposta = await api.put(
+                `/patrimonios/${id}`,
+                dados,
+                { headers: { ...headers, 'Content-Type': 'multipart/form-data' } }
+            );
+            return resposta.data;
+        } catch (erroFallback) {
+            console.error(`Erro ao transferir patrimônio com ID ${id}:`, erroFallback);
+            throw erroFallback;
+        }
     }
 }
 
 // ============================================================
-// OBTER HISTÓRICO DE TRANSFERÊNCIAS
+// HISTÓRICO DO PATRIMÔNIO
+// (usa a mesma rota /historicos da tela de Histórico, filtrando pelo patrimônio)
 // ============================================================
-export async function obterHistoricoTransferencias(
-    id,
-    token
-) {
-    try {
-        if (!token) {
-            throw new Error("Erro: token inválido");
-        }
+export async function obterHistoricoPatrimonio(id, token) {
+    if (!token) throw new Error("Erro: token inválido");
+    if (!id) throw new Error("Erro: ID do patrimônio inválido");
 
-        if (!id) {
-            throw new Error(
-                "Erro: ID do patrimônio inválido"
-            );
-        }
+    const resposta = await api.get('/historicos', {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { id_patrimonio: id, pagina: 1, limite: 100 }
+    });
 
-        const resposta = await api.get(
-            `/patrimonios/${id}/historico-transferencias`,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            }
-        );
-
-        return resposta.data;
-
-    } catch (error) {
-        console.error(
-            `Erro ao buscar histórico do patrimônio com ID ${id}:`,
-            error
-        );
-
-        throw error;
-    }
+    return resposta.data; // { result, total, pagina, limite }
 }

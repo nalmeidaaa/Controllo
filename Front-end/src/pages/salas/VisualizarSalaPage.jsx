@@ -1,5 +1,5 @@
 import ModalTransferenciaPatrimonio from '../../components/patrimonio/ModalTransferenciaPatrimonio.jsx';
-import ModalHistoricoTransferencias from '../../components/patrimonio/ModalHistoricoTransferencias.jsx';
+import ModalHistoricoPatrimonio from '../../components/patrimonio/ModalHistoricoPatrimonio.jsx';
 
 import { useEffect, useRef, useState } from 'react';
 
@@ -13,7 +13,7 @@ import { urlImagemSala } from '../../services/imagemService.js';
 import {
     excluirPatrimonio,
     transferirPatrimonio,
-    obterHistoricoTransferencias
+    obterHistoricoPatrimonio
 } from '../../services/patrimonioService.js';
 
 import {
@@ -43,13 +43,6 @@ export default function VisualizarSalaPage({
         erro
     } = useSalaDetalhe(idSala);
 
-
-    /*
-     * ============================================================
-     * ESTADOS
-     * ============================================================
-     */
-
     const [paginaAtual, setPaginaAtual] =
         useState(1);
 
@@ -60,94 +53,38 @@ export default function VisualizarSalaPage({
         useState(false);
 
 
-    /*
-     * Salas disponíveis para transferência
-     */
-
     const [salasDisponiveis, setSalasDisponiveis] =
         useState([]);
 
-
-    /*
-     * Patrimônio que será transferido
-     */
 
     const [
         patrimonioTransferencia,
         setPatrimonioTransferencia
     ] = useState(null);
 
-
-    /*
-     * Controla o carregamento da transferência
-     */
-
     const [transferindo, setTransferindo] =
         useState(false);
 
-
-    /*
-     * Controla o estado do modal:
-     *
-     * null = fechado
-     *
-     * { id_sala: ... } = novo patrimônio
-     *
-     * patrimonioObj = editando
-     */
-
     const [modalPatrimonio, setModalPatrimonio] =
         useState(null);
-
-
-    /*
-     * ============================================================
-     * HISTÓRICO DE TRANSFERÊNCIAS
-     * ============================================================
-     */
-
-    /*
-     * Patrimônio cujo histórico está sendo visualizado
-     */
-
+        
     const [patrimonioHistorico, setPatrimonioHistorico] =
         useState(null);
-
-
-    /*
-     * Lista de transferências do patrimônio
-     */
 
     const [historicoTransferencias, setHistoricoTransferencias] =
         useState([]);
 
-
-    /*
-     * Controla carregamento do histórico
-     */
-
     const [carregandoHistorico, setCarregandoHistorico] =
         useState(false);
+
+    const [erroHistorico, setErroHistorico] =
+        useState('');
 
 
     const containerRef = useRef(null);
 
-
-    /*
-     * ============================================================
-     * VOLTAR PARA SALAS
-     * ============================================================
-     */
-
     const voltarParaSalas = () =>
         navegarPara.salas();
-
-
-    /*
-     * ============================================================
-     * PATRIMÔNIOS
-     * ============================================================
-     */
 
     const patrimonios =
         sala?.patrimonios || [];
@@ -163,12 +100,6 @@ export default function VisualizarSalaPage({
             )
         );
 
-
-    /*
-     * ============================================================
-     * PAGINAÇÃO
-     * ============================================================
-     */
 
     useEffect(() => {
 
@@ -201,12 +132,6 @@ export default function VisualizarSalaPage({
         );
 
 
-    /*
-     * ============================================================
-     * CARREGAR SALAS PARA TRANSFERÊNCIA
-     * ============================================================
-     */
-
     useEffect(() => {
 
         async function carregarSalas() {
@@ -219,21 +144,6 @@ export default function VisualizarSalaPage({
 
                 const resposta =
                     await listarSalas(token);
-
-
-                /*
-                 * O backend pode retornar:
-                 *
-                 * array
-                 *
-                 * ou:
-                 *
-                 * { result: [...] }
-                 *
-                 * ou:
-                 *
-                 * { data: [...] }
-                 */
 
                 const dados =
                     resposta?.result ??
@@ -269,12 +179,6 @@ export default function VisualizarSalaPage({
     }, [token]);
 
 
-    /*
-     * ============================================================
-     * SELECIONAR PATRIMÔNIO
-     * ============================================================
-     */
-
     function toggleSelecionado(id) {
 
         setSelecionados((atual) => {
@@ -299,13 +203,6 @@ export default function VisualizarSalaPage({
         });
 
     }
-
-
-    /*
-     * ============================================================
-     * SELECIONAR PÁGINA
-     * ============================================================
-     */
 
     function selecionarPagina(marcar) {
 
@@ -344,12 +241,6 @@ export default function VisualizarSalaPage({
     }
 
 
-    /*
-     * ============================================================
-     * VERIFICAR SE TODOS ESTÃO SELECIONADOS
-     * ============================================================
-     */
-
     const todosDaPaginaSelecionados =
         pagina.length > 0 &&
         pagina.every(
@@ -362,12 +253,6 @@ export default function VisualizarSalaPage({
                 )
         );
 
-
-    /*
-     * ============================================================
-     * EXCLUIR PATRIMÔNIO INDIVIDUAL
-     * ============================================================
-     */
 
     async function excluirIndividual(
         id,
@@ -857,6 +742,8 @@ export default function VisualizarSalaPage({
             []
         );
 
+        setErroHistorico('');
+
 
         /*
          * Mostra carregamento
@@ -901,7 +788,7 @@ export default function VisualizarSalaPage({
              */
 
             const resposta =
-                await obterHistoricoTransferencias(
+                await obterHistoricoPatrimonio(
                     idPatrimonio,
                     tkn
                 );
@@ -915,8 +802,6 @@ export default function VisualizarSalaPage({
             const dados =
                 resposta?.result ??
                 resposta?.data?.result ??
-                resposta?.data ??
-                resposta ??
                 [];
 
 
@@ -935,21 +820,11 @@ export default function VisualizarSalaPage({
             );
 
 
-            const mensagemErro =
+            setErroHistorico(
                 erro?.response?.data?.erro ||
                 erro?.response?.data?.message ||
                 erro?.response?.data?.mensagem ||
-                erro?.response?.data?.errorMessage ||
-                'Não foi possível carregar o histórico.';
-
-
-            alert(
-                mensagemErro
-            );
-
-
-            setPatrimonioHistorico(
-                null
+                'Não foi possível carregar o histórico.'
             );
 
 
@@ -971,11 +846,6 @@ export default function VisualizarSalaPage({
      */
 
     function fecharHistorico() {
-
-        if (carregandoHistorico) {
-            return;
-        }
-
 
         setPatrimonioHistorico(
             null
@@ -1699,7 +1569,7 @@ export default function VisualizarSalaPage({
                 MODAL DE HISTÓRICO
             ===================================================== */}
 
-            <ModalHistoricoTransferencias
+            <ModalHistoricoPatrimonio
 
                 aberto={
                     Boolean(
@@ -1717,6 +1587,10 @@ export default function VisualizarSalaPage({
 
                 carregando={
                     carregandoHistorico
+                }
+
+                erro={
+                    erroHistorico
                 }
 
                 onFechar={
