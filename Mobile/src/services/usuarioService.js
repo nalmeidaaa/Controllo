@@ -7,6 +7,7 @@ const BASE64_CHARS =
 function decodificarBase64Url(base64Url) {
     let base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
     const resto = base64.length % 4;
+
     if (resto === 2) base64 += "==";
     else if (resto === 3) base64 += "=";
 
@@ -17,19 +18,24 @@ function decodificarBase64Url(base64Url) {
 
     for (let i = 0; i < semPadding.length; i++) {
         const valor = BASE64_CHARS.indexOf(semPadding[i]);
+
         if (valor === -1) continue;
+
         buffer = (buffer << 6) | valor;
         bits += 6;
+
         if (bits >= 8) {
             bits -= 8;
             resultado += String.fromCharCode((buffer >> bits) & 0xff);
         }
     }
+
     return resultado;
 }
 
 function normalizarTipoUsuario(tipo) {
     if (!tipo || typeof tipo !== "string") return null;
+
     return tipo
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
@@ -39,9 +45,12 @@ function normalizarTipoUsuario(tipo) {
 
 function bytesParaUtf8(bytesString) {
     let percentEncoded = "";
+
     for (let i = 0; i < bytesString.length; i++) {
-        percentEncoded += "%" + ("00" + bytesString.charCodeAt(i).toString(16)).slice(-2);
+        percentEncoded +=
+            "%" + ("00" + bytesString.charCodeAt(i).toString(16)).slice(-2);
     }
+
     return decodeURIComponent(percentEncoded);
 }
 
@@ -49,12 +58,19 @@ function obterPayloadToken(tokenInput) {
     try {
         if (!tokenInput) return null;
 
-        const tokenString = typeof tokenInput === "object" ? tokenInput.token : tokenInput;
+        const tokenString =
+            typeof tokenInput === "object" ? tokenInput.token : tokenInput;
 
         if (!tokenString || typeof tokenString !== "string") return null;
 
         const payloadBase64 = tokenString.split(".")[1];
-        const payloadDecodificado = bytesParaUtf8(decodificarBase64Url(payloadBase64));
+
+        if (!payloadBase64) return null;
+
+        const payloadDecodificado = bytesParaUtf8(
+            decodificarBase64Url(payloadBase64)
+        );
+
         return JSON.parse(payloadDecodificado);
     } catch (e) {
         return null;
@@ -63,27 +79,63 @@ function obterPayloadToken(tokenInput) {
 
 export async function verificarSetup() {
     try {
-        const resposta = await api.get('/usuarios/setup');
+        const resposta = await api.get("/usuarios/setup");
         return resposta.data;
     } catch (error) {
         throw error;
     }
 }
 
+// Realiza o login e prepara os dados do usuário para salvar no aplicativo
 export async function logar(login, senha) {
     try {
-        if (!login || !senha) throw new Error("Login e senha são obrigatórios");
-        const resposta = await api.post('/usuarios/login', { login, senha });
-        const { token } = resposta.data;
+        if (!login || !senha) {
+            throw new Error("Login e senha são obrigatórios");
+        }
 
-        if (!token) throw new Error("Resposta inválida do servidor.");
+        const resposta = await api.post("/usuarios/login", {
+            login,
+            senha,
+        });
+
+        const dadosResposta = resposta.data;
+        const token = dadosResposta?.token;
+
+        if (!token) {
+            throw new Error("Resposta inválida do servidor.");
+        }
 
         const payload = obterPayloadToken(token);
+        const dadosUsuario = dadosResposta?.usuario ?? {};
 
         return {
+            ...dadosResposta,
+
             token,
-            id: payload?.id ?? null,
-            tipo_usuario: normalizarTipoUsuario(payload?.tipo_usuario),
+
+            id:
+                payload?.id ??
+                payload?.id_usuario ??
+                dadosUsuario?.id ??
+                dadosUsuario?.id_usuario ??
+                dadosResposta?.id ??
+                dadosResposta?.id_usuario ??
+                null,
+
+            nome:
+                payload?.nome ??
+                payload?.name ??
+                dadosUsuario?.nome ??
+                dadosUsuario?.name ??
+                dadosResposta?.nome ??
+                dadosResposta?.name ??
+                "",
+
+            tipo_usuario: normalizarTipoUsuario(
+                payload?.tipo_usuario ??
+                dadosUsuario?.tipo_usuario ??
+                dadosResposta?.tipo_usuario
+            ),
         };
     } catch (error) {
         throw error;
@@ -92,11 +144,12 @@ export async function logar(login, senha) {
 
 export async function criarUsuario(token, formData) {
     try {
-        const resposta = await api.post('/usuarios', formData, {
+        const resposta = await api.post("/usuarios", formData, {
             headers: {
-                Authorization: `Bearer ${token}`
-            }
+                Authorization: `Bearer ${token}`,
+            },
         });
+
         return resposta.data;
     } catch (error) {
         throw error;
@@ -110,9 +163,10 @@ export async function atualizarUsuario(token, id, formData) {
 
         const resposta = await api.put(`/usuarios/${id}`, formData, {
             headers: {
-                Authorization: `Bearer ${token}`
-            }
+                Authorization: `Bearer ${token}`,
+            },
         });
+
         return resposta.data;
     } catch (error) {
         throw error;
@@ -122,9 +176,13 @@ export async function atualizarUsuario(token, id, formData) {
 export async function buscarUsuarios(token) {
     try {
         if (!token) throw new Error("Erro: token inválido");
-        const resposta = await api.get('/usuarios', {
-            headers: { Authorization: `Bearer ${token}` }
+
+        const resposta = await api.get("/usuarios", {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
         });
+
         return resposta.data;
     } catch (error) {
         throw error;
@@ -141,16 +199,20 @@ export async function excluirUsuario(token, id) {
 
         const idUsuarioLogado = payload?.id || payload?.id_usuario;
 
-        if (idUsuarioLogado && String(idUsuarioLogado) === String(id)) {
-            throw new Error("Você não pode alterar o tipo da sua própria conta.");
+        if (
+            idUsuarioLogado &&
+            String(idUsuarioLogado) === String(id)
+        ) {
+            throw new Error(
+                "Você não pode alterar o tipo da sua própria conta."
+            );
         }
 
-        const resposta = await api.delete(
-            `/usuarios/${id}`,
-            {
-                headers: { Authorization: `Bearer ${token}` }
-            }
-        );
+        const resposta = await api.delete(`/usuarios/${id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
 
         return resposta.data;
     } catch (error) {
@@ -168,15 +230,22 @@ export async function desativarUsuario(token, id) {
 
         const idUsuarioLogado = payload?.id || payload?.id_usuario;
 
-        if (idUsuarioLogado && String(idUsuarioLogado) === String(id)) {
-            throw new Error("Você não pode desativar a sua própria conta.");
+        if (
+            idUsuarioLogado &&
+            String(idUsuarioLogado) === String(id)
+        ) {
+            throw new Error(
+                "Você não pode desativar a sua própria conta."
+            );
         }
 
         const resposta = await api.put(
             `/usuarios/${id}`,
             { tipo_usuario: "desativado" },
             {
-                headers: { Authorization: `Bearer ${token}` }
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
             }
         );
 
@@ -189,13 +258,17 @@ export async function desativarUsuario(token, id) {
 // Cadastro público (sem token). Multipart; não envia tipo_usuario nem foto.
 export async function cadastrarUsuario({ nome, cpf, email, senha }) {
     const formData = new FormData();
+
     formData.append("nome", nome);
     formData.append("cpf", cpf);
     formData.append("email", email);
     formData.append("senha", senha);
 
     const resposta = await api.post("/usuarios/cadastro", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: {
+            "Content-Type": "multipart/form-data",
+        },
     });
+
     return resposta.data;
 }
