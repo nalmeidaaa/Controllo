@@ -1,14 +1,11 @@
 import { ACOES } from './rotulos.js';
 
 export default function BadgeAcao({ acao }) {
-    const a = ACOES[acao] || { label: acao || '—', bg: '#f4f4f6', cor: '#333338', borda: '#d1d1d6' };
-
+    const a = ACOES[acao];
     return (
-        <span
-            className="badge-perfil"
-            style={{ background: a.bg, color: a.cor, border: `1px solid ${a.borda}` }}
-        >
-            {a.label}
+        <span className={`hist-badge ${a ? `hist-acao--${a.classe}` : 'hist-acao--outra'}`}>
+            <span className="hist-badge-ponto" aria-hidden="true" />
+            {a?.label || acao || '—'}
         </span>
     );
 }

@@ -9,7 +9,6 @@ import SalasPage from './pages/salas/SalasPage.jsx';
 import CriarSalaPage from './pages/salas/CriarSalaPage.jsx';
 import EditarSalaPage from './pages/salas/EditarSalaPage.jsx';
 import VisualizarSalaPage from './pages/salas/VisualizarSalaPage.jsx';
-import AprovarCadastrosPage from './pages/usuario/AprovarCadastrosPage.jsx';
 import HistoricoPage from './pages/historico/HistoricoPage.jsx';
 
 const semAcento = (texto = '') =>
@@ -109,7 +108,8 @@ export default function App() {
     const navegarPara = {
         dashboard: () => mudarPagina('dashboard'),
         usuarios: () => mudarPagina('usuarios'),
-        aprovacoes: () => mudarPagina('aprovacoes'),
+        // atalho: abre Gerenciar Usuários já na fila de cadastros pendentes
+        aprovacoes: () => mudarPagina('usuarios', { aba: 'pendentes' }),
         historico: () => mudarPagina('historico'),
         salas: () => mudarPagina('salas'),
         criarSala: () => mudarPagina('criarSala'),
@@ -131,9 +131,13 @@ export default function App() {
     function renderPagina() {
         switch (pagina) {
             case 'usuarios':
-                return <UsuariosPage />;
-            case 'aprovacoes':
-                return <AprovarCadastrosPage onPendentesAtualizados={atualizarPendentes} />;
+                return (
+                    <UsuariosPage
+                        key={paramsPagina.aba || 'usuarios'}
+                        abaInicial={paramsPagina.aba}
+                        onPendentesAtualizados={atualizarPendentes}
+                    />
+                );
             case 'historico':
                 return <HistoricoPage />;
             case 'salas':

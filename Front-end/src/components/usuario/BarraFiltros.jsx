@@ -9,10 +9,17 @@ const FILTROS = [
     { id: 'desativado', label: 'Desativados' },
 ];
 
-export default function BarraFiltros({ onBusca, onFiltro }) {
+/**
+ * filtroAtivo  - (opcional) controla o chip selecionado a partir da página
+ * pendentes    - (opcional) nº de cadastros aguardando aprovação; quando informado
+ *                (inclusive 0) aparece o chip "Pendentes". Omitir para ocultá-lo.
+ */
+export default function BarraFiltros({ onBusca, onFiltro, filtroAtivo: filtroControlado, pendentes }) {
     const [termo, setTermo] = useState('');
-    const [filtroAtivo, setFiltroAtivo] = useState('todos');
+    const [filtroInterno, setFiltroInterno] = useState('todos');
     const debounceRef = useRef(null);
+
+    const filtroAtivo = filtroControlado ?? filtroInterno;
 
     useEffect(() => {
         clearTimeout(debounceRef.current);
@@ -20,6 +27,11 @@ export default function BarraFiltros({ onBusca, onFiltro }) {
         return () => clearTimeout(debounceRef.current);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [termo]);
+
+    function selecionar(id) {
+        setFiltroInterno(id);
+        onFiltro?.(id);
+    }
 
     return (
         <div className="filtros-barra">
@@ -42,11 +54,24 @@ export default function BarraFiltros({ onBusca, onFiltro }) {
                     <button
                         key={f.id}
                         className={`filtro-chip ${filtroAtivo === f.id ? 'ativo' : ''}`}
-                        onClick={() => { setFiltroAtivo(f.id); onFiltro?.(f.id); }}
+                        onClick={() => selecionar(f.id)}
                     >
                         {f.label}
                     </button>
                 ))}
+
+                {typeof pendentes === 'number' && (
+                    <>
+                        <span className="filtros-divisor" aria-hidden="true" />
+                        <button
+                            className={`filtro-chip filtro-chip--pendentes ${filtroAtivo === 'pendentes' ? 'ativo' : ''} ${pendentes > 0 ? 'tem-pendentes' : ''}`}
+                            onClick={() => selecionar('pendentes')}
+                        >
+                            Pendentes
+                            {pendentes > 0 && <span className="filtro-chip-contador">{pendentes}</span>}
+                        </button>
+                    </>
+                )}
             </div>
         </div>
     );

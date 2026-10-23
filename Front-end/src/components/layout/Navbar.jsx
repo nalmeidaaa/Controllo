@@ -47,7 +47,6 @@ export default function Navbar({ paginaAtiva, navegarPara, onLogout, onSidebarCh
         { id: 'dashboard', icone: 'grid-outline', label: 'Página Inicial' },
         { id: 'salas', icone: 'log-in-outline', label: 'Gerenciar Salas' },
         { id: 'usuarios', icone: 'people-outline', label: 'Gerenciar Usuários' },
-        { id: 'aprovacoes', icone: 'person-add-outline', label: 'Aprovar Cadastros' },
         { id: 'historico', icone: 'time-outline', label: 'Histórico' },
     ];
 
@@ -100,7 +99,7 @@ export default function Navbar({ paginaAtiva, navegarPara, onLogout, onSidebarCh
                                         <ion-icon name={item.icone} style={{ fontSize: '20px' }}></ion-icon>
                                     </span>
                                     {item.label}
-                                    {item.id === 'aprovacoes' && pendentes > 0 && (
+                                    {item.id === 'usuarios' && pendentes > 0 && (
                                         <span style={{ marginLeft: 'auto', minWidth: 20, padding: '1px 7px', borderRadius: 999, background: '#c9131c', color: '#fff', fontSize: 11, fontWeight: 700, textAlign: 'center' }}>
                                             {pendentes}
                                         </span>

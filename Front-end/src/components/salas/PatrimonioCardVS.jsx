@@ -1,4 +1,5 @@
 import { urlImagemPatrimonio } from '../../services/imagemService';
+import { FaEdit, FaTrash, FaExchangeAlt, FaHistory } from 'react-icons/fa';
 
 export default function PatrimonioCardVS({
     patrimonio,
@@ -165,7 +166,7 @@ export default function PatrimonioCardVS({
                         onEditar(patrimonio);
                     }}
                 >
-                    ✏️
+                    <FaEdit />
                 </button>
 
 
@@ -183,7 +184,7 @@ export default function PatrimonioCardVS({
                         onExcluir(id, nome);
                     }}
                 >
-                    🗑️
+                    <FaTrash />
                 </button>
 
 
@@ -196,7 +197,7 @@ export default function PatrimonioCardVS({
                     aria-label="Transferir patrimônio"
                     onClick={handleTransferir}
                 >
-                    ⇄
+                    <FaExchangeAlt />
                 </button>
 
 
@@ -209,7 +210,7 @@ export default function PatrimonioCardVS({
                     aria-label="Ver histórico de transferências"
                     onClick={handleHistorico}
                 >
-                    📋
+                    <FaHistory />
                 </button>
 
             </div>

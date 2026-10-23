@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { obterLinhaDoTempo } from '../../services/historicoService.js';
 import { obterToken } from '../../storage/usuario/dados.storage.js';
 import BadgeAcao from './BadgeAcao.jsx';
-import { PRIORIDADES, formatarDataHora, nomeUsuario } from './rotulos.js';
+import { ACOES, PRIORIDADES, formatarDataHora, nomeUsuario } from './rotulos.js';
 
 export default function ModalLinhaDoTempo({ idRequisicao, onFechar }) {
     const [dados, setDados] = useState(null);
@@ -71,7 +71,7 @@ export default function ModalLinhaDoTempo({ idRequisicao, onFechar }) {
 
                             <ol className="hist-timeline">
                                 {(dados.eventos ?? []).map((ev) => (
-                                    <li key={ev.id_historico} className="hist-timeline-item">
+                                    <li key={ev.id_historico} className={`hist-timeline-item hist-acao--${ACOES[ev.acao]?.classe || 'outra'}`}>
                                         <span className="hist-timeline-ponto"></span>
                                         <div className="hist-timeline-topo">
                                             <BadgeAcao acao={ev.acao} />

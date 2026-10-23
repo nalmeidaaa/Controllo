@@ -1,0 +1,116 @@
+.aprov-tabela-scroll {
+    overflow-x: auto;
+}
+
+.aprov-usuario {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.aprov-acoes {
+    display: flex;
+    gap: 8px;
+}
+
+.aprov-mensagem {
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-bottom: 16px;
+}
+
+.aprov-mensagem.sucesso {
+    background: var(--c-bg-ecfdf3, #ecfdf3);
+    color: var(--c-fg-166534, #166534);
+    border: 1px solid var(--c-bd-bbf7d0, #bbf7d0);
+}
+
+.aprov-mensagem.erro {
+    background: var(--c-bg-fff3f3, #fff3f3);
+    color: var(--c-fg-a02020, #a02020);
+    border: 1px solid var(--c-bd-f5c6c6, #f5c6c6);
+}
+
+.aprov-estado {
+    text-align: center;
+    padding: 48px 20px;
+    color: var(--texto-suave);
+    font-size: 14px;
+}
+
+.aprov-estado button {
+    margin-top: 14px;
+}
+
+/* ── Aviso de cadastros aguardando aprovação ── */
+.aprov-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    border-radius: var(--raio);
+    background: var(--vermelho-suave);
+    border: 1px solid rgba(227, 6, 19, 0.28);
+    color: var(--texto-primario);
+    font-size: 14px;
+}
+
+.aprov-banner-texto strong {
+    color: var(--vermelho-principal);
+}
+
+.aprov-banner-btn {
+    padding: 6px 14px;
+    border: none;
+    border-radius: var(--raio-sm);
+    background: var(--vermelho-principal);
+    color: #fff;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transicao);
+}
+
+.aprov-banner-btn:hover {
+    background: var(--vermelho-hover);
+}
+
+/* ── Chip "Pendentes" com contador ── */
+.filtros-divisor {
+    width: 1px;
+    align-self: stretch;
+    margin: 4px 2px;
+    background: var(--borda-forte);
+}
+
+.filtro-chip--pendentes {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filtro-chip-contador {
+    min-width: 20px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: var(--vermelho-principal);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 20px;
+    text-align: center;
+}
+
+.filtro-chip--pendentes.ativo .filtro-chip-contador {
+    background: #fff;
+    color: var(--vermelho-principal);
+}
+
+:root[data-theme='dark'] .aprov-banner-texto strong {
+    color: #ff6b75;
+}

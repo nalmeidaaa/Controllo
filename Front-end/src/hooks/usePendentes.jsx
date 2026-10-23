@@ -2,12 +2,17 @@ import { useCallback, useEffect, useState } from 'react';
 import { buscarPendentes } from '../services/usuarioService.js';
 import { obterToken } from '../storage/usuario/dados.storage.js';
 
-export function usePendentes() {
+export function usePendentes({ ativo = true } = {}) {
     const [pendentes, setPendentes] = useState([]);
-    const [carregando, setCarregando] = useState(true);
+    const [carregando, setCarregando] = useState(ativo);
     const [erro, setErro] = useState('');
 
     const recarregar = useCallback(async () => {
+        if (!ativo) {
+            setPendentes([]);
+            setCarregando(false);
+            return;
+        }
         try {
             setCarregando(true);
             setErro('');
@@ -22,7 +27,7 @@ export function usePendentes() {
         } finally {
             setCarregando(false);
         }
-    }, []);
+    }, [ativo]);
 
     useEffect(() => {
         recarregar();

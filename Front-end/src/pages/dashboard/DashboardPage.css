@@ -1,0 +1,25 @@
+/* Aviso de cadastros pendentes dentro do card "Gerenciar Usuários" */
+.menu-card-aviso {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: var(--vermelho-suave);
+    color: var(--vermelho-principal);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.menu-card-aviso::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+:root[data-theme='dark'] .menu-card-aviso {
+    color: #ff6b75;
+}

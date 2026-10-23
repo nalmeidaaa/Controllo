@@ -1,109 +1,112 @@
-import { useEffect, useState } from 'react';
-import { listarPatrimoniosParaFiltro } from '../../services/historicoService.js';
-import { obterToken } from '../../storage/usuario/dados.storage.js';
+import { CalendarDays, FilterX } from 'lucide-react';
+import { diasAtras, paraISO } from './rotulos.js';
 
-export default function FiltrosHistorico({ filtros, salas, onChange, onLimpar }) {
-    const [patrimonios, setPatrimonios] = useState([]);
+const PERIODOS = [
+    { id: 'hoje', rotulo: 'Hoje', de: () => paraISO(new Date()), ate: () => paraISO(new Date()) },
+    { id: '7d', rotulo: '7 dias', de: () => diasAtras(6), ate: () => paraISO(new Date()) },
+    { id: '30d', rotulo: '30 dias', de: () => diasAtras(29), ate: () => paraISO(new Date()) },
+    { id: 'tudo', rotulo: 'Todo o período', de: () => '', ate: () => '' },
+];
 
-    // lista de patrimônios acompanha a sala escolhida
-    useEffect(() => {
-        let ativo = true;
-        (async () => {
-            try {
-                const resposta = await listarPatrimoniosParaFiltro(obterToken(), filtros.id_sala);
-                if (ativo) setPatrimonios(resposta?.result ?? []);
-            } catch {
-                if (ativo) setPatrimonios([]);
-            }
-        })();
-        return () => { ativo = false; };
-    }, [filtros.id_sala]);
+function periodoAtivo(filtros) {
+    return PERIODOS.find((p) => p.de() === filtros.de && p.ate() === filtros.ate)?.id ?? 'personalizado';
+}
 
-    function alterarSala(valor) {
-        // trocar a sala invalida o patrimônio escolhido
-        onChange({ id_sala: valor, id_patrimonio: '' });
-    }
+export default function FiltrosHistorico({ filtros, salas, patrimonios, onChange, onLimpar, qtdAtivos }) {
+    const ativo = periodoAtivo(filtros);
 
     return (
-        <div className="hist-filtros">
-            <div className="hist-filtro">
-                <label className="form-label" htmlFor="filtroAcao">Ação</label>
-                <select
-                    id="filtroAcao"
-                    className="form-control"
-                    value={filtros.acao}
-                    onChange={(e) => onChange({ acao: e.target.value })}
+        <section className="hist-filtros" aria-label="Filtros do histórico">
+            <div className="hist-filtros-linha">
+                <div className="hist-filtro hist-filtro--periodo">
+                    <span className="hist-filtro-rotulo"><CalendarDays size={14} /> Período</span>
+                    <div className="hist-periodos">
+                        {PERIODOS.map((p) => (
+                            <button
+                                key={p.id}
+                                type="button"
+                                className={`filtro-chip ${ativo === p.id ? 'ativo' : ''}`}
+                                onClick={() => onChange({ de: p.de(), ate: p.ate() })}
+                            >
+                                {p.rotulo}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="hist-datas">
+                    <div className="hist-filtro">
+                        <label className="hist-filtro-rotulo" htmlFor="filtroDe">De</label>
+                        <input
+                            id="filtroDe"
+                            type="date"
+                            className="form-control"
+                            value={filtros.de}
+                            max={filtros.ate || undefined}
+                            onChange={(e) => onChange({ de: e.target.value })}
+                        />
+                    </div>
+                    <div className="hist-filtro">
+                        <label className="hist-filtro-rotulo" htmlFor="filtroAte">Até</label>
+                        <input
+                            id="filtroAte"
+                            type="date"
+                            className="form-control"
+                            value={filtros.ate}
+                            min={filtros.de || undefined}
+                            onChange={(e) => onChange({ ate: e.target.value })}
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <div className="hist-filtros-linha">
+                <div className="hist-filtro hist-filtro--grande">
+                    <label className="hist-filtro-rotulo" htmlFor="filtroSala">Sala</label>
+                    <select
+                        id="filtroSala"
+                        className="form-control"
+                        value={filtros.id_sala}
+                        // trocar a sala invalida o patrimônio escolhido
+                        onChange={(e) => onChange({ id_sala: e.target.value, id_patrimonio: '' })}
+                    >
+                        <option value="">Todas as salas</option>
+                        {salas.map((s) => (
+                            <option key={s.id_sala} value={s.id_sala}>
+                                {s.descricao} (Bloco {s.bloco})
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <div className="hist-filtro hist-filtro--grande">
+                    <label className="hist-filtro-rotulo" htmlFor="filtroPatrimonio">Patrimônio</label>
+                    <select
+                        id="filtroPatrimonio"
+                        className="form-control"
+                        value={filtros.id_patrimonio}
+                        onChange={(e) => onChange({ id_patrimonio: e.target.value })}
+                    >
+                        <option value="">Todos os patrimônios</option>
+                        {patrimonios.map((p) => (
+                            <option key={p.id_patrimonio} value={p.id_patrimonio}>
+                                {p.nome}{p.numero_patrimonio ? ` (${p.numero_patrimonio})` : ''}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <button
+                    type="button"
+                    className="hist-limpar"
+                    onClick={onLimpar}
+                    disabled={qtdAtivos === 0}
                 >
-                    <option value="">Todas</option>
-                    <option value="Abertura">Abertura</option>
-                    <option value="Andamento">Andamento</option>
-                    <option value="Finalizacao">Finalização</option>
-                </select>
-            </div>
-
-            <div className="hist-filtro">
-                <label className="form-label" htmlFor="filtroDe">De</label>
-                <input
-                    id="filtroDe"
-                    type="date"
-                    className="form-control"
-                    value={filtros.de}
-                    max={filtros.ate || undefined}
-                    onChange={(e) => onChange({ de: e.target.value })}
-                />
-            </div>
-
-            <div className="hist-filtro">
-                <label className="form-label" htmlFor="filtroAte">Até</label>
-                <input
-                    id="filtroAte"
-                    type="date"
-                    className="form-control"
-                    value={filtros.ate}
-                    min={filtros.de || undefined}
-                    onChange={(e) => onChange({ ate: e.target.value })}
-                />
-            </div>
-
-            <div className="hist-filtro">
-                <label className="form-label" htmlFor="filtroSala">Sala</label>
-                <select
-                    id="filtroSala"
-                    className="form-control"
-                    value={filtros.id_sala}
-                    onChange={(e) => alterarSala(e.target.value)}
-                >
-                    <option value="">Todas</option>
-                    {salas.map((s) => (
-                        <option key={s.id_sala} value={s.id_sala}>
-                            {s.descricao} (Bloco {s.bloco})
-                        </option>
-                    ))}
-                </select>
-            </div>
-
-            <div className="hist-filtro">
-                <label className="form-label" htmlFor="filtroPatrimonio">Patrimônio</label>
-                <select
-                    id="filtroPatrimonio"
-                    className="form-control"
-                    value={filtros.id_patrimonio}
-                    onChange={(e) => onChange({ id_patrimonio: e.target.value })}
-                >
-                    <option value="">Todos</option>
-                    {patrimonios.map((p) => (
-                        <option key={p.id_patrimonio} value={p.id_patrimonio}>
-                            {p.nome}{p.numero_patrimonio ? ` (${p.numero_patrimonio})` : ''}
-                        </option>
-                    ))}
-                </select>
-            </div>
-
-            <div className="hist-filtro hist-filtro-limpar">
-                <button type="button" className="btn-modal-cancel" onClick={onLimpar}>
+                    <FilterX size={16} />
                     Limpar filtros
+                    {qtdAtivos > 0 && <span className="hist-limpar-qtd">{qtdAtivos}</span>}
                 </button>
             </div>
-        </div>
+        </section>
     );
 }

@@ -1,21 +1,38 @@
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
     criarUsuario,
     atualizarUsuario,
     desativarUsuario,
-    ativarUsuario
+    ativarUsuario,
+    aprovarCadastro,
+    recusarCadastro
 } from '../../services/usuarioService.js';
 
 import { obterToken, obterUsuarioAtual } from '../../storage/usuario/dados.storage.js';
 import { ITENS_POR_PAGINA } from '../../config/app.config.js';
 import { useUsuarios } from '../../hooks/useUsuarios.jsx';
+import { usePendentes } from '../../hooks/usePendentes.jsx';
+import { idDoUsuario } from '../../utils/usuario.js';
 import BarraFiltros from '../../components/usuario/BarraFiltros.jsx';
 import TabelaUsuarios from '../../components/usuario/TabelaUsuarios.jsx';
 import ModalUsuario from '../../components/usuario/ModalUsuario.jsx';
 import Paginacao from '../../components/shared/Paginacao.jsx';
+import TabelaPendentes from '../../components/aprovacao/TabelaPendentes.jsx';
+import ModalAprovar from '../../components/aprovacao/ModalAprovar.jsx';
+import ModalRecusar from '../../components/aprovacao/ModalRecusar.jsx';
+import './UsuariosPage.css';
 
-export default function UsuariosPage() {
+const semAcento = (texto = '') =>
+    String(texto).normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase();
+
+// abaInicial: 'pendentes' abre direto na fila de aprovação (ex.: vindo do aviso do dashboard)
+export default function UsuariosPage({ abaInicial, onPendentesAtualizados }) {
     const token = obterToken();
+    const usuarioLogado = obterUsuarioAtual();
+    const idLogado = idDoUsuario(usuarioLogado);
+
+    // somente a administração enxerga/gerencia cadastros pendentes
+    const ehAdmin = semAcento(usuarioLogado?.tipo_usuario) === 'administracao';
 
     const {
         usuarios: todos,
@@ -24,8 +41,25 @@ export default function UsuariosPage() {
         recarregar
     } = useUsuarios();
 
+    const {
+        pendentes,
+        carregando: carregandoPendentes,
+        erro: erroPendentes,
+        recarregar: recarregarPendentes
+    } = usePendentes({ ativo: ehAdmin });
+
     const [termoBusca, setTermoBusca] = useState('');
-    const [filtroTipo, setFiltroTipo] = useState('todos');
+    const [filtroTipo, setFiltroTipo] = useState(
+        ehAdmin && abaInicial === 'pendentes' ? 'pendentes' : 'todos'
+    );
+    const abaPendentes = filtroTipo === 'pendentes';
+
+    // fluxo de aprovação / recusa
+    const [aprovando, setAprovando] = useState(null);
+    const [recusando, setRecusando] = useState(null);
+    const [executando, setExecutando] = useState(false);
+    const [erroModal, setErroModal] = useState('');
+    const [mensagem, setMensagem] = useState(null); // { tipo: 'sucesso' | 'erro', texto }
     const [paginaAtual, setPaginaAtual] = useState(1);
 
     const [modalAberto, setModalAberto] = useState(false);
@@ -37,6 +71,11 @@ export default function UsuariosPage() {
         const termo = termoBusca.toLowerCase();
 
         return todos.filter((usuario) => {
+
+            // 0. A própria conta nunca aparece na lista (é editada em "Meu perfil")
+            if (idLogado != null && String(usuario.id_usuario ?? usuario.id) === String(idLogado)) {
+                return false;
+            }
 
             // 1. Verifica se o usuário está inativo/desativado
             const estaInativo =
@@ -73,14 +112,100 @@ export default function UsuariosPage() {
             return !estaInativo && tipo.includes(filtroTipo);
         });
 
-    }, [todos, termoBusca, filtroTipo]);
+    }, [todos, termoBusca, filtroTipo, idLogado]);
+
+    // Cadastros pendentes, com a mesma busca por nome / CPF / e-mail
+    const pendentesFiltrados = useMemo(() => {
+        const termo = termoBusca.toLowerCase();
+        if (!termo) return pendentes;
+        return pendentes.filter((u) =>
+            [u.nome || '', u.cpf || '', u.email || ''].some((c) => c.toLowerCase().includes(termo))
+        );
+    }, [pendentes, termoBusca]);
+
+    // Lista exibida depende da aba
+    const listaAtual = abaPendentes ? pendentesFiltrados : filtrados;
 
     const inicio = (paginaAtual - 1) * ITENS_POR_PAGINA;
 
-    const paginaDados = filtrados.slice(
+    const paginaDados = listaAtual.slice(
         inicio,
         inicio + ITENS_POR_PAGINA
     );
+
+
+    // ============================================================
+    // APROVAR / RECUSAR CADASTROS
+    // ============================================================
+    function mensagemDeErro(error, padrao) {
+        if (error.response?.status === 403) return 'Você não tem permissão para esta ação.';
+        return error.response?.data?.message || (error.response ? padrao : 'Não foi possível conectar ao servidor.');
+    }
+
+    // atualiza a fila, a lista de usuários (quem foi aprovado entra nela) e o contador do menu
+    async function depoisDaAcao() {
+        await Promise.all([recarregarPendentes(), recarregar()]);
+        onPendentesAtualizados?.();
+    }
+
+    async function confirmarAprovacao(perfil) {
+        try {
+            setExecutando(true);
+            setErroModal('');
+            const resposta = await aprovarCadastro(token, aprovando.id_usuario, perfil);
+            setMensagem({ tipo: 'sucesso', texto: resposta?.message || 'Cadastro aprovado com sucesso.' });
+            setAprovando(null);
+            await depoisDaAcao();
+        } catch (error) {
+            setErroModal(mensagemDeErro(error, 'Não foi possível aprovar o cadastro.'));
+            // 404/409: o cadastro já foi tratado por outra pessoa; atualiza a lista
+            if ([404, 409].includes(error.response?.status)) await depoisDaAcao();
+        } finally {
+            setExecutando(false);
+        }
+    }
+
+    async function confirmarRecusa() {
+        try {
+            setExecutando(true);
+            setErroModal('');
+            const resposta = await recusarCadastro(token, recusando.id_usuario);
+            setMensagem({ tipo: 'sucesso', texto: resposta?.message || 'Cadastro recusado e excluído.' });
+            setRecusando(null);
+            await depoisDaAcao();
+        } catch (error) {
+            setErroModal(mensagemDeErro(error, 'Não foi possível recusar o cadastro.'));
+            if ([404, 409].includes(error.response?.status)) await depoisDaAcao();
+        } finally {
+            setExecutando(false);
+        }
+    }
+
+    function abrirAprovar(usuario) {
+        setMensagem(null);
+        setErroModal('');
+        setAprovando(usuario);
+    }
+
+    function abrirRecusar(usuario) {
+        setMensagem(null);
+        setErroModal('');
+        setRecusando(usuario);
+    }
+
+    function trocarFiltro(tipo) {
+        setFiltroTipo(tipo);
+        setPaginaAtual(1);
+        if (tipo !== 'pendentes') setMensagem(null);
+    }
+
+    // Terminou a fila: volta sozinho para a lista de usuários
+    useEffect(() => {
+        if (abaPendentes && !carregandoPendentes && pendentes.length === 0 && mensagem?.tipo === 'sucesso') {
+            setFiltroTipo('todos');
+            setPaginaAtual(1);
+        }
+    }, [abaPendentes, carregandoPendentes, pendentes.length, mensagem]);
 
 
     // ============================================================
@@ -281,7 +406,7 @@ export default function UsuariosPage() {
                     </h1>
 
                     <p className="page-subtitle">
-                        Visualização de cadastros e modificações em tempo real.
+                        Gerencie acessos e libere os novos cadastros em um só lugar.
                     </p>
 
                 </div>
@@ -296,24 +421,81 @@ export default function UsuariosPage() {
             </header>
 
 
+            {/* AVISO: há cadastros esperando e a pessoa está em outra aba */}
+            {ehAdmin && !abaPendentes && pendentes.length > 0 && (
+                <div className="aprov-banner" role="status">
+                    <span className="aprov-banner-texto">
+                        <strong>
+                            {pendentes.length} cadastro{pendentes.length === 1 ? '' : 's'}
+                        </strong>{' '}
+                        aguardando aprovação
+                    </span>
+                    <button
+                        type="button"
+                        className="aprov-banner-btn"
+                        onClick={() => trocarFiltro('pendentes')}
+                    >
+                        Revisar agora
+                    </button>
+                </div>
+            )}
+
+            {/* Resultado da última aprovação / recusa */}
+            {mensagem && (
+                <div className={`aprov-mensagem ${mensagem.tipo}`} role="status">
+                    {mensagem.texto}
+                </div>
+            )}
+
+
             {/* FILTROS */}
             <BarraFiltros
+                filtroAtivo={filtroTipo}
+                pendentes={ehAdmin && !erroPendentes ? pendentes.length : undefined}
                 onBusca={(termo) => {
                     setTermoBusca(termo);
                     setPaginaAtual(1);
                 }}
-
-                onFiltro={(tipo) => {
-                    setFiltroTipo(tipo);
-                    setPaginaAtual(1);
-                }}
+                onFiltro={trocarFiltro}
             />
 
 
             {/* TABELA */}
             <div ref={tabelaRef}>
 
-                {carregando ? (
+                {abaPendentes ? (
+
+                    carregandoPendentes ? (
+                        <div className="tabela-card">
+                            <div className="aprov-estado">Carregando cadastros...</div>
+                        </div>
+                    ) : erroPendentes ? (
+                        <div className="tabela-card">
+                            <div className="aprov-estado">
+                                <p>{erroPendentes}</p>
+                                <button className="btn-primary-custom" onClick={recarregarPendentes}>
+                                    Tentar novamente
+                                </button>
+                            </div>
+                        </div>
+                    ) : pendentesFiltrados.length === 0 ? (
+                        <div className="tabela-card">
+                            <div className="aprov-estado">
+                                {pendentes.length === 0
+                                    ? 'Nenhum cadastro aguardando aprovação.'
+                                    : 'Nenhum cadastro pendente corresponde à busca.'}
+                            </div>
+                        </div>
+                    ) : (
+                        <TabelaPendentes
+                            pendentes={paginaDados}
+                            ocupado={executando}
+                            onAprovar={abrirAprovar}
+                            onRecusar={abrirRecusar}
+                        />
+                    )
+
+                ) : carregando ? (
 
                     <div className="tabela-card">
 
@@ -365,14 +547,14 @@ export default function UsuariosPage() {
 
                 <div className="paginacao-contador">
 
-                    {filtrados.length === 0
+                    {listaAtual.length === 0
 
                         ? 'Nenhum resultado encontrado.'
 
                         : `Exibindo ${inicio + 1}–${Math.min(
                             paginaAtual * ITENS_POR_PAGINA,
-                            filtrados.length
-                        )} de ${filtrados.length} usuários`
+                            listaAtual.length
+                        )} de ${listaAtual.length} ${abaPendentes ? 'cadastros' : 'usuários'}`
 
                     }
 
@@ -380,7 +562,7 @@ export default function UsuariosPage() {
 
 
                 <Paginacao
-                    totalItens={filtrados.length}
+                    totalItens={listaAtual.length}
                     paginaAtual={paginaAtual}
 
                     onPageChange={(nova) => {
@@ -405,6 +587,27 @@ export default function UsuariosPage() {
                 onSalvar={salvarUsuarioModal}
                 onFechar={() => setModalAberto(false)}
             />
+
+            {/* MODAIS DE APROVAÇÃO */}
+            {aprovando && (
+                <ModalAprovar
+                    usuario={aprovando}
+                    salvando={executando}
+                    erro={erroModal}
+                    onConfirmar={confirmarAprovacao}
+                    onFechar={() => !executando && setAprovando(null)}
+                />
+            )}
+
+            {recusando && (
+                <ModalRecusar
+                    usuario={recusando}
+                    salvando={executando}
+                    erro={erroModal}
+                    onConfirmar={confirmarRecusa}
+                    onFechar={() => !executando && setRecusando(null)}
+                />
+            )}
 
         </div>
     );

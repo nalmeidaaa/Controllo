@@ -1,4 +1,5 @@
 import { useUsuarioLogado } from '../../hooks/useUsuarioLogado.jsx';
+import './DashboardPage.css';
 import { primeiroNome } from '../../utils/usuario.js';
 
 export default function DashboardPage({ navegarPara, pendentes = 0 }) {
@@ -43,8 +44,8 @@ export default function DashboardPage({ navegarPara, pendentes = 0 }) {
                     </div>
 
                     <div
-                        className="menu-card"
-                        onClick={() => navegarPara?.usuarios?.()}
+                        className={`menu-card ${pendentes > 0 ? 'menu-card--aviso' : ''}`}
+                        onClick={() => (pendentes > 0 ? navegarPara?.aprovacoes?.() : navegarPara?.usuarios?.())}
                     >
                         <div className="card-icon">
                             <ion-icon
@@ -56,23 +57,13 @@ export default function DashboardPage({ navegarPara, pendentes = 0 }) {
                         <div className="card-info">
                             <h3>Gerenciar Usuários</h3>
                             <p>
-                                Controle de acessos, permissões e perfis do sistema.
+                                Controle de acessos, permissões, perfis e aprovação de novos cadastros.
                             </p>
-                        </div>
-                    </div>
-
-                    <div className="menu-card" onClick={() => navegarPara?.aprovacoes?.()}>
-                        <div className="card-icon">
-                            <ion-icon name="person-add-outline" style={{ fontSize: '28px'}}></ion-icon>
-                        </div>
-
-                        <div className="card-info">
-                            <h3>Aprovar Cadastros</h3>
-                            <p>
-                                {pendentes > 0
-                                    ? `${pendentes} cadastro${pendentes === 1 ? '' : 's'} aguardando aprovação.`
-                                    : 'Nenhum cadastro aguardando aprovação.'}
-                            </p>
+                            {pendentes > 0 && (
+                                <span className="menu-card-aviso">
+                                    {pendentes} cadastro{pendentes === 1 ? '' : 's'} aguardando aprovação
+                                </span>
+                            )}
                         </div>
                     </div>
 
