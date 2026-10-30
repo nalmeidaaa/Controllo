@@ -79,7 +79,7 @@ export default function LoginScreen() {
                         </Text>
 
                         <View style={styles.formGroup}>
-                            <Text style={styles.label}>Acesso ou E-mail</Text>
+                            <Text style={styles.label}>E-mail</Text>
                             <TextInput
                                 style={styles.input}
                                 placeholder="exemplo@controllo.com"

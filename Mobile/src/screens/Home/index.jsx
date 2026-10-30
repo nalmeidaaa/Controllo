@@ -42,19 +42,39 @@ const opcoesPorTipo = {
 export default function HomeScreen() {
     const navigation = useNavigation();
     const [tipoUsuario, setTipoUsuario] = useState(null);
+    const [nomeUsuario, setNomeUsuario] = useState("");
     const [carregando, setCarregando] = useState(true);
 
     useFocusEffect(
         useCallback(() => {
             let ativo = true;
+
             async function carregarUsuario() {
-                const usuario = await obterUsuarioAtual();
-                if (ativo) {
-                    setTipoUsuario(usuario?.tipo_usuario ?? null);
-                    setCarregando(false);
+                try {
+                    const usuario = await obterUsuarioAtual();
+
+                    if (ativo) {
+                        setTipoUsuario(usuario?.tipo_usuario ?? null);
+
+                        // Busca o nome do usuário conectado
+                        setNomeUsuario(
+                            usuario?.nome ||
+                            usuario?.nome_usuario ||
+                            usuario?.name ||
+                            ""
+                        );
+                    }
+                } catch (error) {
+                    console.error("Erro ao carregar usuário:", error);
+                } finally {
+                    if (ativo) {
+                        setCarregando(false);
+                    }
                 }
             }
+
             carregarUsuario();
+
             return () => {
                 ativo = false;
             };
@@ -87,7 +107,9 @@ export default function HomeScreen() {
                 <View style={styles.headerRow}>
                     <View style={styles.heading}>
                         <Text style={styles.eyebrow}>Controllo</Text>
-                        <Text style={styles.title}>Seja bem-vindo, usuário!</Text>
+                        <Text style={styles.title}>
+                            Seja bem-vindo, {nomeUsuario || "Usuário"}!
+                        </Text>
                     </View>
 
                     <TouchableOpacity
@@ -129,11 +151,10 @@ export default function HomeScreen() {
                 )}
             </View>
         </SafeAreaView>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
-
     safeArea: {
         flex: 1,
         backgroundColor: "#f4f7f7",
@@ -216,7 +237,6 @@ const styles = StyleSheet.create({
         paddingVertical: 20,
         borderWidth: 1,
         borderColor: "#fce9e9",
-
         shadowColor: "#101010",
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.08,

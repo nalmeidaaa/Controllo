@@ -1,14 +1,32 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { LogOut } from "lucide-react-native";
-import { deslogarUsuario } from "../storage/usuario/dados.storage.js";
+import {
+    deslogarUsuario,
+    obterUsuarioAtual
+} from "../storage/usuario/dados.storage.js";
 
 const iconColor = "#c9131c";
 
 export default function HomeLayout({ children }) {
     const navigation = useNavigation();
+    const [nomeUsuario, setNomeUsuario] = useState("");
+
+    useEffect(() => {
+        async function carregarUsuario() {
+            try {
+                const usuario = await obterUsuarioAtual();
+                setNomeUsuario(usuario?.nome || usuario?.nome_usuario || "Usuário");
+            } catch (error) {
+                console.error("Erro ao carregar usuário:", error);
+                setNomeUsuario("Usuário");
+            }
+        }
+
+        carregarUsuario();
+    }, []);
 
     async function handleLogout() {
         await deslogarUsuario();
@@ -24,7 +42,9 @@ export default function HomeLayout({ children }) {
                 <View style={styles.headerRow}>
                     <View style={styles.heading}>
                         <Text style={styles.eyebrow}>Controllo</Text>
-                        <Text style={styles.title}>Seja bem-vindo, usuário!</Text>
+                        <Text style={styles.title}>
+                            Seja bem-vindo, {nomeUsuario}!
+                        </Text>
                     </View>
 
                     <TouchableOpacity
