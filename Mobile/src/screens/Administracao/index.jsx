@@ -1,8 +1,12 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { View, StyleSheet, Text } from "react-native";
 import HomeLayout from "../../components/HomeLayout.jsx";
+import { useTema } from "../../theme/tema.jsx";
 
 export default function AdministracaoScreen() {
+    const { cores } = useTema();
+    const styles = useMemo(() => criarStyles(cores), [cores]);
+
     return (
         <HomeLayout>
             <View style={styles.adminContainer}>
@@ -12,7 +16,8 @@ export default function AdministracaoScreen() {
     );
 }
 
-const styles = StyleSheet.create({
+const criarStyles = (c) =>
+    StyleSheet.create({
     adminContainer: {
         flex: 1,
         alignItems: "center",
@@ -21,9 +26,9 @@ const styles = StyleSheet.create({
     },
 
     adminText: {
-        color: "#2d0e0e",
+        color: c.texto,
         fontSize: 18,
         fontWeight: "600",
         textAlign: "center",
     },
-});
+    });

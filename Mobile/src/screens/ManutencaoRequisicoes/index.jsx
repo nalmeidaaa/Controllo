@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useMemo, useCallback, useRef, useState } from "react";
 import {
     View,
     StyleSheet,
@@ -19,8 +19,8 @@ import {
     encerrarSessaoExpirada,
 } from "../../services/requisicaoManutencaoService.js";
 import CardRequisicao from "../../components/manutencao/CardRequisicao.jsx";
+import { useTema } from "../../theme/tema.jsx";
 
-const iconColor = "#c9131c";
 const LIMITE = 10;
 
 // valor = parâmetro `status` enviado à API
@@ -32,6 +32,8 @@ const FILTROS = [
 ];
 
 export default function ManutencaoRequisicoesScreen() {
+    const { cores } = useTema();
+    const styles = useMemo(() => criarStyles(cores), [cores]);
     const navigation = useNavigation();
 
     const [filtro, setFiltro] = useState(undefined);
@@ -135,7 +137,7 @@ export default function ManutencaoRequisicoesScreen() {
                         activeOpacity={0.8}
                         onPress={() => navigation.goBack()}
                     >
-                        <ArrowLeft color={iconColor} size={22} />
+                        <ArrowLeft color={cores.marca} size={22} />
                     </TouchableOpacity>
 
                     <View style={styles.heading}>
@@ -164,7 +166,7 @@ export default function ManutencaoRequisicoesScreen() {
 
                 {carregando ? (
                     <View style={styles.centro}>
-                        <ActivityIndicator size="large" color={iconColor} />
+                        <ActivityIndicator size="large" color={cores.marca} />
                     </View>
                 ) : erro ? (
                     <View style={styles.centro}>
@@ -190,8 +192,8 @@ export default function ManutencaoRequisicoesScreen() {
                             <RefreshControl
                                 refreshing={atualizando}
                                 onRefresh={() => carregar({ status: filtro, puxar: true })}
-                                colors={[iconColor]}
-                                tintColor={iconColor}
+                                colors={[cores.marca]}
+                                tintColor={cores.marca}
                             />
                         }
                         onEndReached={carregarMais}
@@ -201,7 +203,7 @@ export default function ManutencaoRequisicoesScreen() {
                         }
                         ListFooterComponent={
                             carregandoMais ? (
-                                <ActivityIndicator style={styles.rodape} color={iconColor} />
+                                <ActivityIndicator style={styles.rodape} color={cores.marca} />
                             ) : null
                         }
                         renderItem={({ item }) => (
@@ -221,29 +223,29 @@ export default function ManutencaoRequisicoesScreen() {
     );
 }
 
-const styles = StyleSheet.create({
-    safeArea: { flex: 1, backgroundColor: "#f4f7f7" },
+const criarStyles = (c) => StyleSheet.create({
+    safeArea: { flex: 1, backgroundColor: c.fundo },
     container: { flex: 1, paddingHorizontal: 28, paddingTop: 40 },
     headerRow: { flexDirection: "row", alignItems: "center", marginBottom: 20 },
     voltarButton: {
         width: 44,
         height: 44,
         borderRadius: 12,
-        backgroundColor: "#ffd8d8",
+        backgroundColor: c.marcaSuave,
         alignItems: "center",
         justifyContent: "center",
         marginRight: 14,
     },
     heading: { flex: 1 },
     eyebrow: {
-        color: "#b01d2e",
+        color: c.marcaEscura,
         fontSize: 11,
         fontWeight: "600",
         textTransform: "uppercase",
         letterSpacing: 0.7,
     },
     title: {
-        color: "#2d0e0e",
+        color: c.texto,
         fontSize: 24,
         fontWeight: "600",
         letterSpacing: -0.5,
@@ -255,23 +257,23 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
         borderRadius: 999,
         borderWidth: 1,
-        borderColor: "#e6d3d3",
-        backgroundColor: "#fbf5f5",
+        borderColor: c.bordaInput,
+        backgroundColor: c.fundoCampo,
     },
-    chipAtivo: { backgroundColor: "#c9131c", borderColor: "#c9131c" },
-    chipTexto: { color: "#5a4646", fontSize: 13, fontWeight: "600" },
+    chipAtivo: { backgroundColor: c.marca, borderColor: c.marca },
+    chipTexto: { color: c.textoSecundario, fontSize: 13, fontWeight: "600" },
     chipTextoAtivo: { color: "#ffffff" },
     lista: { gap: 14, paddingBottom: 40 },
     listaVazia: { flexGrow: 1, justifyContent: "center", paddingBottom: 80 },
     rodape: { paddingVertical: 16 },
     centro: { flex: 1, alignItems: "center", justifyContent: "center", paddingBottom: 80 },
-    mensagemVazia: { color: "#8a7373", fontSize: 14, textAlign: "center" },
+    mensagemVazia: { color: c.textoMudo, fontSize: 14, textAlign: "center" },
     botaoTentar: {
         marginTop: 14,
         paddingHorizontal: 18,
         paddingVertical: 10,
         borderRadius: 10,
-        backgroundColor: "#c9131c",
+        backgroundColor: c.marca,
     },
     botaoTentarTexto: { color: "#ffffff", fontSize: 14, fontWeight: "600" },
 });

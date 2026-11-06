@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
     View,
     StyleSheet,
@@ -14,8 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { logar } from "../../services/usuarioService.js";
 import { salvarUsuario } from "../../storage/usuario/dados.storage.js";
-
-const corPrincipal = "#c9131c";
+import { useTema } from "../../theme/tema.jsx";
 
 const rotasPorTipo = {
     administracao: "AdministracaoScreen",
@@ -24,6 +23,8 @@ const rotasPorTipo = {
 };
 
 export default function LoginScreen() {
+    const { cores } = useTema();
+    const styles = useMemo(() => criarStyles(cores), [cores]);
     const navigation = useNavigation();
     const [login, setLogin] = useState("");
     const [senha, setSenha] = useState("");
@@ -83,8 +84,7 @@ export default function LoginScreen() {
                             <TextInput
                                 style={styles.input}
                                 placeholder="exemplo@controllo.com"
-                                placeholderTextColor="#8c8c96"
-                                autoCapitalize="none"
+                                placeholderTextColor={cores.textoSuave}autoCapitalize="none"
                                 autoCorrect={false}
                                 value={login}
                                 onChangeText={setLogin}
@@ -96,8 +96,7 @@ export default function LoginScreen() {
                             <TextInput
                                 style={styles.input}
                                 placeholder="••••••••"
-                                placeholderTextColor="#8c8c96"
-                                secureTextEntry
+                                placeholderTextColor={cores.textoSuave}secureTextEntry
                                 autoCapitalize="none"
                                 value={senha}
                                 onChangeText={setSenha}
@@ -143,10 +142,10 @@ export default function LoginScreen() {
     );
 }
 
-const styles = StyleSheet.create({
+const criarStyles = (c) => StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: "#f4f7f7",
+        backgroundColor: c.fundo,
     },
 
     scrollContent: {
@@ -160,13 +159,13 @@ const styles = StyleSheet.create({
     card: {
         width: "100%",
         maxWidth: 380,
-        backgroundColor: "#ffffff",
+        backgroundColor: c.superficie,
         borderRadius: 20,
         borderWidth: 1,
-        borderColor: "#fce9e9",
+        borderColor: c.borda,
         paddingHorizontal: 28,
         paddingVertical: 32,
-        shadowColor: "#101010",
+        shadowColor: c.sombra,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.08,
         shadowRadius: 10,
@@ -183,7 +182,7 @@ const styles = StyleSheet.create({
         width: 36,
         height: 36,
         borderRadius: 10,
-        backgroundColor: corPrincipal,
+        backgroundColor: c.marca,
         alignItems: "center",
         justifyContent: "center",
         marginRight: 10,
@@ -196,20 +195,20 @@ const styles = StyleSheet.create({
     },
 
     logoName: {
-        color: "#2d0e0e",
+        color: c.texto,
         fontSize: 18,
         fontWeight: "700",
     },
 
     title: {
-        color: "#2d0e0e",
+        color: c.texto,
         fontSize: 24,
         fontWeight: "700",
         marginBottom: 4,
     },
 
     subtitle: {
-        color: "#6b6b73",
+        color: c.textoCinza,
         fontSize: 14,
         marginBottom: 28,
     },
@@ -219,7 +218,7 @@ const styles = StyleSheet.create({
     },
 
     label: {
-        color: "#55555d",
+        color: c.textoCinzaEscuro,
         fontSize: 13,
         fontWeight: "600",
         marginBottom: 6,
@@ -227,18 +226,18 @@ const styles = StyleSheet.create({
 
     input: {
         borderWidth: 1,
-        borderColor: "#e1e1e6",
+        borderColor: c.bordaNeutra,
         borderRadius: 10,
         paddingHorizontal: 14,
         paddingVertical: 12,
         fontSize: 15,
-        color: "#2d0e0e",
-        backgroundColor: "#ffffff",
+        color: c.texto,
+        backgroundColor: c.superficie,
     },
 
     erro: {
-        color: "#c9131c",
-        backgroundColor: "#fde8e9",
+        color: c.marcaTexto,
+        backgroundColor: c.marcaMuitoSuave,
         borderRadius: 8,
         paddingHorizontal: 12,
         paddingVertical: 10,
@@ -247,7 +246,7 @@ const styles = StyleSheet.create({
     },
 
     botao: {
-        backgroundColor: corPrincipal,
+        backgroundColor: c.marca,
         borderRadius: 10,
         paddingVertical: 15,
         alignItems: "center",
@@ -271,12 +270,12 @@ const styles = StyleSheet.create({
     },
 
     linkTexto: {
-        color: "#6b6b73",
+        color: c.textoCinza,
         fontSize: 14,
     },
 
     linkDestaque: {
-        color: corPrincipal,
+        color: c.marcaTexto,
         fontWeight: "700",
     },
-});
+});

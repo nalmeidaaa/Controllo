@@ -3,12 +3,10 @@ import { ClipboardClock } from "lucide-react-native";
 import HomeLayout from "../../components/HomeLayout.jsx";
 import MenuList from "../../components/MenuList.jsx";
 
-const iconColor = "#c9131c";
-
 const options = [
     {
         title: "Itens pendentes",
-        icon: <ClipboardClock color={iconColor} size={24} />,
+        Icone: ClipboardClock,
         route: "ManutencaoRequisicoesScreen",
     },
 ];

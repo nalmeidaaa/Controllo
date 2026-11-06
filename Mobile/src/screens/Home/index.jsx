@@ -1,45 +1,47 @@
-import React, { useCallback, useState } from "react";
+import React, { useMemo, useCallback, useState } from "react";
 import { View, StyleSheet, TouchableOpacity, Text, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
-import { QrCode, CalendarDays, MoveRight, ClipboardClock, LogOut } from 'lucide-react-native';
-import { obterUsuarioAtual, deslogarUsuario } from "../../storage/usuario/dados.storage.js";
-
-const iconColor = "#c9131c";
+import { QrCode, CalendarDays, MoveRight, ClipboardClock } from 'lucide-react-native';
+import { obterUsuarioAtual } from "../../storage/usuario/dados.storage.js";
+import PerfilMenu from "../../components/perfil/PerfilMenu.jsx";
+import { useTema } from "../../theme/tema.jsx";
 
 const opcoesPorTipo = {
     manutencao: [
         {
             title: "Itens pendentes",
-            icon: <ClipboardClock color={iconColor} size={24} />,
+            Icone: ClipboardClock,
             route: "ItensPendentesScreen",
         },
         {
             title: "Tarefas agendadas",
-            icon: <CalendarDays color={iconColor} size={24} />,
+            Icone: CalendarDays,
             route: "CalendarioScreen",
         },
     ],
     geral: [
         {
             title: "Leitura de QR Code",
-            icon: <QrCode color={iconColor} size={24} />,
+            Icone: QrCode,
             route: "HomeScreen",
         },
         {
             title: "Tarefas agendadas",
-            icon: <CalendarDays color={iconColor} size={24} />,
+            Icone: CalendarDays,
             route: "CalendarioScreen",
         },
         {
             title: "Itens pendentes",
-            icon: <ClipboardClock color={iconColor} size={24} />,
+            Icone: ClipboardClock,
             route: "ItensPendentesScreen",
         },
     ],
 };
 
 export default function HomeScreen() {
+    const { cores } = useTema();
+    const styles = useMemo(() => criarStyles(cores), [cores]);
     const navigation = useNavigation();
     const [tipoUsuario, setTipoUsuario] = useState(null);
     const [nomeUsuario, setNomeUsuario] = useState("");
@@ -81,19 +83,11 @@ export default function HomeScreen() {
         }, [])
     );
 
-    async function handleLogout() {
-        await deslogarUsuario();
-        navigation.reset({
-            index: 0,
-            routes: [{ name: "LoginScreen" }],
-        });
-    }
-
     if (carregando) {
         return (
             <SafeAreaView style={styles.safeArea}>
                 <View style={styles.loadingContainer}>
-                    <ActivityIndicator color={iconColor} size="large" />
+                    <ActivityIndicator color={cores.marca} size="large" />
                 </View>
             </SafeAreaView>
         );
@@ -112,13 +106,7 @@ export default function HomeScreen() {
                         </Text>
                     </View>
 
-                    <TouchableOpacity
-                        style={styles.logoutButton}
-                        activeOpacity={0.8}
-                        onPress={handleLogout}
-                    >
-                        <LogOut color={iconColor} size={22} />
-                    </TouchableOpacity>
+                    <PerfilMenu />
                 </View>
 
                 {tipoUsuario === "administracao" ? (
@@ -137,14 +125,14 @@ export default function HomeScreen() {
                                 onPress={() => navigation.navigate(option.route)}
                             >
                                 <View style={styles.iconWrapper}>
-                                    {option.icon}
+                                    <option.Icone color={cores.marca} size={24} />
                                 </View>
 
                                 <View style={styles.cardText}>
                                     <Text style={styles.cardTitle}>{option.title}</Text>
                                 </View>
 
-                                <MoveRight color="#b01d2e" size={24} style={styles.arrow} />
+                                <MoveRight color={cores.marcaEscura}size={24} style={styles.arrow} />
                             </TouchableOpacity>
                         ))}
                     </View>
@@ -154,10 +142,10 @@ export default function HomeScreen() {
     );
 }
 
-const styles = StyleSheet.create({
+const criarStyles = (c) => StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: "#f4f7f7",
+        backgroundColor: c.fundo,
     },
 
     loadingContainer: {
@@ -184,7 +172,7 @@ const styles = StyleSheet.create({
     },
 
     eyebrow: {
-        color: "#b01d2e",
+        color: c.marcaEscura,
         fontSize: 11,
         fontWeight: "600",
         textTransform: "uppercase",
@@ -192,21 +180,11 @@ const styles = StyleSheet.create({
     },
 
     title: {
-        color: "#2d0e0e",
+        color: c.texto,
         fontSize: 28,
         fontWeight: "600",
         letterSpacing: -0.5,
         marginTop: 6,
-    },
-
-    logoutButton: {
-        width: 44,
-        height: 44,
-        borderRadius: 12,
-        backgroundColor: "#ffd8d8",
-        alignItems: "center",
-        justifyContent: "center",
-        marginLeft: 12,
     },
 
     list: {
@@ -221,7 +199,7 @@ const styles = StyleSheet.create({
     },
 
     adminText: {
-        color: "#2d0e0e",
+        color: c.texto,
         fontSize: 18,
         fontWeight: "600",
         textAlign: "center",
@@ -231,13 +209,13 @@ const styles = StyleSheet.create({
         minHeight: 92,
         alignItems: "center",
         flexDirection: "row",
-        backgroundColor: "#ffffff",
+        backgroundColor: c.superficie,
         borderRadius: 14,
         paddingHorizontal: 24,
         paddingVertical: 20,
         borderWidth: 1,
-        borderColor: "#fce9e9",
-        shadowColor: "#101010",
+        borderColor: c.borda,
+        shadowColor: c.sombra,
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.08,
         shadowRadius: 3,
@@ -247,7 +225,7 @@ const styles = StyleSheet.create({
     iconWrapper: {
         width: 50,
         height: 50,
-        backgroundColor: "#ffd8d8",
+        backgroundColor: c.marcaSuave,
         borderRadius: 10,
         alignItems: "center",
         justifyContent: "center",
@@ -259,7 +237,7 @@ const styles = StyleSheet.create({
     },
 
     cardTitle: {
-        color: "#270d0d",
+        color: c.texto,
         fontSize: 16,
         fontWeight: "600",
     },
@@ -267,4 +245,4 @@ const styles = StyleSheet.create({
     arrow: {
         marginLeft: 12,
     },
-});
+});

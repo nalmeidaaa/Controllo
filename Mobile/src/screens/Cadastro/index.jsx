@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
     View,
     StyleSheet,
@@ -14,8 +14,8 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { cadastrarUsuario } from "../../services/usuarioService.js";
+import { useTema } from "../../theme/tema.jsx";
 
-const corPrincipal = "#c9131c";
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function validar({ nome, cpf, email, senha, confirmar }) {
@@ -41,6 +41,8 @@ function validar({ nome, cpf, email, senha, confirmar }) {
 }
 
 export default function CadastroScreen() {
+    const { cores } = useTema();
+    const styles = useMemo(() => criarStyles(cores), [cores]);
     const navigation = useNavigation();
 
     const [form, setForm] = useState({ nome: "", cpf: "", email: "", senha: "", confirmar: "" });
@@ -99,8 +101,7 @@ export default function CadastroScreen() {
                 <TextInput
                     style={[styles.input, erros[chave] && styles.inputErro]}
                     placeholder={placeholder}
-                    placeholderTextColor="#8c8c96"
-                    value={form[chave]}
+                    placeholderTextColor={cores.textoSuave}value={form[chave]}
                     onChangeText={(v) => alterar(chave, v)}
                     editable={!carregando}
                     {...props}
@@ -196,8 +197,8 @@ export default function CadastroScreen() {
     );
 }
 
-const styles = StyleSheet.create({
-    safeArea: { flex: 1, backgroundColor: "#f4f7f7" },
+const criarStyles = (c) => StyleSheet.create({
+    safeArea: { flex: 1, backgroundColor: c.fundo },
     scrollContent: {
         flexGrow: 1,
         alignItems: "center",
@@ -208,13 +209,13 @@ const styles = StyleSheet.create({
     card: {
         width: "100%",
         maxWidth: 380,
-        backgroundColor: "#ffffff",
+        backgroundColor: c.superficie,
         borderRadius: 20,
         borderWidth: 1,
-        borderColor: "#fce9e9",
+        borderColor: c.borda,
         paddingHorizontal: 28,
         paddingVertical: 32,
-        shadowColor: "#101010",
+        shadowColor: c.sombra,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.08,
         shadowRadius: 10,
@@ -225,32 +226,32 @@ const styles = StyleSheet.create({
         width: 36,
         height: 36,
         borderRadius: 10,
-        backgroundColor: corPrincipal,
+        backgroundColor: c.marca,
         alignItems: "center",
         justifyContent: "center",
         marginRight: 10,
     },
     logoMarkText: { color: "#ffffff", fontSize: 18, fontWeight: "700" },
-    logoName: { color: "#2d0e0e", fontSize: 18, fontWeight: "700" },
-    title: { color: "#2d0e0e", fontSize: 24, fontWeight: "700", marginBottom: 4 },
-    subtitle: { color: "#6b6b73", fontSize: 14, marginBottom: 24 },
+    logoName: { color: c.texto, fontSize: 18, fontWeight: "700" },
+    title: { color: c.texto, fontSize: 24, fontWeight: "700", marginBottom: 4 },
+    subtitle: { color: c.textoCinza, fontSize: 14, marginBottom: 24 },
     formGroup: { marginBottom: 16 },
-    label: { color: "#55555d", fontSize: 13, fontWeight: "600", marginBottom: 6 },
+    label: { color: c.textoCinzaEscuro, fontSize: 13, fontWeight: "600", marginBottom: 6 },
     input: {
         borderWidth: 1,
-        borderColor: "#e1e1e6",
+        borderColor: c.bordaNeutra,
         borderRadius: 10,
         paddingHorizontal: 14,
         paddingVertical: 12,
         fontSize: 15,
-        color: "#2d0e0e",
-        backgroundColor: "#ffffff",
+        color: c.texto,
+        backgroundColor: c.superficie,
     },
-    inputErro: { borderColor: corPrincipal },
-    erroCampo: { color: corPrincipal, fontSize: 12, marginTop: 4 },
+    inputErro: { borderColor: c.marca },
+    erroCampo: { color: c.marcaTexto, fontSize: 12, marginTop: 4 },
     erro: {
-        color: corPrincipal,
-        backgroundColor: "#fde8e9",
+        color: c.marcaTexto,
+        backgroundColor: c.marcaMuitoSuave,
         borderRadius: 8,
         paddingHorizontal: 12,
         paddingVertical: 10,
@@ -258,7 +259,7 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     botao: {
-        backgroundColor: corPrincipal,
+        backgroundColor: c.marca,
         borderRadius: 10,
         paddingVertical: 15,
         alignItems: "center",
@@ -268,6 +269,6 @@ const styles = StyleSheet.create({
     botaoDesabilitado: { opacity: 0.7 },
     botaoTexto: { color: "#ffffff", fontSize: 16, fontWeight: "700" },
     linkWrapper: { alignItems: "center", marginTop: 20 },
-    linkTexto: { color: "#6b6b73", fontSize: 14 },
-    linkDestaque: { color: corPrincipal, fontWeight: "700" },
+    linkTexto: { color: c.textoCinza, fontSize: 14 },
+    linkDestaque: { color: c.marcaTexto, fontWeight: "700" },
 });

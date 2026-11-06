@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useMemo, useCallback, useState } from "react";
 import {
     View,
     Text,
@@ -26,8 +26,7 @@ import { BASE_URL } from "../../services/api.js";
 import BadgeStatusRequisicao from "../../components/manutencao/BadgeStatusRequisicao.jsx";
 import BadgePrioridade from "../../components/manutencao/BadgePrioridade.jsx";
 import ModalConcluir from "../../components/manutencao/ModalConcluir.jsx";
-
-const iconColor = "#c9131c";
+import { useTema } from "../../theme/tema.jsx";
 
 const ACOES = {
     Abertura: "Requisição aberta",
@@ -47,6 +46,8 @@ function formatarData(isoString) {
 }
 
 export default function ManutencaoRequisicaoDetalheScreen() {
+    const { cores } = useTema();
+    const styles = useMemo(() => criarStyles(cores), [cores]);
     const navigation = useNavigation();
     const route = useRoute();
     const { idRequisicao } = route.params || {};
@@ -169,7 +170,7 @@ export default function ManutencaoRequisicaoDetalheScreen() {
                         activeOpacity={0.8}
                         onPress={() => navigation.goBack()}
                     >
-                        <ArrowLeft color={iconColor} size={22} />
+                        <ArrowLeft color={cores.marca} size={22} />
                     </TouchableOpacity>
 
                     <View style={styles.heading}>
@@ -180,7 +181,7 @@ export default function ManutencaoRequisicaoDetalheScreen() {
 
                 {carregando ? (
                     <View style={styles.centro}>
-                        <ActivityIndicator size="large" color={iconColor} />
+                        <ActivityIndicator size="large" color={cores.marca} />
                     </View>
                 ) : erro || !requisicao ? (
                     <View style={styles.centro}>
@@ -201,7 +202,7 @@ export default function ManutencaoRequisicaoDetalheScreen() {
                                         />
                                     ) : (
                                         <View style={styles.iconWrapper}>
-                                            <Box color={iconColor} size={22} />
+                                            <Box color={cores.marca} size={22} />
                                         </View>
                                     )}
                                     <View style={styles.flex}>
@@ -295,7 +296,7 @@ export default function ManutencaoRequisicaoDetalheScreen() {
                                         onPress={confirmarAssumir}
                                     >
                                         {executando && !modalVisivel ? (
-                                            <ActivityIndicator color={iconColor} />
+                                            <ActivityIndicator color={cores.marca} />
                                         ) : (
                                             <Text style={styles.botaoSecundarioTexto}>Assumir</Text>
                                         )}
@@ -327,30 +328,30 @@ export default function ManutencaoRequisicaoDetalheScreen() {
     );
 }
 
-const styles = StyleSheet.create({
+const criarStyles = (c) => StyleSheet.create({
     flex: { flex: 1 },
-    safeArea: { flex: 1, backgroundColor: "#f4f7f7" },
+    safeArea: { flex: 1, backgroundColor: c.fundo },
     container: { flex: 1, paddingHorizontal: 28, paddingTop: 40 },
     headerRow: { flexDirection: "row", alignItems: "center", marginBottom: 24 },
     voltarButton: {
         width: 44,
         height: 44,
         borderRadius: 12,
-        backgroundColor: "#ffd8d8",
+        backgroundColor: c.marcaSuave,
         alignItems: "center",
         justifyContent: "center",
         marginRight: 14,
     },
     heading: { flex: 1 },
     eyebrow: {
-        color: "#b01d2e",
+        color: c.marcaEscura,
         fontSize: 11,
         fontWeight: "600",
         textTransform: "uppercase",
         letterSpacing: 0.7,
     },
     title: {
-        color: "#2d0e0e",
+        color: c.texto,
         fontSize: 24,
         fontWeight: "600",
         letterSpacing: -0.5,
@@ -358,17 +359,17 @@ const styles = StyleSheet.create({
     },
     conteudo: { paddingBottom: 24 },
     card: {
-        backgroundColor: "#ffffff",
+        backgroundColor: c.superficie,
         borderRadius: 14,
         padding: 18,
         borderWidth: 1,
-        borderColor: "#fce9e9",
+        borderColor: c.borda,
     },
     patrimonioRow: { flexDirection: "row", alignItems: "center" },
     iconWrapper: {
         width: 56,
         height: 56,
-        backgroundColor: "#ffd8d8",
+        backgroundColor: c.marcaSuave,
         borderRadius: 10,
         alignItems: "center",
         justifyContent: "center",
@@ -379,21 +380,21 @@ const styles = StyleSheet.create({
         height: 56,
         borderRadius: 10,
         marginRight: 14,
-        backgroundColor: "#ffd8d8",
+        backgroundColor: c.marcaSuave,
     },
-    patrimonioNome: { color: "#270d0d", fontSize: 18, fontWeight: "700" },
-    sub: { color: "#8a7373", fontSize: 13, marginTop: 2 },
+    patrimonioNome: { color: c.texto, fontSize: 18, fontWeight: "700" },
+    sub: { color: c.textoMudo, fontSize: 13, marginTop: 2 },
     linhaBadges: { flexDirection: "row", alignItems: "center", gap: 8, marginTop: 14 },
     secao: {
-        color: "#b01d2e",
+        color: c.marcaEscura,
         fontSize: 11,
         fontWeight: "600",
         textTransform: "uppercase",
         marginTop: 16,
     },
-    texto: { color: "#270d0d", fontSize: 14, marginTop: 4 },
+    texto: { color: c.texto, fontSize: 14, marginTop: 4 },
     tituloTimeline: {
-        color: "#2d0e0e",
+        color: c.texto,
         fontSize: 16,
         fontWeight: "600",
         marginTop: 24,
@@ -401,18 +402,18 @@ const styles = StyleSheet.create({
     },
     eventoRow: { flexDirection: "row" },
     trilho: { width: 20, alignItems: "center" },
-    bolinha: { width: 12, height: 12, borderRadius: 6, backgroundColor: "#c9131c", marginTop: 4 },
-    linha: { flex: 1, width: 2, backgroundColor: "#f0d4d4" },
+    bolinha: { width: 12, height: 12, borderRadius: 6, backgroundColor: c.marca, marginTop: 4 },
+    linha: { flex: 1, width: 2, backgroundColor: c.linhaTimeline },
     eventoCard: { flex: 1, paddingLeft: 10, paddingBottom: 18 },
-    eventoTitulo: { color: "#270d0d", fontSize: 14, fontWeight: "700" },
-    eventoData: { color: "#a99", fontSize: 12, marginTop: 2 },
-    eventoDescricao: { color: "#5a4646", fontSize: 13, marginTop: 4 },
+    eventoTitulo: { color: c.texto, fontSize: 14, fontWeight: "700" },
+    eventoData: { color: c.textoDiscreto, fontSize: 12, marginTop: 2 },
+    eventoDescricao: { color: c.textoSecundario, fontSize: 13, marginTop: 4 },
     botoes: { flexDirection: "row", gap: 12, paddingVertical: 16 },
     botaoPrimario: {
         flex: 1,
         height: 50,
         borderRadius: 12,
-        backgroundColor: "#c9131c",
+        backgroundColor: c.marca,
         alignItems: "center",
         justifyContent: "center",
     },
@@ -422,21 +423,21 @@ const styles = StyleSheet.create({
         height: 50,
         borderRadius: 12,
         borderWidth: 1,
-        borderColor: "#c9131c",
-        backgroundColor: "#ffffff",
+        borderColor: c.marca,
+        backgroundColor: c.superficie,
         alignItems: "center",
         justifyContent: "center",
     },
-    botaoSecundarioTexto: { color: "#c9131c", fontSize: 16, fontWeight: "600" },
+    botaoSecundarioTexto: { color: c.marcaTexto, fontSize: 16, fontWeight: "600" },
     desabilitado: { opacity: 0.5 },
     centro: { flex: 1, alignItems: "center", justifyContent: "center", paddingBottom: 80 },
-    mensagemVazia: { color: "#8a7373", fontSize: 14, textAlign: "center" },
+    mensagemVazia: { color: c.textoMudo, fontSize: 14, textAlign: "center" },
     botaoTentar: {
         marginTop: 14,
         paddingHorizontal: 18,
         paddingVertical: 10,
         borderRadius: 10,
-        backgroundColor: "#c9131c",
+        backgroundColor: c.marca,
     },
     botaoTentarTexto: { color: "#ffffff", fontSize: 14, fontWeight: "600" },
 });

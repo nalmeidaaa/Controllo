@@ -1,15 +1,18 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-
-// chave = valor do banco (Media sem acento)
-const ESTILOS = {
-    Alta: { label: "Alta", bg: "#ffd8d8", texto: "#c9131c" },
-    Media: { label: "Média", bg: "#ffe6cf", texto: "#b05a10" },
-    Baixa: { label: "Baixa", bg: "#e6e6e6", texto: "#555555" },
-};
+import { useTema } from "../../theme/tema.jsx";
 
 export default function BadgePrioridade({ prioridade }) {
-    const e = ESTILOS[prioridade] || { label: prioridade || "-", bg: "#eeeeee", texto: "#555555" };
+    const { cores } = useTema();
+
+    // chave = valor do banco (Media sem acento)
+    const estilos = {
+        Alta: { label: "Alta", bg: cores.marcaSuave, texto: cores.marcaTexto },
+        Media: { label: "Média", bg: cores.prioridadeMedia.fundo, texto: cores.prioridadeMedia.cor },
+        Baixa: { label: "Baixa", bg: cores.prioridadeBaixa.fundo, texto: cores.prioridadeBaixa.cor },
+    };
+
+    const e = estilos[prioridade] || { label: prioridade || "-", bg: cores.neutro.fundo, texto: cores.neutro.cor };
 
     return (
         <View style={[styles.badge, { backgroundColor: e.bg }]}>

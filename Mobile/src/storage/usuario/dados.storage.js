@@ -2,9 +2,22 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const CHAVE_USUARIO = "@controllo:usuario_logado";
 
+// Quem quiser acompanhar mudanças do usuário logado (ex.: perfil editado) se inscreve aqui
+const ouvintes = new Set();
+
+function notificar(usuario) {
+    ouvintes.forEach((ouvinte) => ouvinte(usuario));
+}
+
+export function assinarUsuario(ouvinte) {
+    ouvintes.add(ouvinte);
+    return () => ouvintes.delete(ouvinte);
+}
+
 export async function salvarUsuario(usuario) {
     if (usuario) {
         await AsyncStorage.setItem(CHAVE_USUARIO, JSON.stringify(usuario));
+        notificar(usuario);
     }
 }
 
@@ -25,4 +38,5 @@ export async function estaLogado() {
 
 export async function deslogarUsuario() {
     await AsyncStorage.removeItem(CHAVE_USUARIO);
+    notificar(null);
 }

@@ -28,7 +28,13 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-status-bar"
+      "expo-status-bar",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "O Controllo acessa suas fotos para você escolher a foto do seu perfil."
+        }
+      ]
     ]
   }
 }

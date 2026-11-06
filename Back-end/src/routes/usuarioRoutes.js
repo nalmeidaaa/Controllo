@@ -30,6 +30,16 @@ usuarioRoutes.get('/pendentes', authMiddleware, autorizar(['administracao']), us
 usuarioRoutes.put('/:id/aprovar', authMiddleware, autorizar(['administracao']), usuarioController.aprovar);
 usuarioRoutes.delete('/:id/recusar', authMiddleware, autorizar(['administracao']), usuarioController.recusar);
 
+// Perfil do próprio usuário (qualquer perfil autenticado).
+// Fica ANTES das rotas com '/:id' para que "me" não seja lido como um id.
+usuarioRoutes.get('/me', authMiddleware, usuarioController.meuPerfil);
+usuarioRoutes.put(
+    '/me',
+    authMiddleware,
+    upload.single('imagem'),
+    usuarioController.editarMeuPerfil
+);
+
 // Criar usuário com upload de foto de perfil
 usuarioRoutes.post(
     '/', 

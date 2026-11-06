@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import BadgeStatusRequisicao from "./BadgeStatusRequisicao.jsx";
 import BadgePrioridade from "./BadgePrioridade.jsx";
+import { useTema } from "../../theme/tema.jsx";
 
 function formatarData(isoString) {
     if (!isoString) return "";
@@ -15,6 +16,8 @@ function formatarData(isoString) {
 }
 
 export default function CardRequisicao({ requisicao, onPress }) {
+    const { cores } = useTema();
+    const styles = useMemo(() => criarStyles(cores), [cores]);
     const concluida = requisicao.status_requisicao === "Concluído";
 
     return (
@@ -59,24 +62,24 @@ export default function CardRequisicao({ requisicao, onPress }) {
     );
 }
 
-const styles = StyleSheet.create({
+const criarStyles = (c) => StyleSheet.create({
     flex: { flex: 1 },
     card: {
-        backgroundColor: "#ffffff",
+        backgroundColor: c.superficie,
         borderRadius: 14,
         padding: 16,
         borderWidth: 1,
-        borderColor: "#fce9e9",
-        shadowColor: "#101010",
+        borderColor: c.borda,
+        shadowColor: c.sombra,
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.08,
         shadowRadius: 3,
         elevation: 2,
     },
     topo: { flexDirection: "row", alignItems: "flex-start", gap: 8 },
-    titulo: { color: "#270d0d", fontSize: 15, fontWeight: "700" },
-    sub: { color: "#8a7373", fontSize: 12, marginTop: 2 },
-    descricao: { color: "#5a4646", fontSize: 13, marginTop: 10 },
+    titulo: { color: c.texto, fontSize: 15, fontWeight: "700" },
+    sub: { color: c.textoMudo, fontSize: 12, marginTop: 2 },
+    descricao: { color: c.textoSecundario, fontSize: 13, marginTop: 10 },
     rodape: { flexDirection: "row", alignItems: "center", gap: 10, marginTop: 12 },
-    meta: { color: "#a99", fontSize: 11, textAlign: "right" },
+    meta: { color: c.textoDiscreto, fontSize: 11, textAlign: "right" },
 });

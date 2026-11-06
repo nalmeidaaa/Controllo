@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useMemo, useCallback, useState } from "react";
 import {
     View,
     StyleSheet,
@@ -19,8 +19,7 @@ import {
     encerrarSessaoExpirada,
 } from "../../services/requisicaoGeralService.js";
 import BadgeStatusRequisicao from "../../components/geral/BadgeStatusRequisicao.jsx";
-
-const iconColor = "#c9131c";
+import { useTema } from "../../theme/tema.jsx";
 
 function formatarData(isoString) {
     if (!isoString) return "";
@@ -37,6 +36,8 @@ function formatarData(isoString) {
 }
 
 export default function ItensPendentesScreen() {
+    const { cores } = useTema();
+    const styles = useMemo(() => criarStyles(cores), [cores]);
     const navigation = useNavigation();
 
     const [requisicoes, setRequisicoes] = useState([]);
@@ -95,9 +96,9 @@ export default function ItensPendentesScreen() {
                     ]}
                 >
                     {concluida ? (
-                        <CheckCircle2 color="#1f9254" size={22} />
+                        <CheckCircle2 color={cores.concluido.cor}size={22} />
                     ) : (
-                        <Clock color="#c9131c" size={22} />
+                        <Clock color={cores.marca}size={22} />
                     )}
                 </View>
 
@@ -140,7 +141,7 @@ export default function ItensPendentesScreen() {
                         activeOpacity={0.8}
                         onPress={() => navigation.goBack()}
                     >
-                        <ArrowLeft color={iconColor} size={22} />
+                        <ArrowLeft color={cores.marca} size={22} />
                     </TouchableOpacity>
 
                     <View style={styles.heading}>
@@ -151,7 +152,7 @@ export default function ItensPendentesScreen() {
 
                 {carregando ? (
                     <View style={styles.centro}>
-                        <ActivityIndicator size="large" color={iconColor} />
+                        <ActivityIndicator size="large" color={cores.marca} />
                     </View>
                 ) : erro ? (
                     <View style={styles.centro}>
@@ -177,8 +178,8 @@ export default function ItensPendentesScreen() {
                             <RefreshControl
                                 refreshing={atualizando}
                                 onRefresh={() => carregarRequisicoes(true)}
-                                colors={[iconColor]}
-                                tintColor={iconColor}
+                                colors={[cores.marca]}
+                                tintColor={cores.marca}
                             />
                         }
                         ListEmptyComponent={
@@ -194,29 +195,29 @@ export default function ItensPendentesScreen() {
     );
 }
 
-const styles = StyleSheet.create({
-    safeArea: { flex: 1, backgroundColor: "#f4f7f7" },
+const criarStyles = (c) => StyleSheet.create({
+    safeArea: { flex: 1, backgroundColor: c.fundo },
     container: { flex: 1, paddingHorizontal: 28, paddingTop: 40 },
     headerRow: { flexDirection: "row", alignItems: "center", marginBottom: 28 },
     voltarButton: {
         width: 44,
         height: 44,
         borderRadius: 12,
-        backgroundColor: "#ffd8d8",
+        backgroundColor: c.marcaSuave,
         alignItems: "center",
         justifyContent: "center",
         marginRight: 14,
     },
     heading: { flex: 1 },
     eyebrow: {
-        color: "#b01d2e",
+        color: c.marcaEscura,
         fontSize: 11,
         fontWeight: "600",
         textTransform: "uppercase",
         letterSpacing: 0.7,
     },
     title: {
-        color: "#2d0e0e",
+        color: c.texto,
         fontSize: 24,
         fontWeight: "600",
         letterSpacing: -0.5,
@@ -227,13 +228,13 @@ const styles = StyleSheet.create({
     card: {
         alignItems: "flex-start",
         flexDirection: "row",
-        backgroundColor: "#ffffff",
+        backgroundColor: c.superficie,
         borderRadius: 14,
         paddingHorizontal: 18,
         paddingVertical: 16,
         borderWidth: 1,
-        borderColor: "#fce9e9",
-        shadowColor: "#101010",
+        borderColor: c.borda,
+        shadowColor: c.sombra,
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.08,
         shadowRadius: 3,
@@ -247,21 +248,21 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         marginRight: 14,
     },
-    iconWrapperOk: { backgroundColor: "#e3f7ea" },
-    iconWrapperPendente: { backgroundColor: "#ffd8d8" },
+    iconWrapperOk: { backgroundColor: c.concluido.fundo },
+    iconWrapperPendente: { backgroundColor: c.marcaSuave },
     cardText: { flex: 1, marginRight: 8 },
-    cardTitle: { color: "#270d0d", fontSize: 15, fontWeight: "600" },
-    cardSubtitle: { color: "#8a7373", fontSize: 12, marginTop: 2 },
-    cardDescricao: { color: "#5a4646", fontSize: 12, marginTop: 4 },
-    cardData: { color: "#a99", fontSize: 11, marginTop: 6 },
+    cardTitle: { color: c.texto, fontSize: 15, fontWeight: "600" },
+    cardSubtitle: { color: c.textoMudo, fontSize: 12, marginTop: 2 },
+    cardDescricao: { color: c.textoSecundario, fontSize: 12, marginTop: 4 },
+    cardData: { color: c.textoDiscreto, fontSize: 11, marginTop: 6 },
     centro: { flex: 1, alignItems: "center", justifyContent: "center", paddingBottom: 80 },
-    mensagemVazia: { color: "#8a7373", fontSize: 14, textAlign: "center" },
+    mensagemVazia: { color: c.textoMudo, fontSize: 14, textAlign: "center" },
     botaoTentar: {
         marginTop: 14,
         paddingHorizontal: 18,
         paddingVertical: 10,
         borderRadius: 10,
-        backgroundColor: "#c9131c",
+        backgroundColor: c.marca,
     },
     botaoTentarTexto: { color: "#ffffff", fontSize: 14, fontWeight: "600" },
 });

@@ -3301,7 +3301,11 @@ body:has(.vs-selecao-barra--visivel) .page-salas-container {
     opacity: 0.55 !important;
     cursor: not-allowed !important;
 }
-
+/* Remove o ícone de olho nativo do Edge e de outros navegadores baseados em Chromium */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none !important;
+}
 /* ============================================================
    MODAL - HISTÓRICO DE TRANSFERÊNCIAS
    ============================================================ */

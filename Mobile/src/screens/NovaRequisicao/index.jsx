@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
     View,
     Text,
@@ -24,8 +24,8 @@ import {
     mensagemDeErro,
 } from "../../services/requisicaoGeralService.js";
 import { BASE_URL } from "../../services/api.js";
+import { useTema } from "../../theme/tema.jsx";
 
-const iconColor = "#c9131c";
 const MIN = 10;
 const MAX = 200;
 
@@ -37,6 +37,8 @@ const PRIORIDADES = [
 ];
 
 export default function NovaRequisicaoScreen() {
+    const { cores } = useTema();
+    const styles = useMemo(() => criarStyles(cores), [cores]);
     const navigation = useNavigation();
     const route = useRoute();
     const { patrimonio, idSala, nomeSala } = route.params || {};
@@ -111,7 +113,7 @@ export default function NovaRequisicaoScreen() {
                             activeOpacity={0.8}
                             onPress={() => navigation.goBack()}
                         >
-                            <ArrowLeft color={iconColor} size={22} />
+                            <ArrowLeft color={cores.marca} size={22} />
                         </TouchableOpacity>
 
                         <View style={styles.heading}>
@@ -128,7 +130,7 @@ export default function NovaRequisicaoScreen() {
                             />
                         ) : (
                             <View style={styles.iconWrapper}>
-                                <Box color={iconColor} size={22} />
+                                <Box color={cores.marca} size={22} />
                             </View>
                         )}
 
@@ -149,8 +151,7 @@ export default function NovaRequisicaoScreen() {
                     <TextInput
                         style={styles.textArea}
                         placeholder="Descreva o problema encontrado"
-                        placeholderTextColor="#a99"
-                        multiline
+                        placeholderTextColor={cores.textoDiscreto}multiline
                         maxLength={MAX}
                         value={descricao}
                         onChangeText={setDescricao}
@@ -210,30 +211,30 @@ export default function NovaRequisicaoScreen() {
     );
 }
 
-const styles = StyleSheet.create({
+const criarStyles = (c) => StyleSheet.create({
     flex: { flex: 1 },
-    safeArea: { flex: 1, backgroundColor: "#f4f7f7" },
+    safeArea: { flex: 1, backgroundColor: c.fundo },
     container: { paddingHorizontal: 28, paddingTop: 40, paddingBottom: 40 },
     headerRow: { flexDirection: "row", alignItems: "center", marginBottom: 28 },
     voltarButton: {
         width: 44,
         height: 44,
         borderRadius: 12,
-        backgroundColor: "#ffd8d8",
+        backgroundColor: c.marcaSuave,
         alignItems: "center",
         justifyContent: "center",
         marginRight: 14,
     },
     heading: { flex: 1 },
     eyebrow: {
-        color: "#b01d2e",
+        color: c.marcaEscura,
         fontSize: 11,
         fontWeight: "600",
         textTransform: "uppercase",
         letterSpacing: 0.7,
     },
     title: {
-        color: "#2d0e0e",
+        color: c.texto,
         fontSize: 24,
         fontWeight: "600",
         letterSpacing: -0.5,
@@ -242,17 +243,17 @@ const styles = StyleSheet.create({
     patrimonioCard: {
         flexDirection: "row",
         alignItems: "center",
-        backgroundColor: "#ffffff",
+        backgroundColor: c.superficie,
         borderRadius: 14,
         padding: 16,
         borderWidth: 1,
-        borderColor: "#fce9e9",
+        borderColor: c.borda,
         marginBottom: 24,
     },
     iconWrapper: {
         width: 48,
         height: 48,
-        backgroundColor: "#ffd8d8",
+        backgroundColor: c.marcaSuave,
         borderRadius: 10,
         alignItems: "center",
         justifyContent: "center",
@@ -263,56 +264,56 @@ const styles = StyleSheet.create({
         height: 48,
         borderRadius: 10,
         marginRight: 16,
-        backgroundColor: "#ffd8d8",
+        backgroundColor: c.marcaSuave,
     },
-    patrimonioNome: { color: "#270d0d", fontSize: 16, fontWeight: "600" },
-    patrimonioSub: { color: "#8a7373", fontSize: 13, marginTop: 2 },
-    label: { color: "#5a4646", fontSize: 13, fontWeight: "600", marginBottom: 10 },
+    patrimonioNome: { color: c.texto, fontSize: 16, fontWeight: "600" },
+    patrimonioSub: { color: c.textoMudo, fontSize: 13, marginTop: 2 },
+    label: { color: c.textoSecundario, fontSize: 13, fontWeight: "600", marginBottom: 10 },
     textArea: {
-        backgroundColor: "#ffffff",
+        backgroundColor: c.superficie,
         borderWidth: 1,
-        borderColor: "#e6d3d3",
+        borderColor: c.bordaInput,
         borderRadius: 12,
         padding: 12,
         minHeight: 120,
         textAlignVertical: "top",
-        color: "#270d0d",
+        color: c.texto,
         fontSize: 14,
     },
-    contador: { color: "#8a7373", fontSize: 12, textAlign: "right", marginTop: 6, marginBottom: 20 },
-    contadorErro: { color: "#c9131c" },
+    contador: { color: c.textoMudo, fontSize: 12, textAlign: "right", marginTop: 6, marginBottom: 20 },
+    contadorErro: { color: c.marcaTexto },
     chips: { flexDirection: "row", gap: 8, marginBottom: 24 },
     chip: {
         paddingHorizontal: 18,
         paddingVertical: 10,
         borderRadius: 999,
         borderWidth: 1,
-        borderColor: "#e6d3d3",
-        backgroundColor: "#fbf5f5",
+        borderColor: c.bordaInput,
+        backgroundColor: c.fundoCampo,
     },
-    chipAtivo: { backgroundColor: "#c9131c", borderColor: "#c9131c" },
-    chipTexto: { color: "#5a4646", fontSize: 14, fontWeight: "600" },
+    chipAtivo: { backgroundColor: c.marca, borderColor: c.marca },
+    chipTexto: { color: c.textoSecundario, fontSize: 14, fontWeight: "600" },
     chipTextoAtivo: { color: "#ffffff" },
     erroBox: {
-        backgroundColor: "#ffd8d8",
+        backgroundColor: c.marcaSuave,
         borderRadius: 12,
         padding: 14,
         marginBottom: 16,
     },
-    erroTexto: { color: "#c9131c", fontSize: 14 },
+    erroTexto: { color: c.marcaTexto, fontSize: 14 },
     erroBotao: {
         alignSelf: "flex-start",
         marginTop: 10,
         paddingHorizontal: 14,
         paddingVertical: 8,
         borderRadius: 10,
-        backgroundColor: "#c9131c",
+        backgroundColor: c.marca,
     },
     erroBotaoTexto: { color: "#ffffff", fontSize: 13, fontWeight: "600" },
     botaoEnviar: {
         height: 52,
         borderRadius: 12,
-        backgroundColor: "#c9131c",
+        backgroundColor: c.marca,
         alignItems: "center",
         justifyContent: "center",
     },

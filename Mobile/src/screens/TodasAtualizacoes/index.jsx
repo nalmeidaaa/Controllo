@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useMemo, useState, useCallback } from "react";
 import {
     View,
     Text,
@@ -22,6 +22,7 @@ import {
 } from "lucide-react-native";
 
 import { obterToken } from "../../storage/usuario/dados.storage.js";
+import { useTema } from "../../theme/tema.jsx";
 import {
     buscarAtualizacoes,
     ehErroDeSessao,
@@ -41,13 +42,18 @@ function formatarData(isoString) {
     });
 }
 
-const TIPOS = {
-    Abertura: { titulo: "Requisição enviada", fundo: "#fff4d6", Icone: Send, cor: "#a5710a" },
-    Andamento: { titulo: "Requisição em andamento", fundo: "#ffd8d8", Icone: Clock, cor: "#c9131c" },
-    Finalizacao: { titulo: "Requisição concluída!", fundo: "#e3f7ea", Icone: CheckCircle2, cor: "#1f9254" },
-};
+function criarTipos(c) {
+    return {
+        Abertura: { titulo: "Requisição enviada", fundo: c.alerta.fundo, Icone: Send, cor: c.alerta.cor },
+        Andamento: { titulo: "Requisição em andamento", fundo: c.marcaSuave, Icone: Clock, cor: c.marca },
+        Finalizacao: { titulo: "Requisição concluída!", fundo: c.concluido.fundo, Icone: CheckCircle2, cor: c.concluido.cor },
+    };
+}
 
 export default function TodasAtualizacoesScreen() {
+    const { cores } = useTema();
+    const styles = useMemo(() => criarStyles(cores), [cores]);
+    const TIPOS = useMemo(() => criarTipos(cores), [cores]);
     const navigation = useNavigation();
 
     const [atualizacoes, setAtualizacoes] = useState([]);
@@ -154,19 +160,18 @@ export default function TodasAtualizacoesScreen() {
                     onPress={() => navigation.goBack()}
                     activeOpacity={0.7}
                 >
-                    <ArrowLeft color="#270d0d" size={24} />
+                    <ArrowLeft color={cores.texto}size={24} />
                 </TouchableOpacity>
                 <Text style={styles.headerTitulo}>Mural Completo</Text>
             </View>
 
             {/* Barra de Pesquisa */}
             <View style={styles.searchContainer}>
-                <Search color="#8a8a8a" size={20} style={styles.searchIcon} />
+                <Search color={cores.iconeNeutroCor}size={20} style={styles.searchIcon} />
                 <TextInput
                     style={styles.searchInput}
                     placeholder="Buscar por patrimônio, sala ou descrição..."
-                    placeholderTextColor="#8a8a8a"
-                    value={busca}
+                    placeholderTextColor={cores.iconeNeutroCor}value={busca}
                     onChangeText={setBusca}
                 />
             </View>
@@ -174,12 +179,12 @@ export default function TodasAtualizacoesScreen() {
             {/* Conteúdo Principal */}
             {carregando ? (
                 <View style={styles.containerCentralizado}>
-                    <ActivityIndicator color="#c9131c" size="large" />
+                    <ActivityIndicator color={cores.marca}size="large" />
                     <Text style={styles.textoCarregando}>Carregando atualizações...</Text>
                 </View>
             ) : erro ? (
                 <View style={styles.containerCentralizado}>
-                    <AlertCircle color="#c9131c" size={48} />
+                    <AlertCircle color={cores.marca}size={48} />
                     <Text style={styles.textoErroTitulo}>Não foi possível carregar</Text>
                     <Text style={styles.textoErroSubtitulo}>
                         Ocorreu um problema ao buscar o histórico.
@@ -199,12 +204,12 @@ export default function TodasAtualizacoesScreen() {
                         <RefreshControl
                             refreshing={renovando}
                             onRefresh={aoRecarregar}
-                            colors={["#c9131c"]}
+                            colors={[cores.marca]}
                         />
                     }
                     ListEmptyComponent={
                         <View style={styles.containerVazio}>
-                            <Bell color="#8a8a8a" size={40} />
+                            <Bell color={cores.iconeNeutroCor}size={40} />
                             <Text style={styles.textoVazioTitulo}>Nenhuma atualização encontrada</Text>
                             <Text style={styles.textoVazioSubtitulo}>
                                 {busca
@@ -219,10 +224,10 @@ export default function TodasAtualizacoesScreen() {
     );
 }
 
-const styles = StyleSheet.create({
+const criarStyles = (c) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#f5f5f5",
+        backgroundColor: c.fundoBusca,
     },
 
     header: {
@@ -230,9 +235,9 @@ const styles = StyleSheet.create({
         alignItems: "center",
         paddingHorizontal: 16,
         paddingVertical: 14,
-        backgroundColor: "#ffffff",
+        backgroundColor: c.superficie,
         borderBottomWidth: 1,
-        borderBottomColor: "#eaeaea",
+        borderBottomColor: c.divisor,
     },
 
     botaoVoltar: {
@@ -243,20 +248,20 @@ const styles = StyleSheet.create({
     headerTitulo: {
         fontSize: 18,
         fontWeight: "bold",
-        color: "#270d0d",
+        color: c.texto,
     },
 
     searchContainer: {
         flexDirection: "row",
         alignItems: "center",
-        backgroundColor: "#ffffff",
+        backgroundColor: c.superficie,
         marginHorizontal: 16,
         marginTop: 12,
         marginBottom: 8,
         paddingHorizontal: 12,
         borderRadius: 12,
         borderWidth: 1,
-        borderColor: "#e0e0e0",
+        borderColor: c.bordaClara,
         height: 46,
     },
 
@@ -267,7 +272,7 @@ const styles = StyleSheet.create({
     searchInput: {
         flex: 1,
         fontSize: 14,
-        color: "#270d0d",
+        color: c.texto,
     },
 
     listContent: {
@@ -280,13 +285,13 @@ const styles = StyleSheet.create({
     card: {
         flexDirection: "row",
         alignItems: "flex-start",
-        backgroundColor: "#ffffff",
+        backgroundColor: c.superficie,
         borderRadius: 14,
         paddingHorizontal: 16,
         paddingVertical: 16,
         borderWidth: 1,
-        borderColor: "rgb(239, 239, 239)",
-        shadowColor: "#000",
+        borderColor: c.bordaMural,
+        shadowColor: c.sombra,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
         shadowRadius: 4,
@@ -307,25 +312,25 @@ const styles = StyleSheet.create({
     },
 
     titulo: {
-        color: "#270d0d",
+        color: c.texto,
         fontSize: 15,
         fontWeight: "700",
     },
 
     subtitulo: {
-        color: "#5a4646",
+        color: c.textoSecundario,
         fontSize: 13,
         marginTop: 2,
     },
 
     descricao: {
-        color: "#7a6a6a",
+        color: c.textoMural,
         fontSize: 12,
         marginTop: 4,
     },
 
     data: {
-        color: "#a99",
+        color: c.textoDiscreto,
         fontSize: 11,
         marginTop: 6,
     },
@@ -339,27 +344,27 @@ const styles = StyleSheet.create({
 
     textoCarregando: {
         marginTop: 12,
-        color: "#7a6a6a",
+        color: c.textoMural,
         fontSize: 14,
     },
 
     textoErroTitulo: {
         fontSize: 16,
         fontWeight: "bold",
-        color: "#270d0d",
+        color: c.texto,
         marginTop: 12,
     },
 
     textoErroSubtitulo: {
         fontSize: 13,
-        color: "#7a6a6a",
+        color: c.textoMural,
         textAlign: "center",
         marginTop: 4,
         marginBottom: 16,
     },
 
     botaoTentarNovamente: {
-        backgroundColor: "#c9131c",
+        backgroundColor: c.marca,
         paddingHorizontal: 20,
         paddingVertical: 10,
         borderRadius: 8,
@@ -380,14 +385,14 @@ const styles = StyleSheet.create({
     textoVazioTitulo: {
         fontSize: 15,
         fontWeight: "bold",
-        color: "#270d0d",
+        color: c.texto,
         marginTop: 12,
     },
 
     textoVazioSubtitulo: {
         fontSize: 13,
-        color: "#7a6a6a",
+        color: c.textoMural,
         textAlign: "center",
         marginTop: 4,
     },
-});
+});

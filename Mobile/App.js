@@ -1,5 +1,9 @@
-import { NavigationContainer } from "@react-navigation/native";
+import { useMemo } from "react";
+import { NavigationContainer, DefaultTheme, DarkTheme } from "@react-navigation/native";
+import { StatusBar } from "expo-status-bar";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+
+import { TemaProvider, useTema } from "./src/theme/tema.jsx";
 
 import LoginScreen from "./src/screens/Login";
 import AdministracaoScreen from "./src/screens/Administracao";
@@ -21,8 +25,39 @@ const Stack = createNativeStackNavigator()
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="LoginScreen">
+    <TemaProvider>
+      <Navegacao />
+    </TemaProvider>
+  );
+}
+
+function Navegacao() {
+  const { cores, escuro } = useTema();
+
+  // Tema do React Navigation acompanha o tema do app (fundo, bordas, textos)
+  const temaNavegacao = useMemo(() => {
+    const base = escuro ? DarkTheme : DefaultTheme;
+    return {
+      ...base,
+      colors: {
+        ...base.colors,
+        primary: cores.marca,
+        background: cores.fundo,
+        card: cores.superficie,
+        text: cores.texto,
+        border: cores.borda,
+      },
+    };
+  }, [escuro, cores]);
+
+  return (
+    <NavigationContainer theme={temaNavegacao}>
+      {/* Ícones da barra de status claros no tema escuro e escuros no claro */}
+      <StatusBar style={escuro ? "light" : "dark"} />
+      <Stack.Navigator
+        initialRouteName="LoginScreen"
+        screenOptions={{ contentStyle: { backgroundColor: cores.fundo } }}
+      >
         <Stack.Screen
           name="LoginScreen"
           component={LoginScreen}
@@ -101,4 +136,4 @@ export default function App() {
       </Stack.Navigator>
     </NavigationContainer>
   );
-}
+}

@@ -272,3 +272,30 @@ export async function cadastrarUsuario({ nome, cpf, email, senha }) {
 
     return resposta.data;
 }
+
+// Perfil do próprio usuário (qualquer tipo de conta)
+export async function buscarMeuPerfil(token) {
+    if (!token) throw new Error("Erro: token inválido");
+
+    const resposta = await api.get("/usuarios/me", {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+
+    return resposta.data;
+}
+
+// formData aceita: nome, email e imagem. Tipo de conta e CPF não mudam por aqui.
+export async function atualizarMeuPerfil(token, formData) {
+    if (!token) throw new Error("Erro: token inválido");
+
+    const resposta = await api.put("/usuarios/me", formData, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+        },
+    });
+
+    return resposta.data;
+}

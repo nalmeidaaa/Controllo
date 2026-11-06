@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useMemo, useEffect, useState } from "react";
+import { useTema } from "../../theme/tema.jsx";
 import {
     Modal,
     View,
@@ -15,6 +16,8 @@ const MIN = 5;
 const MAX = 200;
 
 export default function ModalConcluir({ visivel, enviando, erro, onFechar, onConfirmar }) {
+    const { cores } = useTema();
+    const styles = useMemo(() => criarStyles(cores), [cores]);
     const [observacao, setObservacao] = useState("");
 
     useEffect(() => {
@@ -38,8 +41,7 @@ export default function ModalConcluir({ visivel, enviando, erro, onFechar, onCon
                     <TextInput
                         style={styles.textArea}
                         placeholder="Descreva o que foi feito"
-                        placeholderTextColor="#a99"
-                        multiline
+                        placeholderTextColor={cores.textoDiscreto}multiline
                         maxLength={MAX}
                         value={observacao}
                         onChangeText={setObservacao}
@@ -79,32 +81,32 @@ export default function ModalConcluir({ visivel, enviando, erro, onFechar, onCon
     );
 }
 
-const styles = StyleSheet.create({
+const criarStyles = (c) => StyleSheet.create({
     overlay: {
         flex: 1,
-        backgroundColor: "rgba(18, 18, 20, 0.55)",
+        backgroundColor: c.overlay,
         justifyContent: "center",
         alignItems: "center",
         padding: 20,
     },
-    card: { width: "100%", maxWidth: 420, backgroundColor: "#ffffff", borderRadius: 16, padding: 20 },
-    titulo: { color: "#270d0d", fontSize: 18, fontWeight: "700", marginBottom: 14 },
-    label: { color: "#5a4646", fontSize: 13, fontWeight: "600", marginBottom: 8 },
+    card: { width: "100%", maxWidth: 420, backgroundColor: c.superficie, borderRadius: 16, padding: 20 },
+    titulo: { color: c.texto, fontSize: 18, fontWeight: "700", marginBottom: 14 },
+    label: { color: c.textoSecundario, fontSize: 13, fontWeight: "600", marginBottom: 8 },
     textArea: {
         borderWidth: 1,
-        borderColor: "#e6d3d3",
+        borderColor: c.bordaInput,
         borderRadius: 12,
         padding: 12,
         minHeight: 100,
         textAlignVertical: "top",
-        color: "#270d0d",
+        color: c.texto,
         fontSize: 14,
     },
-    contador: { color: "#8a7373", fontSize: 12, textAlign: "right", marginTop: 6 },
-    contadorErro: { color: "#c9131c" },
+    contador: { color: c.textoMudo, fontSize: 12, textAlign: "right", marginTop: 6 },
+    contadorErro: { color: c.marcaTexto },
     erro: {
-        color: "#c9131c",
-        backgroundColor: "#fde8e9",
+        color: c.marcaTexto,
+        backgroundColor: c.marcaMuitoSuave,
         borderRadius: 8,
         padding: 10,
         fontSize: 13,
@@ -116,16 +118,16 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         borderRadius: 10,
         borderWidth: 1,
-        borderColor: "#e6d3d3",
+        borderColor: c.bordaInput,
     },
-    btnCancelarTexto: { color: "#5a4646", fontSize: 14, fontWeight: "600" },
+    btnCancelarTexto: { color: c.textoSecundario, fontSize: 14, fontWeight: "600" },
     btnConfirmar: {
         minWidth: 96,
         alignItems: "center",
         paddingHorizontal: 20,
         paddingVertical: 12,
         borderRadius: 10,
-        backgroundColor: "#c9131c",
+        backgroundColor: c.marca,
     },
     btnConfirmarTexto: { color: "#ffffff", fontSize: 14, fontWeight: "600" },
     desabilitado: { opacity: 0.5 },

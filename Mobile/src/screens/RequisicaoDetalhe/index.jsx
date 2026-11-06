@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useMemo, useCallback, useState } from "react";
 import {
     View,
     Text,
@@ -19,8 +19,7 @@ import {
     mensagemDeErro,
 } from "../../services/requisicaoGeralService.js";
 import BadgeStatusRequisicao from "../../components/geral/BadgeStatusRequisicao.jsx";
-
-const iconColor = "#c9131c";
+import { useTema } from "../../theme/tema.jsx";
 
 const ACOES = {
     Abertura: "Requisição aberta",
@@ -43,6 +42,8 @@ function formatarData(isoString) {
 }
 
 export default function RequisicaoDetalheScreen() {
+    const { cores } = useTema();
+    const styles = useMemo(() => criarStyles(cores), [cores]);
     const navigation = useNavigation();
     const route = useRoute();
     const { idRequisicao } = route.params || {};
@@ -87,7 +88,7 @@ export default function RequisicaoDetalheScreen() {
                         activeOpacity={0.8}
                         onPress={() => navigation.goBack()}
                     >
-                        <ArrowLeft color={iconColor} size={22} />
+                        <ArrowLeft color={cores.marca} size={22} />
                     </TouchableOpacity>
 
                     <View style={styles.heading}>
@@ -98,7 +99,7 @@ export default function RequisicaoDetalheScreen() {
 
                 {carregando ? (
                     <View style={styles.centro}>
-                        <ActivityIndicator size="large" color={iconColor} />
+                        <ActivityIndicator size="large" color={cores.marca} />
                     </View>
                 ) : erro || !requisicao ? (
                     <View style={styles.centro}>
@@ -175,29 +176,29 @@ export default function RequisicaoDetalheScreen() {
     );
 }
 
-const styles = StyleSheet.create({
-    safeArea: { flex: 1, backgroundColor: "#f4f7f7" },
+const criarStyles = (c) => StyleSheet.create({
+    safeArea: { flex: 1, backgroundColor: c.fundo },
     container: { flex: 1, paddingHorizontal: 28, paddingTop: 40 },
     headerRow: { flexDirection: "row", alignItems: "center", marginBottom: 28 },
     voltarButton: {
         width: 44,
         height: 44,
         borderRadius: 12,
-        backgroundColor: "#ffd8d8",
+        backgroundColor: c.marcaSuave,
         alignItems: "center",
         justifyContent: "center",
         marginRight: 14,
     },
     heading: { flex: 1 },
     eyebrow: {
-        color: "#b01d2e",
+        color: c.marcaEscura,
         fontSize: 11,
         fontWeight: "600",
         textTransform: "uppercase",
         letterSpacing: 0.7,
     },
     title: {
-        color: "#2d0e0e",
+        color: c.texto,
         fontSize: 24,
         fontWeight: "600",
         letterSpacing: -0.5,
@@ -205,25 +206,25 @@ const styles = StyleSheet.create({
     },
     conteudo: { paddingBottom: 40 },
     card: {
-        backgroundColor: "#ffffff",
+        backgroundColor: c.superficie,
         borderRadius: 14,
         padding: 18,
         borderWidth: 1,
-        borderColor: "#fce9e9",
+        borderColor: c.borda,
     },
-    patrimonioNome: { color: "#270d0d", fontSize: 18, fontWeight: "700" },
-    sub: { color: "#8a7373", fontSize: 13, marginTop: 2 },
+    patrimonioNome: { color: c.texto, fontSize: 18, fontWeight: "700" },
+    sub: { color: c.textoMudo, fontSize: 13, marginTop: 2 },
     linhaBadges: {
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
         marginTop: 14,
     },
-    prioridade: { color: "#5a4646", fontSize: 13, fontWeight: "600" },
-    secao: { color: "#b01d2e", fontSize: 11, fontWeight: "600", textTransform: "uppercase", marginTop: 16 },
-    texto: { color: "#270d0d", fontSize: 14, marginTop: 4 },
+    prioridade: { color: c.textoSecundario, fontSize: 13, fontWeight: "600" },
+    secao: { color: c.marcaEscura, fontSize: 11, fontWeight: "600", textTransform: "uppercase", marginTop: 16 },
+    texto: { color: c.texto, fontSize: 14, marginTop: 4 },
     tituloTimeline: {
-        color: "#2d0e0e",
+        color: c.texto,
         fontSize: 16,
         fontWeight: "600",
         marginTop: 24,
@@ -231,20 +232,20 @@ const styles = StyleSheet.create({
     },
     eventoRow: { flexDirection: "row" },
     trilho: { width: 20, alignItems: "center" },
-    bolinha: { width: 12, height: 12, borderRadius: 6, backgroundColor: "#c9131c", marginTop: 4 },
-    linha: { flex: 1, width: 2, backgroundColor: "#f0d4d4" },
+    bolinha: { width: 12, height: 12, borderRadius: 6, backgroundColor: c.marca, marginTop: 4 },
+    linha: { flex: 1, width: 2, backgroundColor: c.linhaTimeline },
     eventoCard: { flex: 1, paddingLeft: 10, paddingBottom: 18 },
-    eventoTitulo: { color: "#270d0d", fontSize: 14, fontWeight: "700" },
-    eventoData: { color: "#a99", fontSize: 12, marginTop: 2 },
-    eventoDescricao: { color: "#5a4646", fontSize: 13, marginTop: 4 },
+    eventoTitulo: { color: c.texto, fontSize: 14, fontWeight: "700" },
+    eventoData: { color: c.textoDiscreto, fontSize: 12, marginTop: 2 },
+    eventoDescricao: { color: c.textoSecundario, fontSize: 13, marginTop: 4 },
     centro: { flex: 1, alignItems: "center", justifyContent: "center", paddingBottom: 80 },
-    mensagemVazia: { color: "#8a7373", fontSize: 14, textAlign: "center" },
+    mensagemVazia: { color: c.textoMudo, fontSize: 14, textAlign: "center" },
     botaoTentar: {
         marginTop: 14,
         paddingHorizontal: 18,
         paddingVertical: 10,
         borderRadius: 10,
-        backgroundColor: "#c9131c",
+        backgroundColor: c.marca,
     },
     botaoTentarTexto: { color: "#ffffff", fontSize: 14, fontWeight: "600" },
 });

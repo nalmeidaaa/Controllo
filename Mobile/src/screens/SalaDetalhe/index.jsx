@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useMemo, useCallback, useState } from "react";
 import {
     View,
     Text,
@@ -25,10 +25,11 @@ import {
 } from "../../services/requisicaoGeralService.js";
 import { BASE_URL } from "../../services/api.js";
 import { obterEstiloStatus } from "../../utils/statusPatrimonio.js";
-
-const iconColor = "#c9131c";
+import { useTema } from "../../theme/tema.jsx";
 
 export default function SalaDetalheScreen() {
+    const { cores } = useTema();
+    const styles = useMemo(() => criarStyles(cores), [cores]);
     const navigation = useNavigation();
     const route = useRoute();
 
@@ -154,7 +155,7 @@ export default function SalaDetalheScreen() {
                         activeOpacity={0.8}
                         onPress={() => navigation.goBack()}
                     >
-                        <ArrowLeft color={iconColor} size={22} />
+                        <ArrowLeft color={cores.marca} size={22} />
                     </TouchableOpacity>
 
                     <View style={styles.heading}>
@@ -168,13 +169,12 @@ export default function SalaDetalheScreen() {
 
                 {/* Barra de pesquisa */}
                 <View style={styles.barraPesquisa}>
-                    <Search color="#8a7373" size={20} />
+                    <Search color={cores.textoMudo}size={20} />
 
                     <TextInput
                         style={styles.inputPesquisa}
                         placeholder="Pesquisar patrimônio..."
-                        placeholderTextColor="#8a7373"
-                        value={pesquisa}
+                        placeholderTextColor={cores.textoMudo}value={pesquisa}
                         onChangeText={setPesquisa}
                         autoCapitalize="none"
                         returnKeyType="search"
@@ -185,14 +185,14 @@ export default function SalaDetalheScreen() {
                             onPress={() => setPesquisa("")}
                             activeOpacity={0.7}
                         >
-                            <X color="#8a7373" size={20} />
+                            <X color={cores.textoMudo}size={20} />
                         </TouchableOpacity>
                     )}
                 </View>
 
                 {carregando ? (
                     <View style={styles.centro}>
-                        <ActivityIndicator size="large" color={iconColor} />
+                        <ActivityIndicator size="large" color={cores.marca} />
                     </View>
                 ) : erro ? (
                     <View style={styles.centro}>
@@ -239,7 +239,7 @@ export default function SalaDetalheScreen() {
                                         />
                                     ) : (
                                         <View style={styles.iconWrapper}>
-                                            <Box color={iconColor} size={22} />
+                                            <Box color={cores.marca} size={22} />
                                         </View>
                                     )}
 
@@ -259,7 +259,7 @@ export default function SalaDetalheScreen() {
                                     </View>
 
                                     {abrindoId === item.id_patrimonio ? (
-                                        <ActivityIndicator color={iconColor} />
+                                        <ActivityIndicator color={cores.marca} />
                                     ) : (
                                         <View
                                             style={[
@@ -292,10 +292,10 @@ export default function SalaDetalheScreen() {
     );
 }
 
-const styles = StyleSheet.create({
+const criarStyles = (c) => StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: "#f4f7f7",
+        backgroundColor: c.fundo,
     },
     container: {
         flex: 1,
@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
         width: 44,
         height: 44,
         borderRadius: 12,
-        backgroundColor: "#ffd8d8",
+        backgroundColor: c.marcaSuave,
         alignItems: "center",
         justifyContent: "center",
         marginRight: 14,
@@ -320,14 +320,14 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     eyebrow: {
-        color: "#b01d2e",
+        color: c.marcaEscura,
         fontSize: 11,
         fontWeight: "600",
         textTransform: "uppercase",
         letterSpacing: 0.7,
     },
     title: {
-        color: "#2d0e0e",
+        color: c.texto,
         fontSize: 24,
         fontWeight: "600",
         letterSpacing: -0.5,
@@ -336,18 +336,18 @@ const styles = StyleSheet.create({
     barraPesquisa: {
         flexDirection: "row",
         alignItems: "center",
-        backgroundColor: "#ffffff",
+        backgroundColor: c.superficie,
         borderRadius: 12,
         paddingHorizontal: 16,
         height: 50,
         marginBottom: 20,
         borderWidth: 1,
-        borderColor: "#fce9e9",
+        borderColor: c.borda,
     },
     inputPesquisa: {
         flex: 1,
         marginLeft: 10,
-        color: "#2d0e0e",
+        color: c.texto,
         fontSize: 14,
         paddingVertical: 0,
     },
@@ -359,13 +359,13 @@ const styles = StyleSheet.create({
         minHeight: 84,
         alignItems: "center",
         flexDirection: "row",
-        backgroundColor: "#ffffff",
+        backgroundColor: c.superficie,
         borderRadius: 14,
         paddingHorizontal: 22,
         paddingVertical: 18,
         borderWidth: 1,
-        borderColor: "#fce9e9",
-        shadowColor: "#101010",
+        borderColor: c.borda,
+        shadowColor: c.sombra,
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.08,
         shadowRadius: 3,
@@ -374,7 +374,7 @@ const styles = StyleSheet.create({
     iconWrapper: {
         width: 48,
         height: 48,
-        backgroundColor: "#ffd8d8",
+        backgroundColor: c.marcaSuave,
         borderRadius: 10,
         alignItems: "center",
         justifyContent: "center",
@@ -385,18 +385,18 @@ const styles = StyleSheet.create({
         height: 48,
         borderRadius: 10,
         marginRight: 16,
-        backgroundColor: "#ffd8d8",
+        backgroundColor: c.marcaSuave,
     },
     cardText: {
         flex: 1,
     },
     cardTitle: {
-        color: "#270d0d",
+        color: c.texto,
         fontSize: 16,
         fontWeight: "600",
     },
     cardSubtitle: {
-        color: "#8a7373",
+        color: c.textoMudo,
         fontSize: 13,
         marginTop: 2,
     },
@@ -416,7 +416,7 @@ const styles = StyleSheet.create({
         paddingBottom: 80,
     },
     mensagemVazia: {
-        color: "#8a7373",
+        color: c.textoMudo,
         fontSize: 14,
         textAlign: "center",
     },

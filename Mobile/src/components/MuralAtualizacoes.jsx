@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { View, StyleSheet, Text, TouchableOpacity, ActivityIndicator, FlatList } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useTema } from "../theme/tema.jsx";
 import { CheckCircle2, Clock, Bell, Send, AlertCircle, ChevronRight } from "lucide-react-native";
 
 function formatarData(isoString) {
@@ -16,13 +17,15 @@ function formatarData(isoString) {
     });
 }
 
-const TIPOS = {
-    Abertura: { titulo: "Requisição enviada", fundo: "#fff4d6", Icone: Send, cor: "#a5710a" },
-    Andamento: { titulo: "Requisição em andamento", fundo: "#ffd8d8", Icone: Clock, cor: "#c9131c" },
-    Finalizacao: { titulo: "Requisição concluída!", fundo: "#e3f7ea", Icone: CheckCircle2, cor: "#1f9254" },
-};
+function criarTipos(c) {
+    return {
+        Abertura: { titulo: "Requisição enviada", fundo: c.alerta.fundo, Icone: Send, cor: c.alerta.cor },
+        Andamento: { titulo: "Requisição em andamento", fundo: c.andamento.fundo, Icone: Clock, cor: c.andamento.cor },
+        Finalizacao: { titulo: "Requisição concluída!", fundo: c.concluido.fundo, Icone: CheckCircle2, cor: c.concluido.cor },
+    };
+}
 
-function CardMensagem({ titulo, subtitulo, children }) {
+function CardMensagem({ titulo, subtitulo, children, styles }) {
     return (
         <View style={styles.card}>
             <View style={[styles.iconWrapper, styles.iconWrapperNeutro]}>{children}</View>
@@ -36,12 +39,15 @@ function CardMensagem({ titulo, subtitulo, children }) {
 
 export default function MuralAtualizacoes({ atualizacoes = [], carregando = false, erro = false }) {
     const navigation = useNavigation();
+    const { cores } = useTema();
+    const styles = useMemo(() => criarStyles(cores), [cores]);
+    const TIPOS = useMemo(() => criarTipos(cores), [cores]);
 
     if (carregando) {
         return (
             <View style={styles.muralContainer}>
-                <CardMensagem titulo="Carregando atualizações...">
-                    <ActivityIndicator color="#c9131c" />
+                <CardMensagem styles={styles} titulo="Carregando atualizações...">
+                    <ActivityIndicator color={cores.marca} />
                 </CardMensagem>
             </View>
         );
@@ -51,10 +57,11 @@ export default function MuralAtualizacoes({ atualizacoes = [], carregando = fals
         return (
             <View style={styles.muralContainer}>
                 <CardMensagem
+                    styles={styles}
                     titulo="Não foi possível carregar o mural"
                     subtitulo="Tente novamente mais tarde."
                 >
-                    <AlertCircle color="#c9131c" size={22} />
+                    <AlertCircle color={cores.marca} size={22} />
                 </CardMensagem>
             </View>
         );
@@ -64,10 +71,11 @@ export default function MuralAtualizacoes({ atualizacoes = [], carregando = fals
         return (
             <View style={styles.muralContainer}>
                 <CardMensagem
+                    styles={styles}
                     titulo="Sem atualizações"
                     subtitulo="Nenhuma atualização recente nas suas requisições."
                 >
-                    <Bell color="#8a8a8a" size={22} />
+                    <Bell color={cores.iconeNeutroCor} size={22} />
                 </CardMensagem>
             </View>
         );
@@ -140,19 +148,20 @@ export default function MuralAtualizacoes({ atualizacoes = [], carregando = fals
                 }}
             >
                 <Text style={styles.textoBotaoExibirMais}>Exibir mais</Text>
-                <ChevronRight color="#c9131c" size={18} />
+                <ChevronRight color={cores.marca} size={18} />
             </TouchableOpacity>
         </View>
     );
 }
 
-const styles = StyleSheet.create({
+const criarStyles = (c) =>
+    StyleSheet.create({
     muralContainer: {
-        backgroundColor: "#fafafa",
+        backgroundColor: c.cardMural,
         borderRadius: 20,
         padding: 16,
         marginVertical: 12,
-        shadowColor: "#000",
+        shadowColor: c.sombra,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.15,
         shadowRadius: 8,
@@ -160,7 +169,7 @@ const styles = StyleSheet.create({
     },
 
     muralTitulo: {
-        color: "#270d0d",
+        color: c.texto,
         fontSize: 16,
         fontWeight: "bold",
         marginBottom: 14,
@@ -174,12 +183,12 @@ const styles = StyleSheet.create({
     card: {
         flexDirection: "row",
         alignItems: "flex-start",
-        backgroundColor: "#ffffff",
+        backgroundColor: c.superficie,
         borderRadius: 14,
         paddingHorizontal: 16,
         paddingVertical: 16,
         borderWidth: 1,
-        borderColor: "rgb(239, 239, 239)",
+        borderColor: c.bordaMural,
     },
 
     iconWrapper: {
@@ -192,7 +201,7 @@ const styles = StyleSheet.create({
     },
 
     iconWrapperNeutro: {
-        backgroundColor: "#eeeeee",
+        backgroundColor: c.iconeNeutro,
     },
 
     textWrapper: {
@@ -200,25 +209,25 @@ const styles = StyleSheet.create({
     },
 
     titulo: {
-        color: "#270d0d",
+        color: c.texto,
         fontSize: 15,
         fontWeight: "700",
     },
 
     subtitulo: {
-        color: "#5a4646",
+        color: c.textoSecundario,
         fontSize: 13,
         marginTop: 2,
     },
 
     descricao: {
-        color: "#7a6a6a",
+        color: c.textoMural,
         fontSize: 12,
         marginTop: 4,
     },
 
     data: {
-        color: "#a99",
+        color: c.textoDiscreto,
         fontSize: 11,
         marginTop: 6,
     },
@@ -230,13 +239,13 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         marginTop: 12,
         borderTopWidth: 1,
-        borderTopColor: "#eaeaea",
+        borderTopColor: c.divisor,
     },
 
     textoBotaoExibirMais: {
-        color: "#c9131c",
+        color: c.marcaTexto,
         fontSize: 14,
         fontWeight: "600",
         marginRight: 4,
     },
-});
+    });

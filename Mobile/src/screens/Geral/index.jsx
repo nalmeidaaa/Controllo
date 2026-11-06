@@ -12,17 +12,15 @@ import {
     encerrarSessaoExpirada,
 } from "../../services/requisicaoGeralService.js";
 
-const iconColor = "#c9131c";
-
 const options = [
     {
         title: "Visualizar Salas",
-        icon: <Wrench color={iconColor} size={24} />,
+        Icone: Wrench,
         route: "SalasScreen",
     },
     {
         title: "Itens pendentes",
-        icon: <ClipboardClock color={iconColor} size={24} />,
+        Icone: ClipboardClock,
         route: "ItensPendentesScreen",
     },
 ];
@@ -89,4 +87,4 @@ const styles = StyleSheet.create({
     scrollContent: {
         paddingBottom: 24, // Espaço extra ao final da rolagem
     },
-});
+});

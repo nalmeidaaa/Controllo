@@ -1,4 +1,3 @@
-
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { Usuario } from "../models/Usuario.js";
@@ -23,6 +22,16 @@ const apagarImagemDoDisco = (caminhoImagem) => {
         }
     });
 };
+
+// Dados do usuário que podem ser devolvidos ao próprio usuário (nunca o hash da senha)
+const perfilPublico = (usuario) => ({
+    id_usuario: usuario.id_usuario,
+    nome: usuario.nome,
+    cpf: usuario.cpf,
+    email: usuario.email,
+    tipo_usuario: usuario.tipo_usuario,
+    caminho_imagem: usuario.caminho_imagem
+});
 
 // Remove o arquivo enviado quando a requisição falha
 const descartarUpload = (req) => {
@@ -530,6 +539,132 @@ const usuarioController = {
 
         } catch (error) {
             console.error("ERRO AO SELECIONAR USUÁRIOS GERAIS:", error);
+
+            return res.status(500).json({
+                message: "Ocorreu um erro no servidor.",
+                error: error.message
+            });
+        }
+    },
+
+    // PERFIL DO PRÓPRIO USUÁRIO
+    // Qualquer perfil autenticado pode ver e editar a si mesmo. Aceita apenas
+    // nome, e-mail e foto: tipo de usuário, CPF e senha NÃO mudam por aqui.
+    meuPerfil: async (req, res) => {
+        try {
+            const id = req.usuario?.id;
+
+            if (!id) {
+                return res.status(401).json({
+                    message: "Não autenticado."
+                });
+            }
+
+            const usuario = await usuarioRepository.selecionarPorId(id);
+
+            if (!usuario) {
+                return res.status(404).json({
+                    message: "Usuário não encontrado.",
+                    campo: "usuario"
+                });
+            }
+
+            return res.status(200).json({ result: perfilPublico(usuario) });
+
+        } catch (error) {
+            return res.status(500).json({
+                message: "Ocorreu um erro no servidor.",
+                error: error.message
+            });
+        }
+    },
+
+    editarMeuPerfil: async (req, res) => {
+        try {
+            const id = req.usuario?.id;
+
+            if (!id) {
+                descartarUpload(req);
+                return res.status(401).json({
+                    message: "Não autenticado."
+                });
+            }
+
+            const usuarioExistente =
+                await usuarioRepository.selecionarPorId(id);
+
+            if (!usuarioExistente) {
+                descartarUpload(req);
+                return res.status(404).json({
+                    message: "Usuário não encontrado.",
+                    campo: "usuario"
+                });
+            }
+
+            const nome =
+                typeof req.body?.nome === "string"
+                    ? req.body.nome.trim()
+                    : "";
+
+            const email =
+                typeof req.body?.email === "string" &&
+                req.body.email.trim()
+                    ? req.body.email.trim()
+                    : undefined;
+
+            if (nome.length < 3) {
+                descartarUpload(req);
+                return res.status(400).json({
+                    message: "Informe o nome completo (mínimo de 3 caracteres).",
+                    campo: "nome"
+                });
+            }
+
+            const caminhoImagem = req.file
+                ? `/imagens/${req.file.filename}`
+                : usuarioExistente.caminho_imagem;
+
+            let usuario;
+
+            try {
+                // Sem cpf, tipo_usuario e senha de propósito
+                usuario = Usuario.editar(
+                    {
+                        nome,
+                        email,
+                        caminho_imagem: caminhoImagem
+                    },
+                    id
+                );
+            } catch (validacao) {
+                descartarUpload(req);
+                return res.status(400).json({
+                    message: validacao.message
+                });
+            }
+
+            await usuarioRepository.editar(id, usuario);
+
+            // Só apaga a foto antiga depois que o banco foi atualizado
+            if (req.file && usuarioExistente.caminho_imagem) {
+                apagarImagemDoDisco(usuarioExistente.caminho_imagem);
+            }
+
+            const atualizado = await usuarioRepository.selecionarPorId(id);
+
+            return res.status(200).json({ result: perfilPublico(atualizado) });
+
+        } catch (error) {
+            descartarUpload(req);
+
+            if (error.code === "ER_DUP_ENTRY") {
+                return res.status(409).json({
+                    message: "O E-mail informado já está cadastrado.",
+                    campo: "email"
+                });
+            }
+
+            console.error("ERRO AO EDITAR O PRÓPRIO PERFIL:", error);
 
             return res.status(500).json({
                 message: "Ocorreu um erro no servidor.",

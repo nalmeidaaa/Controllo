@@ -1,5 +1,5 @@
 
-import React, { useCallback, useState } from 'react';
+import React, { useMemo, useCallback, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -16,10 +16,11 @@ import { ArrowLeft, DoorOpen, MoveRight, Search, X } from 'lucide-react-native';
 import { obterToken } from '../../storage/usuario/dados.storage.js';
 import { buscarSalas } from '../../services/salaService.js';
 import { BASE_URL } from "../../services/api.js";
-
-const iconColor = '#c9131c';
+import { useTema } from "../../theme/tema.jsx";
 
 export default function SalasScreen() {
+    const { cores } = useTema();
+    const styles = useMemo(() => criarStyles(cores), [cores]);
   const navigation = useNavigation();
 
   const [salas, setSalas] = useState([]);
@@ -77,7 +78,7 @@ export default function SalasScreen() {
             activeOpacity={0.8}
             onPress={() => navigation.goBack()}
           >
-            <ArrowLeft color={iconColor} size={22} />
+            <ArrowLeft color={cores.marca} size={22} />
           </TouchableOpacity>
 
           <View style={styles.heading}>
@@ -88,13 +89,12 @@ export default function SalasScreen() {
 
         {/* Barra de pesquisa */}
         <View style={styles.barraPesquisa}>
-          <Search color="#8a7373" size={20} />
+          <Search color={cores.textoMudo}size={20} />
 
           <TextInput
             style={styles.inputPesquisa}
             placeholder="Pesquisar sala..."
-            placeholderTextColor="#8a7373"
-            value={pesquisa}
+            placeholderTextColor={cores.textoMudo}value={pesquisa}
             onChangeText={setPesquisa}
             autoCapitalize="none"
             returnKeyType="search"
@@ -105,14 +105,14 @@ export default function SalasScreen() {
               onPress={() => setPesquisa('')}
               activeOpacity={0.7}
             >
-              <X color="#8a7373" size={20} />
+              <X color={cores.textoMudo}size={20} />
             </TouchableOpacity>
           )}
         </View>
 
         {carregando ? (
           <View style={styles.centro}>
-            <ActivityIndicator size="large" color={iconColor} />
+            <ActivityIndicator size="large" color={cores.marca} />
           </View>
         ) : erro ? (
           <View style={styles.centro}>
@@ -158,7 +158,7 @@ export default function SalasScreen() {
                     )}
                   </View>
 
-                  <MoveRight color="#b01d2e" size={22} />
+                  <MoveRight color={cores.marcaEscura}size={22} />
                 </View>
 
                 {/* Imagem da sala */}
@@ -172,7 +172,7 @@ export default function SalasScreen() {
                   />
                 ) : (
                   <View style={styles.placeholderRetangular}>
-                    <DoorOpen color={iconColor} size={32} />
+                    <DoorOpen color={cores.marca} size={32} />
 
                     <Text style={styles.placeholderTexto}>
                       Sem imagem disponível
@@ -188,10 +188,10 @@ export default function SalasScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const criarStyles = (c) => StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#f4f7f7',
+    backgroundColor: c.fundo,
   },
 
   container: {
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 12,
-    backgroundColor: '#ffd8d8',
+    backgroundColor: c.marcaSuave,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 14,
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
   },
 
   eyebrow: {
-    color: '#b01d2e',
+    color: c.marcaEscura,
     fontSize: 11,
     fontWeight: '600',
     textTransform: 'uppercase',
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    color: '#2d0e0e',
+    color: c.texto,
     fontSize: 24,
     fontWeight: '600',
     letterSpacing: -0.5,
@@ -240,19 +240,19 @@ const styles = StyleSheet.create({
   barraPesquisa: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#ffffff',
+    backgroundColor: c.superficie,
     borderRadius: 12,
     paddingHorizontal: 16,
     height: 50,
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: '#fce9e9',
+    borderColor: c.borda,
   },
 
   inputPesquisa: {
     flex: 1,
     marginLeft: 10,
-    color: '#2d0e0e',
+    color: c.texto,
     fontSize: 14,
     paddingVertical: 0,
   },
@@ -264,12 +264,12 @@ const styles = StyleSheet.create({
 
   card: {
     flexDirection: 'column',
-    backgroundColor: '#ffffff',
+    backgroundColor: c.superficie,
     borderRadius: 14,
     padding: 20,
     borderWidth: 1,
-    borderColor: '#fce9e9',
-    shadowColor: '#101010',
+    borderColor: c.borda,
+    shadowColor: c.sombra,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.08,
     shadowRadius: 3,
@@ -287,13 +287,13 @@ const styles = StyleSheet.create({
   },
 
   cardTitle: {
-    color: '#270d0d',
+    color: c.texto,
     fontSize: 18,
     fontWeight: '600',
   },
 
   cardSubtitle: {
-    color: '#8a7373',
+    color: c.textoMudo,
     fontSize: 14,
     marginTop: 2,
   },
@@ -302,24 +302,24 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 160,
     borderRadius: 10,
-    backgroundColor: '#ffd8d8',
+    backgroundColor: c.marcaSuave,
   },
 
   placeholderRetangular: {
     width: '100%',
     height: 160,
     borderRadius: 10,
-    backgroundColor: '#fff1f1',
+    backgroundColor: c.fundoRosado,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#fce9e9',
+    borderColor: c.borda,
     borderStyle: 'dashed',
     gap: 8,
   },
 
   placeholderTexto: {
-    color: '#8a7373',
+    color: c.textoMudo,
     fontSize: 13,
   },
 
@@ -331,7 +331,7 @@ const styles = StyleSheet.create({
   },
 
   mensagemVazia: {
-    color: '#8a7373',
+    color: c.textoMudo,
     fontSize: 14,
     textAlign: 'center',
   },

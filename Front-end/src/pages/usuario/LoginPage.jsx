@@ -112,24 +112,26 @@ export default function LoginPage({ onLoginSucesso }) {
                                         onChange={(e) => setSenha(e.target.value)}
                                         style={{ paddingRight: '40px' }}
                                     />
-                                    <button 
-                                        type="button" 
-                                        onClick={() => setMostrarSenha(!mostrarSenha)}
-                                        style={{ 
-                                            background: 'none', 
-                                            border: 'none', 
-                                            cursor: 'pointer', 
-                                            position: 'absolute', 
-                                            right: '12px', 
-                                            color: '#6c757d', 
-                                            display: 'flex', 
-                                            alignItems: 'center',
-                                            padding: 0
-                                        }}
-                                        title={mostrarSenha ? "Ocultar senha" : "Ver senha"}
-                                    >
-                                        {mostrarSenha ? <IoEyeOutline size={18} /> : <IoEyeOffOutline size={18} />}
-                                    </button>
+                                   <button
+  type="button"
+  onClick={() => setMostrarSenha(!mostrarSenha)}
+  style={{
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    position: 'absolute',
+    right: '12px',
+    color: '#6c757d',
+    display: 'flex',
+    alignItems: 'center',
+    padding: 0
+  }}
+  title={mostrarSenha ? "Ocultar senha" : "Ver senha"}
+>
+  {/* Ajustado aqui: Quando mostrarSenha for true (tipo text), renderiza o olho aberto. Quando for false (tipo password), renderiza o olho cortado */}
+  {mostrarSenha ? <IoEyeOutline size={18} /> : <IoEyeOffOutline size={18} />}
+</button>
+
                                 </div>
                             </div>
 
