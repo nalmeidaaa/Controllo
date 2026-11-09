@@ -15,6 +15,7 @@ import {
     IoEyeOffOutline
 } from 'react-icons/io5';
 import { criarUsuario } from '../../services/usuarioService.js';
+import { gsap, useGSAP } from '../../animations/gsap.js';
 import './SetupPage.css';
 
 const ESTADO_INICIAL = {
@@ -27,7 +28,6 @@ const ESTADO_INICIAL = {
     imagem: null
 };
 
-// Função para validar o CPF (matematicamente)
 function validarCPF(cpf) {
     cpf = cpf.replace(/[^\d]+/g, '');
     if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
@@ -53,16 +53,15 @@ function validarCPF(cpf) {
     return true;
 }
 
-// Função para mascarar o CPF (000.000.000-00)
 function mascaraCPF(valor) {
     return valor
         .replace(/\D/g, '')
         .replace(/(\d{3})(\d)/, '$1.$2')
         .replace(/(\d{3})(\d)/, '$1.$2')
-        .replace(/(\d{3})(\d{1,2})/, '$1-$2') .replace(/(-\d{2})\d+$/, '$1');
+        .replace(/(\d{3})(\d{1,2})/, '$1-$2')
+        .replace(/(-\d{2})\d+$/, '$1');
 }
 
-// Objeto de checagem individual para os requisitos da senha
 function checarRequisitosSenha(senha) {
     return {
         tamanho: senha.length >= 8,
@@ -79,13 +78,41 @@ export default function SetupPage({ onSetupConcluido }) {
     const [salvando, setSalvando] = useState(false);
     const [erro, setErro] = useState([]);
     const [camposErro, setCamposErro] = useState([]);
+    const [introAtiva, setIntroAtiva] = useState(true);
 
-    // Estados para controlar a visibilidade das senhas
     const [mostrarSenha, setMostrarSenha] = useState(false);
     const [mostrarConfirmarSenha, setMostrarConfirmarSenha] = useState(false);
 
     const requisitosSenha = checarRequisitosSenha(form.senha);
     const senhaValida = Object.values(requisitosSenha).every(Boolean);
+
+    // Animação de Entrada Inicial com o SVG do Controllo
+    useGSAP(() => {
+        const tl = gsap.timeline({
+            onComplete: () => {
+                setIntroAtiva(false);
+            }
+        });
+
+        tl.from('.setup-intro-logo', {
+            scale: 0,
+            rotation: -180,
+            duration: 0.8,
+            ease: 'back.out(2)'
+        })
+        .to('.setup-intro-title', {
+            opacity: 1,
+            y: 0,
+            duration: 0.6,
+            ease: 'power3.out'
+        }, '-=0.3')
+        .to('.setup-intro-overlay', {
+            opacity: 0,
+            duration: 0.5,
+            delay: 0.6,
+            ease: 'power2.inOut'
+        });
+    }, []);
 
     function atualizar(campo, valor) {
         const valorTratado = campo === 'cpf' ? mascaraCPF(valor) : valor;
@@ -196,12 +223,23 @@ export default function SetupPage({ onSetupConcluido }) {
 
     return (
         <div className="setup-wrapper">
+            {introAtiva && (
+                <div className="setup-intro-overlay">
+                    <div className="setup-intro-logo">
+                        <img src="../assets/controlloalt.svg" alt="Controllo Logo" />
+                    </div>
+                    <div className="setup-intro-title">Controllo</div>
+                </div>
+            )}
+
             <div className="setup-brand-panel">
                 <div className="brand-glow-effect"></div>
                 
                 <div className="brand-content">
                     <div className="brand-header">
-                        <div className="brand-logo-box">C</div>
+                        <div className="brand-logo-box">
+                            <img src="../assets/controlloalt.svg" alt="Controllo Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                        </div>
                         <span className="brand-logo-text">Controllo</span>
                     </div>
 
@@ -335,7 +373,6 @@ export default function SetupPage({ onSetupConcluido }) {
                         </div>
 
                         <div className="setup-form-row">
-                            {/* Campo Senha */}
                             <div className="setup-input-group">
                                 <label className="setup-input-label">
                                     Senha <span className="required-star">*</span>
@@ -380,7 +417,6 @@ export default function SetupPage({ onSetupConcluido }) {
                                 </div>
                             </div>
 
-                            {/* Campo Confirmar Senha */}
                             <div className="setup-input-group">
                                 <label className="setup-input-label">
                                     Confirmar Senha <span className="required-star">*</span>

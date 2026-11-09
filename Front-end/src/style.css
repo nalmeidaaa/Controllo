@@ -131,8 +131,8 @@ small {
 .card-login-logo .logo-mark {
     width: 36px;
     height: 36px;
-    background: var(--vermelho-principal);
-    border-radius: 9px;
+    background: transparent; /* Remove o quadrado colorido de fundo */
+    border-radius: 0;        /* Remove o arredondamento anterior */
     display: flex;
     align-items: center;
     justify-content: center;

@@ -786,7 +786,7 @@ export default function SalasPage({ navegarPara }) {
                 <input
                     type="text"
                     className="filtros-input"
-                    placeholder="Pesquisar sala pelo nome..."
+                    placeholder="Pesquisar sala..."
                     value={termoBusca}
                     onChange={(e) => {
                         setTermoBusca(e.target.value);

@@ -287,15 +287,30 @@ export async function buscarMeuPerfil(token) {
 }
 
 // formData aceita: nome, email e imagem. Tipo de conta e CPF não mudam por aqui.
+// Envio de foto pode demorar mais que o padrão (10s), por isso o timeout é maior.
+// Não definimos Content-Type manualmente: o React Native monta o multipart com o boundary correto.
+const TIMEOUT_UPLOAD = 60000;
+
 export async function atualizarMeuPerfil(token, formData) {
     if (!token) throw new Error("Erro: token inválido");
 
-    const resposta = await api.put("/usuarios/me", formData, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-        },
-    });
+    const enviar = () =>
+        api.put("/usuarios/me", formData, {
+            headers: { Authorization: `Bearer ${token}` },
+            timeout: TIMEOUT_UPLOAD,
+        });
+
+    let resposta;
+    try {
+        resposta = await enviar();
+    } catch (error) {
+        // Sem resposta do servidor (conexão ainda acordando): tenta mais uma vez.
+        // Respostas de erro do servidor (400, 401, 409...) não são repetidas.
+        if (error?.response) throw error;
+
+        await new Promise((resolver) => setTimeout(resolver, 1500));
+        resposta = await enviar();
+    }
 
     return resposta.data;
 }

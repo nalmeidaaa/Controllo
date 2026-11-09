@@ -1,16 +1,8 @@
 import React, { useMemo, useCallback, useState } from "react";
-import {
-    View,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    FlatList,
-    ActivityIndicator,
-    RefreshControl,
-} from "react-native";
+import { View, Text, StyleSheet, FlatList, RefreshControl } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
-import { ArrowLeft, CheckCircle2, Clock } from "lucide-react-native";
+import { CheckCircle2, Clock } from "lucide-react-native";
 
 import { obterToken } from "../../storage/usuario/dados.storage.js";
 import {
@@ -19,6 +11,11 @@ import {
     encerrarSessaoExpirada,
 } from "../../services/requisicaoGeralService.js";
 import BadgeStatusRequisicao from "../../components/geral/BadgeStatusRequisicao.jsx";
+import CabecalhoTela from "../../components/shared/CabecalhoTela.jsx";
+import EstadoVazio from "../../components/shared/EstadoVazio.jsx";
+import EntradaAnimada from "../../animations/EntradaAnimada.jsx";
+import PressionavelAnimado from "../../animations/PressionavelAnimado.jsx";
+import { EsqueletoCartaoLinha } from "../../animations/Esqueleto.jsx";
 import { useTema } from "../../theme/tema.jsx";
 
 function formatarData(isoString) {
@@ -76,96 +73,69 @@ export default function ItensPendentesScreen() {
         }, [])
     );
 
-    function renderItem({ item }) {
+    function renderItem({ item, index }) {
         const concluida = item.status_requisicao === "Concluído";
 
         return (
-            <TouchableOpacity
-                style={styles.card}
-                activeOpacity={0.8}
-                onPress={() =>
-                    navigation.navigate("RequisicaoDetalheScreen", {
-                        idRequisicao: item.id_requisicao,
-                    })
-                }
-            >
-                <View
-                    style={[
-                        styles.iconWrapper,
-                        concluida ? styles.iconWrapperOk : styles.iconWrapperPendente,
-                    ]}
+            <EntradaAnimada atraso={Math.min(index, 8) * 70} distancia={14}>
+                <PressionavelAnimado
+                    style={styles.card}
+                    onPress={() =>
+                        navigation.navigate("RequisicaoDetalheScreen", {
+                            idRequisicao: item.id_requisicao,
+                        })
+                    }
                 >
-                    {concluida ? (
-                        <CheckCircle2 color={cores.concluido.cor}size={22} />
-                    ) : (
-                        <Clock color={cores.marca}size={22} />
-                    )}
-                </View>
+                    <View
+                        style={[
+                            styles.iconWrapper,
+                            concluida ? styles.iconWrapperOk : styles.iconWrapperPendente,
+                        ]}
+                    >
+                        {concluida ? (
+                            <CheckCircle2 color={cores.concluido.cor} size={22} />
+                        ) : (
+                            <Clock color={cores.marca} size={22} />
+                        )}
+                    </View>
 
-                <View style={styles.cardText}>
-                    <Text style={styles.cardTitle} numberOfLines={1}>
-                        {item.patrimonio?.nome}
-                        {item.patrimonio?.numero_patrimonio
-                            ? ` • Nº ${item.patrimonio.numero_patrimonio}`
-                            : ""}
-                    </Text>
+                    <View style={styles.cardText}>
+                        <EstadoTexto
+                            titulo={item.patrimonio?.nome}
+                            numero={item.patrimonio?.numero_patrimonio}
+                            sala={item.sala?.descricao}
+                            descricao={item.descricao}
+                            data={
+                                concluida
+                                    ? `Concluída em ${formatarData(item.data_conclusao)}`
+                                    : `Criada em ${formatarData(item.abertura)}`
+                            }
+                            styles={styles}
+                        />
+                    </View>
 
-                    {!!item.sala?.descricao && (
-                        <Text style={styles.cardSubtitle}>{item.sala.descricao}</Text>
-                    )}
-
-                    {!!item.descricao && (
-                        <Text style={styles.cardDescricao} numberOfLines={2}>
-                            {item.descricao}
-                        </Text>
-                    )}
-
-                    <Text style={styles.cardData}>
-                        {concluida
-                            ? `Concluída em ${formatarData(item.data_conclusao)}`
-                            : `Criada em ${formatarData(item.abertura)}`}
-                    </Text>
-                </View>
-
-                <BadgeStatusRequisicao status={item.status_requisicao} />
-            </TouchableOpacity>
+                    <BadgeStatusRequisicao status={item.status_requisicao} />
+                </PressionavelAnimado>
+            </EntradaAnimada>
         );
     }
 
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
-                <View style={styles.headerRow}>
-                    <TouchableOpacity
-                        style={styles.voltarButton}
-                        activeOpacity={0.8}
-                        onPress={() => navigation.goBack()}
-                    >
-                        <ArrowLeft color={cores.marca} size={22} />
-                    </TouchableOpacity>
-
-                    <View style={styles.heading}>
-                        <Text style={styles.eyebrow}>Controllo</Text>
-                        <Text style={styles.title}>Itens pendentes</Text>
-                    </View>
-                </View>
+                <CabecalhoTela titulo="Itens pendentes" onVoltar={() => navigation.goBack()} />
 
                 {carregando ? (
-                    <View style={styles.centro}>
-                        <ActivityIndicator size="large" color={cores.marca} />
-                    </View>
+                    <EntradaAnimada>
+                        <EsqueletoCartaoLinha quantidade={4} />
+                    </EntradaAnimada>
                 ) : erro ? (
-                    <View style={styles.centro}>
-                        <Text style={styles.mensagemVazia}>
-                            Não foi possível carregar as requisições.
-                        </Text>
-                        <TouchableOpacity
-                            style={styles.botaoTentar}
-                            onPress={() => carregarRequisicoes()}
-                        >
-                            <Text style={styles.botaoTentarTexto}>Tentar novamente</Text>
-                        </TouchableOpacity>
-                    </View>
+                    <EstadoVazio
+                        erro
+                        titulo="Não foi possível carregar as requisições"
+                        acaoTexto="Tentar novamente"
+                        onAcao={() => carregarRequisicoes()}
+                    />
                 ) : (
                     <FlatList
                         data={requisicoes}
@@ -183,9 +153,11 @@ export default function ItensPendentesScreen() {
                             />
                         }
                         ListEmptyComponent={
-                            <Text style={styles.mensagemVazia}>
-                                Nenhuma requisição foi feita até o momento
-                            </Text>
+                            <EstadoVazio
+                                compacto
+                                titulo="Nenhuma requisição"
+                                descricao="Nenhuma requisição foi feita até o momento."
+                            />
                         }
                         renderItem={renderItem}
                     />
@@ -195,74 +167,59 @@ export default function ItensPendentesScreen() {
     );
 }
 
-const criarStyles = (c) => StyleSheet.create({
-    safeArea: { flex: 1, backgroundColor: c.fundo },
-    container: { flex: 1, paddingHorizontal: 28, paddingTop: 40 },
-    headerRow: { flexDirection: "row", alignItems: "center", marginBottom: 28 },
-    voltarButton: {
-        width: 44,
-        height: 44,
-        borderRadius: 12,
-        backgroundColor: c.marcaSuave,
-        alignItems: "center",
-        justifyContent: "center",
-        marginRight: 14,
-    },
-    heading: { flex: 1 },
-    eyebrow: {
-        color: c.marcaEscura,
-        fontSize: 11,
-        fontWeight: "600",
-        textTransform: "uppercase",
-        letterSpacing: 0.7,
-    },
-    title: {
-        color: c.texto,
-        fontSize: 24,
-        fontWeight: "600",
-        letterSpacing: -0.5,
-        marginTop: 4,
-    },
-    lista: { gap: 14, paddingBottom: 40 },
-    listaVazia: { flexGrow: 1, justifyContent: "center", paddingBottom: 80 },
-    card: {
-        alignItems: "flex-start",
-        flexDirection: "row",
-        backgroundColor: c.superficie,
-        borderRadius: 14,
-        paddingHorizontal: 18,
-        paddingVertical: 16,
-        borderWidth: 1,
-        borderColor: c.borda,
-        shadowColor: c.sombra,
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.08,
-        shadowRadius: 3,
-        elevation: 2,
-    },
-    iconWrapper: {
-        width: 42,
-        height: 42,
-        borderRadius: 10,
-        alignItems: "center",
-        justifyContent: "center",
-        marginRight: 14,
-    },
-    iconWrapperOk: { backgroundColor: c.concluido.fundo },
-    iconWrapperPendente: { backgroundColor: c.marcaSuave },
-    cardText: { flex: 1, marginRight: 8 },
-    cardTitle: { color: c.texto, fontSize: 15, fontWeight: "600" },
-    cardSubtitle: { color: c.textoMudo, fontSize: 12, marginTop: 2 },
-    cardDescricao: { color: c.textoSecundario, fontSize: 12, marginTop: 4 },
-    cardData: { color: c.textoDiscreto, fontSize: 11, marginTop: 6 },
-    centro: { flex: 1, alignItems: "center", justifyContent: "center", paddingBottom: 80 },
-    mensagemVazia: { color: c.textoMudo, fontSize: 14, textAlign: "center" },
-    botaoTentar: {
-        marginTop: 14,
-        paddingHorizontal: 18,
-        paddingVertical: 10,
-        borderRadius: 10,
-        backgroundColor: c.marca,
-    },
-    botaoTentarTexto: { color: "#ffffff", fontSize: 14, fontWeight: "600" },
-});
+/* Textos do cartão, em um componente próprio para manter o renderItem enxuto */
+function EstadoTexto({ titulo, numero, sala, descricao, data, styles }) {
+    return (
+        <>
+            <Text style={styles.cardTitle} numberOfLines={1}>
+                {titulo}
+                {numero ? ` • Nº ${numero}` : ""}
+            </Text>
+            {!!sala && <Text style={styles.cardSubtitle}>{sala}</Text>}
+            {!!descricao && (
+                <Text style={styles.cardDescricao} numberOfLines={2}>
+                    {descricao}
+                </Text>
+            )}
+            <Text style={styles.cardData}>{data}</Text>
+        </>
+    );
+}
+
+const criarStyles = (c) =>
+    StyleSheet.create({
+        safeArea: { flex: 1, backgroundColor: c.fundo },
+        container: { flex: 1, paddingHorizontal: 28, paddingTop: 40 },
+        lista: { gap: 14, paddingBottom: 40 },
+        listaVazia: { flexGrow: 1, justifyContent: "center", paddingBottom: 80 },
+        card: {
+            alignItems: "flex-start",
+            flexDirection: "row",
+            backgroundColor: c.superficie,
+            borderRadius: 14,
+            paddingHorizontal: 18,
+            paddingVertical: 16,
+            borderWidth: 1,
+            borderColor: c.borda,
+            shadowColor: c.sombra,
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.08,
+            shadowRadius: 3,
+            elevation: 2,
+        },
+        iconWrapper: {
+            width: 42,
+            height: 42,
+            borderRadius: 10,
+            alignItems: "center",
+            justifyContent: "center",
+            marginRight: 14,
+        },
+        iconWrapperOk: { backgroundColor: c.concluido.fundo },
+        iconWrapperPendente: { backgroundColor: c.marcaSuave },
+        cardText: { flex: 1, marginRight: 8 },
+        cardTitle: { color: c.texto, fontSize: 15, fontWeight: "600" },
+        cardSubtitle: { color: c.textoMudo, fontSize: 12, marginTop: 2 },
+        cardDescricao: { color: c.textoSecundario, fontSize: 12, marginTop: 4 },
+        cardData: { color: c.textoDiscreto, fontSize: 11, marginTop: 6 },
+    });

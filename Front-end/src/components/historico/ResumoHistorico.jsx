@@ -1,11 +1,12 @@
 import { ACOES, LISTA_ACOES } from './rotulos.js';
+import NumeroAnimado from '../../animations/NumeroAnimado.jsx';
 
 /**
  * Cards de resumo que também funcionam como filtro de ação:
  * clicar em um card filtra a lista; clicar em "Todas" (ou no card ativo) limpa.
  */
 export default function ResumoHistorico({ contagens, total, carregando, acaoAtiva, onSelecionar }) {
-    const numero = (v) => (carregando || v == null ? <span className="hist-esqueleto hist-esqueleto--num" /> : v.toLocaleString('pt-BR'));
+    const numero = (v) => (carregando || v == null ? <span className="hist-esqueleto hist-esqueleto--num" /> : <NumeroAnimado valor={v} />);
 
     return (
         <div className="hist-resumo-cards" role="group" aria-label="Filtrar por ação">

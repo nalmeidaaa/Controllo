@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
+import PressionavelAnimado from "../../animations/PressionavelAnimado.jsx";
 import BadgeStatusRequisicao from "./BadgeStatusRequisicao.jsx";
 import BadgePrioridade from "./BadgePrioridade.jsx";
 import { useTema } from "../../theme/tema.jsx";
@@ -21,7 +22,7 @@ export default function CardRequisicao({ requisicao, onPress }) {
     const concluida = requisicao.status_requisicao === "Concluído";
 
     return (
-        <TouchableOpacity style={styles.card} activeOpacity={0.8} onPress={onPress}>
+        <PressionavelAnimado style={styles.card} onPress={onPress} accessibilityLabel={requisicao.patrimonio?.nome || "Requisição"}>
             <View style={styles.topo}>
                 <View style={styles.flex}>
                     <Text style={styles.titulo} numberOfLines={1}>
@@ -58,7 +59,7 @@ export default function CardRequisicao({ requisicao, onPress }) {
                     </Text>
                 </View>
             </View>
-        </TouchableOpacity>
+        </PressionavelAnimado>
     );
 }
 

@@ -1,16 +1,7 @@
 import React, { useMemo, useCallback, useRef, useState } from "react";
-import {
-    View,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    FlatList,
-    ActivityIndicator,
-    RefreshControl,
-} from "react-native";
+import { View, StyleSheet, Text, FlatList, ActivityIndicator, RefreshControl } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
-import { ArrowLeft } from "lucide-react-native";
 
 import { obterToken } from "../../storage/usuario/dados.storage.js";
 import {
@@ -19,6 +10,11 @@ import {
     encerrarSessaoExpirada,
 } from "../../services/requisicaoManutencaoService.js";
 import CardRequisicao from "../../components/manutencao/CardRequisicao.jsx";
+import CabecalhoTela from "../../components/shared/CabecalhoTela.jsx";
+import EstadoVazio from "../../components/shared/EstadoVazio.jsx";
+import EntradaAnimada from "../../animations/EntradaAnimada.jsx";
+import PressionavelAnimado from "../../animations/PressionavelAnimado.jsx";
+import { EsqueletoCartaoLinha } from "../../animations/Esqueleto.jsx";
 import { useTema } from "../../theme/tema.jsx";
 
 const LIMITE = 10;
@@ -128,152 +124,121 @@ export default function ManutencaoRequisicoesScreen() {
         setFiltro(valor); // o useFocusEffect recarrega
     }
 
+    function renderItem({ item, index }) {
+        return (
+            <EntradaAnimada atraso={Math.min(index, 8) * 70} distancia={14}>
+                <CardRequisicao
+                    requisicao={item}
+                    onPress={() =>
+                        navigation.navigate("ManutencaoRequisicaoDetalheScreen", {
+                            idRequisicao: item.id_requisicao,
+                        })
+                    }
+                />
+            </EntradaAnimada>
+        );
+    }
+
+    let conteudo;
+    if (carregando) {
+        conteudo = (
+            <EntradaAnimada>
+                <EsqueletoCartaoLinha quantidade={4} />
+            </EntradaAnimada>
+        );
+    } else if (erro) {
+        conteudo = (
+            <EstadoVazio
+                erro
+                titulo="Não foi possível carregar as requisições"
+                acaoTexto="Tentar novamente"
+                onAcao={() => carregar({ status: filtro })}
+            />
+        );
+    } else {
+        conteudo = (
+            <FlatList
+                data={requisicoes}
+                keyExtractor={(item) => String(item.id_requisicao)}
+                contentContainerStyle={[
+                    styles.lista,
+                    requisicoes.length === 0 && styles.listaVazia,
+                ]}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={atualizando}
+                        onRefresh={() => carregar({ status: filtro, puxar: true })}
+                        colors={[cores.marca]}
+                        tintColor={cores.marca}
+                    />
+                }
+                onEndReached={carregarMais}
+                onEndReachedThreshold={0.4}
+                ListEmptyComponent={
+                    <EstadoVazio
+                        compacto
+                        titulo="Nenhuma requisição encontrada"
+                        descricao="Tente outro filtro para ver outras requisições."
+                    />
+                }
+                ListFooterComponent={
+                    carregandoMais ? (
+                        <ActivityIndicator style={styles.rodape} color={cores.marca} />
+                    ) : null
+                }
+                renderItem={renderItem}
+            />
+        );
+    }
+
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
-                <View style={styles.headerRow}>
-                    <TouchableOpacity
-                        style={styles.voltarButton}
-                        activeOpacity={0.8}
-                        onPress={() => navigation.goBack()}
-                    >
-                        <ArrowLeft color={cores.marca} size={22} />
-                    </TouchableOpacity>
+                <CabecalhoTela titulo="Itens pendentes" onVoltar={() => navigation.goBack()} marginBottom={20} />
 
-                    <View style={styles.heading}>
-                        <Text style={styles.eyebrow}>Controllo</Text>
-                        <Text style={styles.title}>Itens pendentes</Text>
-                    </View>
-                </View>
-
-                <View style={styles.chips}>
+                {/* Filtros em forma de chips: o ativo ganha a cor da marca */}
+                <EntradaAnimada atraso={100} distancia={10} style={styles.chips}>
                     {FILTROS.map((f) => {
                         const ativo = f.valor === filtro;
                         return (
-                            <TouchableOpacity
+                            <PressionavelAnimado
                                 key={f.label}
-                                activeOpacity={0.8}
+                                escala={0.94}
                                 style={[styles.chip, ativo && styles.chipAtivo]}
                                 onPress={() => trocarFiltro(f.valor)}
+                                accessibilityLabel={`Filtrar por ${f.label}`}
                             >
                                 <Text style={[styles.chipTexto, ativo && styles.chipTextoAtivo]}>
                                     {f.label}
                                 </Text>
-                            </TouchableOpacity>
+                            </PressionavelAnimado>
                         );
                     })}
-                </View>
+                </EntradaAnimada>
 
-                {carregando ? (
-                    <View style={styles.centro}>
-                        <ActivityIndicator size="large" color={cores.marca} />
-                    </View>
-                ) : erro ? (
-                    <View style={styles.centro}>
-                        <Text style={styles.mensagemVazia}>
-                            Não foi possível carregar as requisições.
-                        </Text>
-                        <TouchableOpacity
-                            style={styles.botaoTentar}
-                            onPress={() => carregar({ status: filtro })}
-                        >
-                            <Text style={styles.botaoTentarTexto}>Tentar novamente</Text>
-                        </TouchableOpacity>
-                    </View>
-                ) : (
-                    <FlatList
-                        data={requisicoes}
-                        keyExtractor={(item) => String(item.id_requisicao)}
-                        contentContainerStyle={[
-                            styles.lista,
-                            requisicoes.length === 0 && styles.listaVazia,
-                        ]}
-                        refreshControl={
-                            <RefreshControl
-                                refreshing={atualizando}
-                                onRefresh={() => carregar({ status: filtro, puxar: true })}
-                                colors={[cores.marca]}
-                                tintColor={cores.marca}
-                            />
-                        }
-                        onEndReached={carregarMais}
-                        onEndReachedThreshold={0.4}
-                        ListEmptyComponent={
-                            <Text style={styles.mensagemVazia}>Nenhuma requisição encontrada</Text>
-                        }
-                        ListFooterComponent={
-                            carregandoMais ? (
-                                <ActivityIndicator style={styles.rodape} color={cores.marca} />
-                            ) : null
-                        }
-                        renderItem={({ item }) => (
-                            <CardRequisicao
-                                requisicao={item}
-                                onPress={() =>
-                                    navigation.navigate("ManutencaoRequisicaoDetalheScreen", {
-                                        idRequisicao: item.id_requisicao,
-                                    })
-                                }
-                            />
-                        )}
-                    />
-                )}
+                {conteudo}
             </View>
         </SafeAreaView>
     );
 }
 
-const criarStyles = (c) => StyleSheet.create({
-    safeArea: { flex: 1, backgroundColor: c.fundo },
-    container: { flex: 1, paddingHorizontal: 28, paddingTop: 40 },
-    headerRow: { flexDirection: "row", alignItems: "center", marginBottom: 20 },
-    voltarButton: {
-        width: 44,
-        height: 44,
-        borderRadius: 12,
-        backgroundColor: c.marcaSuave,
-        alignItems: "center",
-        justifyContent: "center",
-        marginRight: 14,
-    },
-    heading: { flex: 1 },
-    eyebrow: {
-        color: c.marcaEscura,
-        fontSize: 11,
-        fontWeight: "600",
-        textTransform: "uppercase",
-        letterSpacing: 0.7,
-    },
-    title: {
-        color: c.texto,
-        fontSize: 24,
-        fontWeight: "600",
-        letterSpacing: -0.5,
-        marginTop: 4,
-    },
-    chips: { flexDirection: "row", flexWrap: "wrap", gap: 8, marginBottom: 18 },
-    chip: {
-        paddingHorizontal: 14,
-        paddingVertical: 8,
-        borderRadius: 999,
-        borderWidth: 1,
-        borderColor: c.bordaInput,
-        backgroundColor: c.fundoCampo,
-    },
-    chipAtivo: { backgroundColor: c.marca, borderColor: c.marca },
-    chipTexto: { color: c.textoSecundario, fontSize: 13, fontWeight: "600" },
-    chipTextoAtivo: { color: "#ffffff" },
-    lista: { gap: 14, paddingBottom: 40 },
-    listaVazia: { flexGrow: 1, justifyContent: "center", paddingBottom: 80 },
-    rodape: { paddingVertical: 16 },
-    centro: { flex: 1, alignItems: "center", justifyContent: "center", paddingBottom: 80 },
-    mensagemVazia: { color: c.textoMudo, fontSize: 14, textAlign: "center" },
-    botaoTentar: {
-        marginTop: 14,
-        paddingHorizontal: 18,
-        paddingVertical: 10,
-        borderRadius: 10,
-        backgroundColor: c.marca,
-    },
-    botaoTentarTexto: { color: "#ffffff", fontSize: 14, fontWeight: "600" },
-});
+const criarStyles = (c) =>
+    StyleSheet.create({
+        safeArea: { flex: 1, backgroundColor: c.fundo },
+        container: { flex: 1, paddingHorizontal: 28, paddingTop: 40 },
+        chips: { flexDirection: "row", flexWrap: "wrap", gap: 8, marginBottom: 18 },
+        chip: {
+            paddingHorizontal: 14,
+            paddingVertical: 8,
+            borderRadius: 999,
+            borderWidth: 1,
+            borderColor: c.bordaInput,
+            backgroundColor: c.fundoCampo,
+        },
+        chipAtivo: { backgroundColor: c.marca, borderColor: c.marca },
+        chipTexto: { color: c.textoSecundario, fontSize: 13, fontWeight: "600" },
+        chipTextoAtivo: { color: "#ffffff" },
+        lista: { gap: 14, paddingBottom: 40 },
+        listaVazia: { flexGrow: 1, justifyContent: "center", paddingBottom: 80 },
+        rodape: { paddingVertical: 16 },
+    });

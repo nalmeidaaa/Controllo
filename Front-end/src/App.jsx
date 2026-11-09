@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { estaLogado, deslogarUsuario, obterToken, obterUsuarioAtual } from './storage/usuario/dados.storage.js';
+import { gsap, useGSAP } from './animations/gsap.js';
 import { contarPendentes } from './services/usuarioService.js';
 import Navbar from './components/layout/Navbar.jsx';
 import LoginPage from './pages/usuario/LoginPage.jsx';
@@ -116,6 +117,17 @@ export default function App() {
         editarSala: (id) => mudarPagina('editarSala', { id }),
         visualizarSala: (id) => mudarPagina('visualizarSala', { id }),
     };
+
+    // Transição suave a cada troca de página (e na entrada do sistema)
+    useGSAP(() => {
+        if (!logado) return;
+        gsap.fromTo(
+            '#app',
+            { opacity: 0, y: 18 },
+            { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out', clearProps: 'transform,opacity' }
+        );
+        window.scrollTo({ top: 0 });
+    }, { dependencies: [pagina, logado] });
 
     if (!logado) {
         return (

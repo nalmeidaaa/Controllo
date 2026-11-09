@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "controllo",
-    "slug": "controllo",
+    "name": "Controllo",
+    "slug": "Controllo",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -13,7 +13,7 @@
       "backgroundColor": "#ffffff"
     },
     "android": {
-      "package": "com.seu_nome.sensoresaula1",
+      "package": "com.seuusuario.controllo",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -22,7 +22,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.seu_nome.sensoresaula1"
+      "bundleIdentifier": "com.seuusuario.controllo"
     },
     "web": {
       "favicon": "./assets/favicon.png"

@@ -1,34 +1,8 @@
-import React, { useMemo } from "react";
-import { View, StyleSheet, Text } from "react-native";
-import HomeLayout from "../../components/HomeLayout.jsx";
-import { useTema } from "../../theme/tema.jsx";
+import React from "react";
+import GeralScreen from "../Geral/index.jsx";
 
+// O administrador tem as mesmas funções do usuário Geral (mural + Visualizar Salas + Itens pendentes).
+// Reutiliza a própria tela, então qualquer ajuste feito no Geral vale também para o admin.
 export default function AdministracaoScreen() {
-    const { cores } = useTema();
-    const styles = useMemo(() => criarStyles(cores), [cores]);
-
-    return (
-        <HomeLayout>
-            <View style={styles.adminContainer}>
-                <Text style={styles.adminText}>Página de admin carregada!</Text>
-            </View>
-        </HomeLayout>
-    );
+    return <GeralScreen />;
 }
-
-const criarStyles = (c) =>
-    StyleSheet.create({
-    adminContainer: {
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-        paddingBottom: 80,
-    },
-
-    adminText: {
-        color: c.texto,
-        fontSize: 18,
-        fontWeight: "600",
-        textAlign: "center",
-    },
-    });

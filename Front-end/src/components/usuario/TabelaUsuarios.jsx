@@ -1,6 +1,6 @@
 import { obterUsuarioAtual } from '../../storage/usuario/dados.storage.js';
 import { urlImagemUsuario } from '../../services/imagemService.js';
-
+import { IoPersonOutline } from 'react-icons/io5';
 function getBadge(tipo) {
     const type = (tipo || '').toLowerCase();
 
@@ -71,8 +71,8 @@ export default function TabelaUsuarios({
         return (
             <div className="tabela-card">
                 <div className="tabela-empty">
-                    <div className="tabela-empty-icon">
-                        👤
+                    <div className="tabela-empty-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6c757d' }}>
+                        <IoPersonOutline size={42} />
                     </div>
 
                     <p>
@@ -107,7 +107,7 @@ export default function TabelaUsuarios({
                         const nome = usuario.nome || '—';
 
                       const cpf = formatarCPF(usuario.cpf);
-                      
+
                         const email = usuario.email || '—';
 
                         const id = usuario.id_usuario;
@@ -156,7 +156,7 @@ export default function TabelaUsuarios({
                             >
 
                                 {/* =====================================================
-                                    USUÁRIO
+                                    USUÁRIOS
                                 ====================================================== */}
                                 <td>
 
@@ -311,9 +311,9 @@ export default function TabelaUsuarios({
                                     ) : (
 
                                         /* =============================================
-                                           SE ESTIVER ATIVO
-                                           MOSTRA BOTÃO DESATIVAR
-                                        ============================================== */
+                                            SE ESTIVER ATIVO
+                                            MOSTRA BOTÃO DESATIVAR
+                                         ============================================== */
                                         ehVoce ? (
 
                                             <button

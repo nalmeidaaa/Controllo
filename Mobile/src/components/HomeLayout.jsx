@@ -5,6 +5,7 @@ import { useTema } from "../theme/tema.jsx";
 import { useUsuarioLogado } from "../hooks/useUsuarioLogado.js";
 import { nomeDoUsuario } from "../utils/usuario.js";
 import PerfilMenu from "./perfil/PerfilMenu.jsx";
+import EntradaAnimada from "../animations/EntradaAnimada.jsx";
 
 export default function HomeLayout({ children }) {
     const { cores } = useTema();
@@ -15,7 +16,7 @@ export default function HomeLayout({ children }) {
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
-                <View style={styles.headerRow}>
+                <EntradaAnimada distancia={-12} style={styles.headerRow}>
                     <View style={styles.heading}>
                         <Text style={styles.eyebrow}>Controllo</Text>
                         <Text style={styles.title}>
@@ -24,7 +25,7 @@ export default function HomeLayout({ children }) {
                     </View>
 
                     <PerfilMenu />
-                </View>
+                </EntradaAnimada>
 
                 {children}
             </View>
