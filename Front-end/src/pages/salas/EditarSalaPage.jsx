@@ -226,14 +226,16 @@ export default function EditarSalaPage({ navegarPara, idSala }) {
                             <div className="form-group-edit">
                                 <label className="form-label-edit">Imagem da Sala</label>
                                 <div className="imagem-upload-area">
-                                    {previewImagem ? (
-                                        <img src={previewImagem} alt="Prévia da sala" className="imagem-preview" />
-                                    ) : (
-                                        <div className="imagem-preview-placeholder">
-                                            <ion-icon name="image-outline"></ion-icon>
-                                            <span>Sem imagem</span>
-                                        </div>
-                                    )}
+                                    <div className="imagem-preview-wrapper">
+                                        {previewImagem ? (
+                                            <img src={previewImagem} alt="Prévia da sala" />
+                                        ) : (
+                                            <div className="imagem-preview-placeholder">
+                                                <ion-icon name="image-outline"></ion-icon>
+                                                <span>Sem imagem</span>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                             <div className="imagem-upload-controls">

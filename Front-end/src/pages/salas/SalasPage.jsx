@@ -566,6 +566,70 @@ export default function SalasPage({ navegarPara }) {
 
     /*
      * =====================================================
+     * DUPLICAR UMA SALA (botão "Duplicar" do card)
+     * =====================================================
+     */
+
+    async function handleDuplicarSala(sala) {
+
+        if (duplicando) {
+            return;
+        }
+
+        const nome =
+            sala.descricao ||
+            sala.nome ||
+            'Sala';
+
+        if (
+            !confirm(
+                `Duplicar a sala "${nome}" com seus patrimônios?`
+            )
+        ) {
+            return;
+        }
+
+        setDuplicando(true);
+
+        try {
+
+            const {
+                errosPatrimonios
+            } =
+                await duplicarSala(sala);
+
+            await recarregar();
+
+            if (errosPatrimonios > 0) {
+
+                alert(
+                    `${errosPatrimonios} patrimônio(s) não puderam ser duplicados.`
+                );
+
+            }
+
+        } catch (erroDuplicar) {
+
+            console.error(
+                'Erro ao duplicar sala:',
+                erroDuplicar
+            );
+
+            alert(
+                'Não foi possível duplicar a sala.'
+            );
+
+        } finally {
+
+            setDuplicando(false);
+
+        }
+
+    }
+
+
+    /*
+     * =====================================================
      * DUPLICAR EM LOTE
      * =====================================================
      */
@@ -786,7 +850,7 @@ export default function SalasPage({ navegarPara }) {
                 <input
                     type="text"
                     className="filtros-input"
-                    placeholder="Pesquisar sala..."
+                    placeholder="Pesquisar sala pelo nome..."
                     value={termoBusca}
                     onChange={(e) => {
                         setTermoBusca(e.target.value);
@@ -964,6 +1028,10 @@ export default function SalasPage({ navegarPara }) {
 
                                         onHistorico={
                                             setSalaHistorico
+                                        }
+
+                                        onDuplicar={
+                                            handleDuplicarSala
                                         }
 
                                     />
